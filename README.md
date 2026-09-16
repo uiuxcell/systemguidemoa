@@ -2,13 +2,6 @@
 
 디자인 시스템 가이드 챗봇 Figma 플러그인. 360×640, 목업 답변 기반이며 추후 Gemini API + DB 연동 예정.
 
-## 설치 (개발 모드)
-
-1. Figma 데스크톱 앱 실행
-2. 메뉴 → Plugins → Development → **Import plugin from manifest…**
-3. 이 저장소의 `manifest.json` 선택
-4. Plugins → Development → **System Guide Moa** 실행
-
 ## 구조
 
 ```
