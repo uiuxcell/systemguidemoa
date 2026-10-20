@@ -207,6 +207,36 @@ function moaPing(apiKey){
     .catch(function(){ clearTimeout(tm); return false; });
 }
 
+/* 무료 사용량 추적 (Gemini API는 잔여량을 알려주지 않아 이 기기에서 보낸 요청 수로 추정)
+   하루 한도는 무료 등급 기준 추정치 · 미국 태평양 시간 자정에 초기화 */
+var MOA_FREE_RPD = { 'gemini-3.5-flash': 20, 'gemini-3.1-flash-lite': 500, 'gemini-2.5-flash': 20 };
+var moaMem = {};
+function moaStore(k, v){
+  try { if(v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(_){ if(v === undefined) return moaMem[k]; moaMem[k] = v; }
+}
+function moaDay(){
+  try { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' }); } catch(_){ return new Date().toISOString().slice(0, 10); }
+}
+function moaUsageAll(){
+  var u = {}; try { u = JSON.parse(moaStore('moa_usage') || '{}'); } catch(_){}
+  if(u.day !== moaDay()) u = { day: moaDay(), used: {}, last: u.last || '' };
+  u.used = u.used || {};
+  return u;
+}
+function moaCount(model, exhausted){
+  var u = moaUsageAll();
+  u.used[model] = exhausted ? (MOA_FREE_RPD[model] || u.used[model] || 0) : (u.used[model] || 0) + 1;
+  if(!exhausted) u.last = model;
+  moaStore('moa_usage', JSON.stringify(u));
+}
+/* 현재 쓰는 모델과 오늘 남은 횟수 */
+function moaUsage(){
+  var u = moaUsageAll();
+  var left = function(m){ return Math.max(0, (MOA_FREE_RPD[m] || 0) - (u.used[m] || 0)); };
+  var model = MOA_MODELS.filter(function(m){ return left(m) > 0; })[0] || u.last || MOA_MODELS[0];
+  return { model: model, used: u.used[model] || 0, limit: MOA_FREE_RPD[model] || 0, left: left(model) };
+}
+
 function moaWait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
 
 function moaFail(msg){ var e = new Error(msg); e.moa = true; return e; }
@@ -225,11 +255,13 @@ function moaCall(model, apiKey, body, onDelta){
           var json = {}; try { json = JSON.parse(t); } catch(_){}
           if(Array.isArray(json)) json = json[0] || {};
           var m = (json.error && json.error.message) || '';
+          if(res.status === 429 && /per ?day|PerDay|daily/i.test(m)) moaCount(model, true);
           var e = moaFail('HTTP ' + res.status + (m ? ' · ' + m : ''));
           e.status = res.status;
           throw e;
         });
       }
+      moaCount(model);
       if(!stream) return res.json().catch(function(){ return {}; });
       var merged = { candidates: [{ content: { parts: [] } }] }, text = '', buf = '';
       var eat = function(line){
@@ -452,6 +484,7 @@ function moaAsk(question, apiKey, opts){
 window.MOA_STEPS = MOA_STEPS;
 window.MOA_NO_ANSWER = MOA_NO_ANSWER;
 window.moaAsk = moaAsk;
+window.moaUsage = moaUsage;
 window.moaSearch = moaSearch;
 window.moaLoadPrompts = moaLoadPrompts;
 window.moaSystem = moaSystem;

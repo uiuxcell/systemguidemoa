@@ -268,6 +268,12 @@ input{font:inherit;border:0;outline:0;background:none}
 .field-box .clear svg{position:absolute;left:9.083px;top:9.083px}
 .err-msg{margin-top:8px;align-self:stretch;font-size:12px;font-weight:400;line-height:16px;color:#D62E2E;display:none}
 .field-box.err .err-msg{display:block}
+.key-usage{margin-top:8px;display:none;align-items:center;gap:6px;font-size:11px;font-weight:500;line-height:15px;letter-spacing:-0.02em;color:#5C6473}
+.key-usage.on{display:flex}
+.field-box.err .key-usage{display:none}
+.key-usage i{width:4px;height:4px;border-radius:50%;background:#00BC06;flex-shrink:0}
+.key-usage b{font-weight:600;color:#000}
+.key-usage.low b{color:#D62E2E}
 .key-cta{position:absolute;left:24px;top:404px;width:312px;z-index:5}
 .cta{width:100%;height:44px;border-radius:8px;background:#4185FF;display:flex;justify-content:center;align-items:center;font-size:14px;font-weight:600;line-height:20px;color:#fff}
 .cta[disabled]{background:#E0E3E9;color:#8C93A0;cursor:default}
@@ -406,6 +412,7 @@ Gemini API 키가 필요해요</h1>
           <button class="clear" id="keyClear" aria-label="지우기"><i></i><svg width="5.833" height="5.833" viewBox="0 0 5.833 5.833"><path d="M 5.833 0.587 L 5.246 0 L 2.917 2.329 L 0.587 0 L 0 0.587 L 2.329 2.917 L 0 5.246 L 0.587 5.833 L 2.917 3.504 L 5.246 5.833 L 5.833 5.246 L 3.504 2.917 L 5.833 0.587 Z" fill="#fff"/></svg></button>
         </div>
         <div class="err-msg">키 형식이 올바르지 않습니다</div>
+        <div class="key-usage" id="keyUsage"></div>
       </div>
     </div>
     <div class="key-cta"><button class="cta" id="keySave" disabled>저장하고 시작하기</button></div>
@@ -1172,15 +1179,27 @@ function closeMenu(){
 $('btnBack').onclick = back;
 $('btnClose').onclick = function(){ show(S.screen === 'home' ? 'intro' : 'home'); };
 $('btnAsk').onclick = function(){ show('key'); };
-$('btnSettings').onclick = function(){ show('key'); };
+$('btnSettings').onclick = function(){ show('key'); renderUsage(); checkApi(); };
 $('btnRefresh').onclick = function(){ if(S.cat) openCategory(S.cat, S.topic); toast('대화를 초기화했어요'); };
 $('statusDot').parentNode.addEventListener('contextmenu', function(e){ e.preventDefault(); setConnected(!S.connected); });
 $('discClose').onclick = function(){ $('discOverlay').classList.add('hide'); };
 $('discGo').onclick = function(){ $('discOverlay').classList.add('hide'); show('key'); };
 
 /* Gemini API 연결 상태 → 설정 아이콘 위 점 (초록: 연결 / 빨강: 끊김) */
+/* 설정 화면: 연결돼 있으면 현재 모델과 오늘 남은 사용량(추정) */
+function renderUsage(){
+  var box = $('keyUsage');
+  if(!box) return;
+  if(!S.apiOk || typeof moaUsage !== 'function'){ box.classList.remove('on'); return; }
+  var u = moaUsage();
+  box.innerHTML = '<i></i><span>' + u.model + '</span><span>·</span><span>오늘 남은 사용량 약 <b>' + u.left + '</b> / ' + u.limit + '회</span>';
+  box.title = '이 기기에서 보낸 요청 수 기준 추정치예요. 정확한 값은 Google AI Studio에서 확인해 주세요.';
+  box.classList.toggle('low', u.limit > 0 && u.left / u.limit <= 0.2);
+  box.classList.add('on');
+}
 function setApiStatus(ok){
   S.apiOk = !!ok;
+  setTimeout(renderUsage, 0);
   $('statusDot').classList.toggle('off', !ok);
   $('statusDot').title = ok ? 'Gemini API 연결됨' : 'Gemini API 연결 끊김';
 }
