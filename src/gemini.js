@@ -40,10 +40,8 @@ function moaPromptBody(md){
 /* 프롬프트 파일이 정하지 않는, 앱 동작에 필요한 규칙 */
 var MOA_RULES = [
   '[시스템 연동 규칙]',
-  '<context>의 "토큰" 항목은 Figma 변수입니다. 토큰을 답할 때는 토큰 이름(예: tab/standard/label/normal)과 값을 함께 적고, Light/Dark 값이 있으면 둘 다 적으세요. 괄호 안은 참조하는 상위 토큰입니다.',
-  '앞선 대화는 사용자가 무엇을 이어서 묻는지 파악하는 데만 쓰세요. "그럼", "그건", "다크모드는?"처럼 짧은 후속 질문은 앞선 질문의 대상에 대한 질문으로 해석합니다. 근거는 항상 마지막 <context>만 사용합니다.',
-  '"언제 사용해?"처럼 사용 시점을 묻는 질문은 context의 "적용 상황"·"사용처"·"사용 기준" 항목에서 "~할 때 → 타입" 형태로 답하세요.',
-  '[데이터 없음]일 때는 다른 말을 붙이지 말고 정확히 이 문장만 답하세요: "' + MOA_NO_ANSWER + '"'
+  '<context>의 "토큰" 항목은 Figma 변수입니다. Light/Dark 값이 있으면 둘 다 적으세요. 값 뒤 괄호 안은 참조하는 상위 토큰입니다.',
+  '앞선 대화는 사용자가 무엇을 이어서 묻는지 파악하는 데만 쓰세요. "그럼", "그건", "다크모드는?"처럼 짧은 후속 질문은 앞선 질문의 대상에 대한 질문으로 해석합니다. 근거는 항상 마지막 <context>만 사용합니다.'
 ].join('\n');
 
 function moaPrompts(){ return moaLive || window.MOA_PROMPTS || []; }
@@ -77,36 +75,54 @@ function moaLoadPrompts(force){
 }
 function moaPromptSource(){ return moaLive ? moaLiveFrom + ' (최신)' : (window.MOA_PROMPTS && window.MOA_PROMPTS.length ? '빌드 내장' : '기본값'); }
 
-/* 한글·약어 → DB 토픽 이름 */
-var MOA_GLOSSARY = {
-  '컬러':'Color','색상':'Color','색':'Color','color':'Color','hex':'Color','테마':'Color','다크':'Color',
-  '폰트':'Typeface','서체':'Typeface','글꼴':'Typeface','타이포':'Typeface','타이포그래피':'Typeface','typeface':'Typeface','font':'Typeface',
-  '간격':'Spacing','여백':'Spacing','패딩':'Spacing','마진':'Spacing','spacing':'Spacing','그리드':'Spacing',
-  'cta':'CTA Button','버튼':'CTA Button','button':'CTA Button',
-  '유틸리티':'Utility Button','utility':'Utility Button',
-  '팝업':'Popup','모달':'Popup','다이얼로그':'Popup','popup':'Popup',
-  '딤':'Dimmed & Shadow','딤드':'Dimmed & Shadow','그림자':'Dimmed & Shadow','섀도우':'Dimmed & Shadow','shadow':'Dimmed & Shadow','dimmed':'Dimmed & Shadow',
-  '아이콘':'Iconography','icon':'Iconography','iconography':'Iconography',
-  '라운드':'Radius','모서리':'Radius','곡률':'Radius','radius':'Radius',
-  '뱃지':'Badge','배지':'Badge','badge':'Badge',
-  '칩':'Chip','chip':'Chip',
-  '체크박스':'Selection Control','라디오':'Selection Control','스위치':'Selection Control','토글':'Selection Control','checkbox':'Selection Control',
-  '인디케이터':'Indicator','indicator':'Indicator','페이지네이션':'Indicator',
-  '구분선':'Divider','디바이더':'Divider','divider':'Divider',
-  '옵션칩':'Option Chip','옵션':'Option Chip',
-  '옵션셀렉터':'Option Selector','셀렉터':'Option Selector','selector':'Option Selector',
-  '탭':'Tab','tab':'Tab','툴팁':'Tooltip','tooltip':'Tooltip','스낵바':'Snackbar','snackbar':'Snackbar',
-  '텍스트필드':'Text Field','입력창':'Text Field','인풋':'Text Field','검색':'Search','검색창':'Search','search':'Search',
-  '슬라이더':'Slider','slider':'Slider','리스트':'List','목록':'List','메뉴':'Menu','드롭다운':'Menu','필터':'Filter','filter':'Filter',
-  '브레드크럼':'Breadcrumb','하이퍼링크':'Hyperlink','링크':'Hyperlink','스테퍼':'Stepper','프로그레스':'Progress','진행바':'Progress',
-  '평점':'Rating','별점':'Rating','카운터':'Number Counter','수량':'Number Counter','스크롤':'Scroll','갤러리':'Gallery Controls','fab':'Fab',
-  '모션':'Motion','애니메이션':'Motion','보더':'Border','테두리':'Border','그라디언트':'Gradient','그라데이션':'Gradient',
-  '투명도':'Opacity','불투명도':'Opacity','opacity':'Opacity'
-};
+/* data/db_glossary/glossary.md → 사용자 표현 ↔ 공식 용어 (빌드 시 window.MOA_GLOSSARY_DB로 들어옴) */
+var MOA_GLOSSARY_CAT = { 'typography':'Typeface' };
+var MOA_GLOSSARY = {}, MOA_GLOSSARY_PHRASE = [], MOA_GLOSSARY_TERM = {};
+function moaBuildGlossary(){
+  MOA_GLOSSARY = {}; MOA_GLOSSARY_PHRASE = []; MOA_GLOSSARY_TERM = {};
+  var list = Array.isArray(window.MOA_GLOSSARY_DB) ? window.MOA_GLOSSARY_DB : [];
+  var topics = {};
+  (window.MOA_DB || []).forEach(function(c){ if(c.topic) topics[c.topic.toLowerCase().replace(/[^a-z]/g, '')] = c.topic; });
+  var norm = function(x){ return String(x || '').toLowerCase().replace(/\s+/g, ''); };
+  list.forEach(function(it){
+    if(!it || !it.term) return;
+    var cat = String(it.category || '').toLowerCase().replace(/[^a-z]/g, '');
+    var topic = topics[String(it.term).toLowerCase().replace(/[^a-z]/g, '')] || topics[cat] || MOA_GLOSSARY_CAT[cat] || '';
+    if(topic && !topics[topic.toLowerCase().replace(/[^a-z]/g, '')]) topic = '';
+    var words = [it.term].concat(it.aliases || []);
+    words.forEach(function(w){
+      var k = norm(w);
+      if(!k) return;
+      if(MOA_GLOSSARY_TERM[k] === undefined) MOA_GLOSSARY_TERM[k] = it.term;
+      if(topic && MOA_GLOSSARY[k] === undefined) MOA_GLOSSARY[k] = topic;
+      if(/\s/.test(String(w).trim()) && k.length > 2) MOA_GLOSSARY_PHRASE.push({ k: k, term: it.term, topic: topic });
+    });
+  });
+  return list.length;
+}
+/* 질문 → { topics, terms } */
+function moaGlossaryMatch(question, qs){
+  if(!Object.keys(MOA_GLOSSARY_TERM).length) moaBuildGlossary();
+  var topics = [], terms = [];
+  var add = function(topic, term){
+    if(topic && topics.indexOf(topic) < 0) topics.push(topic);
+    if(term && terms.indexOf(term) < 0) terms.push(term);
+  };
+  var flat = String(question || '').toLowerCase().replace(/\s+/g, '');
+  MOA_GLOSSARY_PHRASE.forEach(function(p){ if(flat.indexOf(p.k) > -1) add(p.topic, p.term); });
+  (qs || []).forEach(function(t){
+    var term = MOA_GLOSSARY_TERM[t], topic = MOA_GLOSSARY[t];
+    if(term === undefined) Object.keys(MOA_GLOSSARY_TERM).forEach(function(k){ if(term === undefined && t.indexOf(k) === 0 && (k.length > 1 || (/[가-힣]/.test(k) && /^(이랑|랑|과|와|은|는|이|가|을|를|의|도|하고|에서|에)?$/.test(t.slice(1))))){ term = MOA_GLOSSARY_TERM[k]; topic = MOA_GLOSSARY[k]; } });
+    if(term !== undefined) add(topic, term);
+  });
+  return { topics: topics, terms: terms };
+}
 
 /* 사용 시점(적용 상황) 질문 */
 var MOA_USAGE_RE = /언제|어떤(상황|경우|때)|어디에?(써|쓰|사용)|무슨(상황|경우)|용도|쓰임|사용처|적용상황|when/i;
 var MOA_USAGE_HEAD = /적용 ?상황|사용처|사용 ?용도|사용 ?기준|케이스별/;
+var MOA_COMPARE_RE = /비교|차이|다른점|다른가|다르|달라|구분|vs|versus|compare|difference/i;
+var MOA_COMPARE_HINT = '\n\n(질문 의도: 비교 — 반드시 아래 순서로 답하세요.\n1) 카테고리별로 [카테고리명] 제목 아래 "정의"와 "용도(언제 쓰는지)"를 context의 정의·적용 상황 항목으로 각각 설명\n2) 그 다음 "차이" 항목에서 같은 기준(용도, 형태, 크기, 상태 등)으로 차이를 정리\n한쪽 근거가 없으면 없다고 밝히세요.)';
 var MOA_USAGE_HINT = '\n\n(질문 의도: 적용 상황 — 언제, 어떤 상황에서 쓰는지를 context의 적용 상황 항목으로 답하세요.)';
 var MOA_TOKEN_STOP = ['언제','사용','사용해','써','쓰는','쓰는건데','사용하는건데','상황','토큰','token','tokens','변수','컬러','색','색상','color','값','알려줘','뭐야','무엇','어떻게','무슨','어떤','있어','코드','hex'];
 var MOA_FOUNDATION = ['Color','Typeface','Spacing','Radius','Dimmed & Shadow','Opacity','Motion','Border','Gradient'];
@@ -178,6 +194,17 @@ function moaWhy(json){
   return r + (label && !block ? ' · ' + label : '') +
     ' · 토큰 입력 ' + (u.promptTokenCount || 0) + ' / 생각 ' + (u.thoughtsTokenCount || 0) + ' / 출력 ' + (u.candidatesTokenCount || 0) +
     ' · parts ' + parts.length;
+}
+
+/* Gemini 연결 확인: 키로 모델 목록을 1건 조회 */
+function moaPing(apiKey){
+  if(!apiKey) return Promise.resolve(false);
+  if(typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve(false);
+  var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var tm = setTimeout(function(){ if(ctl) ctl.abort(); }, 6000);
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1&key=' + encodeURIComponent(apiKey), ctl ? { signal: ctl.signal } : {})
+    .then(function(r){ clearTimeout(tm); return r.ok; })
+    .catch(function(){ clearTimeout(tm); return false; });
 }
 
 function moaWait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
@@ -270,22 +297,24 @@ function moaAsk(question, apiKey, opts){
   .then(function(){
     var names = {};
     db.forEach(function(c){ if(c.topic) names[c.topic.toLowerCase()] = c.topic; });
-    qs.forEach(function(t){
-      var hit = MOA_GLOSSARY[t] || names[t];
-      if(!hit) Object.keys(MOA_GLOSSARY).forEach(function(k){ if(!hit && k.length > 1 && t.indexOf(k) === 0) hit = MOA_GLOSSARY[k]; });
-      if(hit && topics.indexOf(hit) < 0) topics.push(hit);
-    });
+    var gm = moaGlossaryMatch(question, qs);
+    gm.topics.forEach(function(t){ if(topics.indexOf(t) < 0) topics.push(t); });
+    qs.forEach(function(t){ var hit = names[t]; if(hit && topics.indexOf(hit) < 0) topics.push(hit); });
+    gm.terms.forEach(function(t){ var k = String(t).toLowerCase(); if(sq.indexOf(k) < 0) sq.push(k); });
     var inherited = false;
+    if(opts.compareTopics && opts.compareTopics.length){ opts.compareTopics.forEach(function(t){ if(topics.indexOf(t) < 0) topics.push(t); }); }
     var onlyBase = topics.every(function(t){ return MOA_FOUNDATION.indexOf(t) > -1; });
-    if(last && last.topics && onlyBase){ last.topics.forEach(function(t){ if(topics.indexOf(t) < 0){ topics.push(t); inherited = true; } }); }
+    if(last && last.topics && onlyBase && !opts.compareTopics){ last.topics.forEach(function(t){ if(topics.indexOf(t) < 0){ topics.push(t); inherited = true; } }); }
     if(!topics.length && opts.topic) topics.push(opts.topic);
-    end(1, topics.length ? topics.join(', ') + (inherited ? ' (이전 질문 주제 포함)' : '') : '매핑된 용어 없음 · 전체 DB 검색', topics.length ? 'done' : 'warn');
+    var termTxt = gm.terms.length ? '\n용어 ' + gm.terms.slice(0, 6).join(', ') : '';
+    if(opts.compareTopics) termTxt += '\n비교 모드 · ' + opts.compareTopics.join(' vs ');
+    end(1, (topics.length ? topics.join(', ') + (inherited ? ' (이전 질문 주제 포함)' : '') : '매핑된 주제 없음 · 전체 DB 검색') + termTxt, (topics.length || gm.terms.length) ? 'done' : 'warn');
   })
   /* 3 */
   .then(function(){ return begin(2); })
   .then(function(){
     var tokens = window.MOA_TOKENS || [];
-    if(!db.length && !tokens.length) throw moaFail('DB가 비어 있어요 · data/ 폴더를 넣고 다시 빌드해 주세요');
+    if(!db.length && !tokens.length) throw moaFail('DB가 비어 있어요 · data/DB_guide, data/DB_tokens를 넣고 다시 빌드해 주세요');
     var search = function(list, isToken){
       var eq = isToken ? sq.concat(moaEnglish(sq), topics.map(function(t){ return t.toLowerCase().replace(/ & | /g, '_'); })).filter(function(t){ return MOA_TOKEN_STOP.indexOf(t) < 0; }) : sq;
       var comp = topics.filter(function(t){ return MOA_FOUNDATION.indexOf(t) < 0; });
@@ -298,6 +327,11 @@ function moaAsk(question, apiKey, opts){
             else if(/사용 ?규칙|usage/i.test(hd) && (!topics.length || topics.indexOf(ch.topic) > -1)) s += 3;
           }
           if(isToken && topics.indexOf(ch.topic) > -1) s += 2;
+          /* 비교: 비교 대상 카테고리의 가이드 핵심 섹션은 키워드 점수와 무관하게 포함 */
+          if(!isToken && opts.compareTopics && opts.compareTopics.indexOf(ch.topic) > -1){
+            var hd2 = moaHead(ch);
+            s += /정의|개요|타입별 ?요약|적용 ?상황|사용 ?기준|용도/.test(hd2) ? 6 : 1;
+          }
           if(isToken && comp.indexOf(ch.topic) > -1) s += 4;
           return { ch: ch, score: s };
         }).filter(function(r){ return r.score > 0; });
@@ -317,7 +351,14 @@ function moaAsk(question, apiKey, opts){
       list.sort(function(a,b){ return b.score - a.score; });
       return list.slice(0, n).map(function(r){ return r.ch; });
     };
-    var g = rank(hits.guide, 5), t = rank(hits.token, usage ? 0 : 4);
+    /* 비교 질문: 카테고리마다 근거를 고르게 가져옴 */
+    var rankEach = function(list, per){
+      var out = [];
+      opts.compareTopics.forEach(function(tp){ out = out.concat(rank(list.filter(function(r){ return r.ch.topic === tp; }), per)); });
+      return out;
+    };
+    var cmp = opts.compareTopics && opts.compareTopics.length > 1;
+    var g = cmp ? rankEach(hits.guide, 3) : rank(hits.guide, 5), t = cmp ? rankEach(hits.token, usage ? 0 : 2) : rank(hits.token, usage ? 0 : 4);
     hits = g.concat(t);
     var lab = function(c){ return (c.topic ? c.topic + ' › ' : '') + moaHead(c); };
     var info = (g.length ? '가이드: ' + g.slice(0, 2).map(lab).join(' / ') : '') + (g.length && t.length ? '\n' : '') + (t.length ? '토큰: ' + t.slice(0, 3).map(function(c){ return moaHead(c).replace(/ 토큰$/, ''); }).join(', ') : '');
@@ -347,7 +388,7 @@ function moaAsk(question, apiKey, opts){
         systemInstruction: { parts: [{ text: moaSystem() }] },
         contents: [].concat.apply([], hist.map(function(h){
           return [{ role: 'user', parts: [{ text: h.q }] }, { role: 'model', parts: [{ text: String(h.a || '').slice(0, 1200) }] }];
-        })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n질문: ' + question + (usage ? MOA_USAGE_HINT : '') }] }]),
+        })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') }] }]),
       };
       var tried = [], fails = [], plain = false;
       function next(i){

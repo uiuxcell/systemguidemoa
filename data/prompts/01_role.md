@@ -19,7 +19,7 @@
 - Target: 어떤 대상을 묻는지 ( Component / Property / Token 등 )
 - Condition: 어떤 조건에서의 값을 묻는지 ( Platform / Variant / State / Size / Theme 등 )
 - Requested Info: 최종적으로 알고 싶은 정보가 무엇인지
-- [data/glossary.md]: glossary DB를 거쳐 표현 단어와 데이터 용어간 의미를 매핑한다.
+- [data/db_glossary/glossary.md]: glossary DB를 거쳐 표현 단어와 데이터 용어간 의미를 매핑한다.
 
 **05. DB별 역할**
 

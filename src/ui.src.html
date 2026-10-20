@@ -517,14 +517,11 @@ Gemini API 키가 필요해요</h1>
 <script>window.MOA_DB = __DB_JSON__;</script>
 <script>window.MOA_TOKENS = __TOKENS_JSON__;</script>
 <script>window.MOA_PROMPTS = __PROMPTS_JSON__;</script>
+<script>window.MOA_GLOSSARY_DB = __GLOSSARY_JSON__;</script>
 <script>__GEMINI_JS__</script>
 <script>
-/* ── fallback data (data/ 폴더가 비었을 때만 사용) ────────────── */
-var MENU = [
-  {en:'Foundation', ko:'공통 스타일', items:['Color','Typeface','Spacing','Dimmed & Shadow','Iconography','Radius']},
-  {en:'Element', ko:'기본 요소', items:['CTA Button','Utility Button','Option Chip','Option Selector','Selection Control','Text Field']},
-  {en:'Component', ko:'조합 UI', items:['Popup','Tooltip']}
-];
+/* ── 기본 데이터: 기타 문의 고정 답변 (가이드 데이터는 data/ 폴더에서) ── */
+var MENU = []; /* data/DB_guide 기준으로 아래에서 구성 */
 var HOME_CHIPS = [
   ['Color','Typeface','Spacing'],
   ['CTA Button','Utility Button'],
@@ -536,80 +533,7 @@ var T = function(t,d,items){return {kind:'type',title:t,desc:d,items:items};};
 var X = function(t,d,text){return {kind:'text',title:t,desc:d,text:text};};
 var E = function(t,text,cta){return {kind:'text',title:t,desc:'',text:text,cta:cta||''};};
 
-var GUIDE = {
-  'Color':{q:['한 눈에 보기','Primary Color','Secondary Color','Grayscale','Neutral Color'],a:{
-    '한 눈에 보기':X('Color','컬러 시스템 요약','컬러는 Primary · Secondary · Grayscale · Neutral 네 그룹으로 운영해요.\n핵심 액션에는 Skyblue #2189FF, 배경과 표면에는 Neutral을 사용합니다.'),
-    'Primary Color':C('Primary Color','브랜드 핵심 액션이 필요할 때',[
-      [['Black','#000000'],['White','#FFFFFF']],
-      [['Skyblue','#2189FF'],['Skyblue Dark','#006BEA']],
-      [['Skyblue Light','#68AEFF']]]),
-    'Secondary Color':C('Secondary Color','브랜드 아이덴티티를 보강하고 싶을 때',[
-      [['Coral','#EF3434'],['Coral Dark','#D62E2E']],
-      [['Coral Light','#F36E6E'],['Orange','#F66700']],
-      [['Orange Dark','#C74700'],['Sea Blue','#00B3E3']],
-      [['Teal','#00838F'],['Teal Dark','#007D89']]]),
-    'Grayscale':C('Grayscale Color','텍스트 위계(타이틀/본문/보조/비활성)를 정할 때',[
-      [['0_F7','#F7F7F7'],['1_EE','#EEEEEE']],
-      [['2_DD','#DDDDDD'],['3_BB','#BBBBBB']],
-      [['4_99','#999999'],['5_77','#777777']],
-      [['6_55','#555555'],['7_33','#333333']],
-      [['8_11','#111111'],['9_00','#000000']]]),
-    'Neutral Color':C('Neutral Color','배경·카드 표면에 은은한 톤이 필요할 때',[
-      [['Neutral Blue','#F5F7FE'],['Neutral Beige','#F7F5F2']],
-      [['Neutral Orange','#FEF6F3'],['Neutral Pink','#F6F0F5']]])}},
-  'Typeface':{q:['한 눈에 보기','Display','Heading','Body','Caption'],a:{
-    '한 눈에 보기':X('Typeface','타입 시스템 요약','Pretendard 한 벌로 Display · Heading · Body · Caption 4단계를 운영해요.\n자간은 -2%로 통일합니다.'),
-    'Display':T('Display','시선 유도와 임팩트가 최우선인 최상단 영역',[['56px','행간 67px, 자간-2%'],['48px','행간 58px, 자간-2%'],['40px','행간 48px, 자간-2%']]),
-    'Heading':T('Heading','화면과 섹션의 제목',[['32px','행간 42px, 자간-2%'],['24px','행간 32px, 자간-2%'],['20px','행간 30px, 자간-2%']]),
-    'Body':T('Body','본문과 설명 텍스트',[['16px','행간 24px, 자간-2%'],['14px','행간 20px, 자간-2%'],['13px','행간 17px, 자간-2%']]),
-    'Caption':T('Caption','보조 정보와 라벨',[['12px','행간 16px, 자간-2%'],['11px','행간 14px, 자간-2%']])}},
-  'Spacing':{q:['한 눈에 보기','기본 단위','섹션 간격','컴포넌트 내부'],a:{
-    '한 눈에 보기':X('Spacing','간격 규칙 요약','4의 배수를 기본 단위로 사용해요. 화면 좌우 여백은 24px, 카드 내부는 16px입니다.'),
-    '기본 단위':X('기본 단위','4px 그리드','4 · 8 · 12 · 16 · 20 · 24 · 32 를 사용합니다. 그 외 값은 예외로 관리해요.'),
-    '섹션 간격':X('섹션 간격','블록 사이 여백','같은 그룹 안에서는 12px, 다른 그룹 사이에는 24~32px을 둡니다.'),
-    '컴포넌트 내부':X('컴포넌트 내부','패딩 규칙','칩 8/12, 버튼 12/16, 카드 12/16을 기본으로 합니다.')}},
-  'Dimmed & Shadow':{q:['Dimmed','Shadow','Blur'],a:{
-    'Dimmed':X('Dimmed','오버레이 배경','rgba(0,0,0,0.6)을 사용합니다. 팝업·바텀시트 공통이에요.'),
-    'Shadow':X('Shadow','띄움 표현','기본 2px 2px 12px rgba(0,0,0,0.08), 입력 바는 0 6px 12px / 0 20px 60px rgba(0,0,0,0.1)입니다.'),
-    'Blur':X('Blur','배경 흐림','유리 표면은 backdrop-blur 4px, 배경 그래픽은 150~180px을 사용해요.')}},
-  'Iconography':{q:['그리드','선 두께','색상'],a:{
-    '그리드':X('Iconography','아이콘 그리드','24×24 프레임 안에서 15~16px 실루엣으로 그립니다.'),
-    '선 두께':X('선 두께','스트로크','기본 1.2px, 12px 이하 소형 아이콘은 0.6px을 사용합니다.'),
-    '색상':X('색상','아이콘 컬러','기본 #000, 비활성 rgba(66,71,81,0.6), 강조는 #2063FF입니다.')}},
-  'Radius':{q:['한 눈에 보기','버튼','카드','말풍선'],a:{
-    '한 눈에 보기':X('Radius','라운드 값','2 · 4 · 8 · 18 · 20 · 22 · 999를 사용합니다.'),
-    '버튼':X('버튼','CTA와 칩','CTA는 8, 칩은 999(pill), 홈 카테고리 칩은 18을 씁니다.'),
-    '카드':X('카드','8px','답변 카드와 팝업은 8, 바텀시트 상단은 20입니다.'),
-    '말풍선':X('말풍선','꼬리 있는 라운드','보낸 말풍선 20/2/20/20, 받은 말풍선 2/20/20/20입니다.')}},
-  'CTA Button':{q:['Normal','Disabled'],a:{
-    'Normal':C('CTA Button / Normal','높이 44, 라운드 8',[[['Fill','#4185FF'],['Label','#FFFFFF']]]),
-    'Disabled':C('CTA Button / Disabled','조건 미충족 상태',[[['Fill','#E0E3E9'],['Label','#8C93A0']]])}},
-  'Utility Button':{q:['Text','Icon','Link'],a:{
-    'Text':X('Utility Button / Text','보조 액션','14px SemiBold, 컬러 #424751. 밑줄은 링크에만 사용해요.'),
-    'Icon':X('Utility Button / Icon','아이콘 단독','24×24 터치 영역, 라운드 4, hover 시 rgba(0,0,0,0.05).'),
-    'Link':X('Utility Button / Link','외부 이동','밑줄 + #424751. 이동 대상이 외부일 때만 사용합니다.')}},
-  'Option Chip':{q:['Normal','Selected'],a:{
-    'Normal':C('Option Chip / Normal','높이 33, 라운드 999',[[['Border','#E0E3E9'],['Label','#000000']]]),
-    'Selected':C('Option Chip / Selected','선택 상태',[[['Border','#2063FF'],['Label','#2063FF']]])}},
-  'Option Selector':{q:['단일 선택','다중 선택'],a:{
-    '단일 선택':X('Option Selector','한 개만 선택','칩을 가로로 나열하고 선택된 하나만 파란 테두리로 표시해요.'),
-    '다중 선택':X('Option Selector','여러 개 선택','선택된 항목마다 테두리를 바꾸고, 상단에 선택 개수를 노출합니다.')}},
-  'Selection Control':{q:['Checkbox','Radio','Toggle'],a:{
-    'Checkbox':X('Checkbox','다중 선택','18×18, 라운드 4, 선택 시 #4185FF 채움.'),
-    'Radio':X('Radio','단일 선택','18×18 원형, 선택 시 안쪽 8px 원 #4185FF.'),
-    'Toggle':X('Toggle','즉시 적용','44×24, 켜짐 #4185FF / 꺼짐 #D8DFE5.')}},
-  'Text Field':{q:['Default','Approve','Error'],a:{
-    'Default':C('Text Field / Default','높이 43, 라벨 12px',[[['Border','#C8CDD4'],['Placeholder','#8C93A0']]]),
-    'Approve':C('Text Field / Approve','입력 완료',[[['Border','#000000'],['Text','#000000']]]),
-    'Error':C('Text Field / Error','형식 오류',[[['Border','#D62E2E'],['Message','#D62E2E']]])}},
-  'Popup':{q:['크기','구성','버튼'],a:{
-    '크기':X('Popup','기본 규격','너비 312, 라운드 8, 좌우 여백 24. 배경은 dimmed 60%.'),
-    '구성':X('Popup','구성 요소','닫기 → 일러스트 → 타이틀 16px → 설명 12px → CTA 순서입니다.'),
-    '버튼':X('Popup','버튼 배치','단일 CTA는 가로 꽉 채움, 두 개면 8px 간격으로 나눕니다.')}},
-  'Tooltip':{q:['위치','내용'],a:{
-    '위치':X('Tooltip','노출 위치','대상 위 8px, 화면 밖으로 나가면 아래로 뒤집습니다.'),
-    '내용':X('Tooltip','문구 길이','한 줄 24자 이내, 최대 두 줄까지 권장합니다.')}}
-};
+var GUIDE = {};
 GUIDE['기타 문의'] = {q:['담당자에게 직접 문의하고 싶어요','원하는 답변을 찾지 못했어요','가이드에 없는 경우에는 어떻게 해야 하나요?','잘못된 답변을 발견했어요','새로운 가이드나 항목을 제안하고 싶어요'],a:{
   '원하는 답변을 찾지 못했어요':E('원하는 답변을 찾지 못했다면?','원하는 답변을 찾지 못했다면 질문을 조금 다르게 입력해 보세요.\n컴포넌트명이나 확인하려는 속성을 함께 입력하면 더 정확한 답변을 받을 수 있어요.\n\n예) Button의 높이를 변경할 수 있어?','메일로 문의하기'),
   '가이드에 없는 경우에는 어떻게 해야 하나요?':E('가이드에 없는 경우라면?','가이드에 정의되지 않은 항목은 임의로 적용하기보다 담당자 확인을 권장해요.\n필요한 내용을 정리해 디자인 시스템 담당자에게 문의해 주세요.','메일로 문의하기'),
@@ -905,19 +829,20 @@ function remember(q, text, topics){
 }
 var AVATAR_HTML = '<img src="__IMG_PROFILE__" alt="Moa">';
 /* 입력한 질문의 주제가 지금 채팅창과 다르면 맞는 카테고리로 이동 */
-function detectTopics(q){
-  if(!USE_DB || typeof moaTokenize !== 'function' || !window.MOA_GLOSSARY && typeof MOA_GLOSSARY === 'undefined') return [];
+function detectTopics(q, keepAll){
+  if(!USE_DB || typeof moaTokenize !== 'function' || typeof moaGlossaryMatch !== 'function') return [];
+  var gm = moaGlossaryMatch(q, moaTokenize(q));
   var names = {};
   TOPICS.concat(['Tab']).forEach(function(t){ names[t.toLowerCase().replace(/[^a-z가-힣]/g, '')] = t; });
   var found = [];
   moaTokenize(q).forEach(function(t){
     var k = t.replace(/[^a-z가-힣]/g, '');
-    var hit = MOA_GLOSSARY[t] || names[k];
-    if(!hit) Object.keys(MOA_GLOSSARY).forEach(function(g){ if(!hit && g.length > 1 && t.indexOf(g) === 0) hit = MOA_GLOSSARY[g]; });
+    var hit = names[k];
     if(hit && found.indexOf(hit) < 0 && (isTopic(hit) || hit === 'Tab')) found.push(hit);
   });
+  gm.topics.forEach(function(hit){ if(found.indexOf(hit) < 0 && (isTopic(hit) || hit === 'Tab')) found.push(hit); });
   /* 더 구체적인 주제가 있으면 일반 주제는 뺌 (유틸리티 버튼 > 버튼, 옵션칩 > 칩) */
-  [['Utility Button','CTA Button'],['Option Chip','Chip']].forEach(function(p){ if(found.indexOf(p[0]) > -1) found = found.filter(function(t){ return t !== p[1]; }); });
+  if(!keepAll) [['Utility Button','CTA Button'],['Option Chip','Chip']].forEach(function(p){ if(found.indexOf(p[0]) > -1) found = found.filter(function(t){ return t !== p[1]; }); });
   var comp = found.filter(function(t){ return MOA_FOUNDATION.indexOf(t) < 0; });
   return comp.concat(found.filter(function(t){ return comp.indexOf(t) < 0; }));
 }
@@ -933,8 +858,19 @@ function redirectTopic(q){
   if(cur && found.some(function(t){ return relatedTopic(t, cur); })) return null;
   return found[0];
 }
+/* "비교/차이" 질문: 카테고리를 옮기지 않고 언급된 카테고리 데이터를 함께 불러옴 */
+function compareTopics(q){
+  if(typeof MOA_COMPARE_RE === 'undefined' || !MOA_COMPARE_RE.test(String(q).replace(/\s+/g, ''))) return null;
+  var found = detectTopics(q, true);
+  if(!found.length) return null;
+  var cur = S.cat === '기타 문의' ? null : (S.topic || S.cat);
+  var list = found.length > 1 ? found.slice() : [];
+  if(!list.length){ if(cur) list.push(cur); found.forEach(function(t){ if(list.indexOf(t) < 0) list.push(t); }); }
+  return list.length > 1 ? list : null;
+}
 function ask(q, typed){
-  if(typed){
+  var cmp = compareTopics(q);
+  if(typed && !cmp){
     var mv = redirectTopic(q);
     if(mv){
       var con0 = $('chatCon');
@@ -966,8 +902,6 @@ function ask(q, typed){
   setIng(true);
 
   setTimeout(function(){
-    body.removeChild(ing);
-    setIng(false);
     var catInDb = USE_DB && inDb(S.cat);
     var gc = GUIDE[S.cat];
     if(!catInDb && gc && gc.a[q]){ renderAnswer(body, gc.a[q]); return; }
@@ -984,7 +918,6 @@ function ask(q, typed){
       if(exact.length){ renderAnswer(body, dbAnswer(q, exact)); return; }
       var typed = S.topic ? typeChunks(S.topic, q) : [];
       if(typed.length){ renderAnswer(body, dbAnswer(q, typed)); return; }
-      setIng(true);
       var onStep = function(){};
       var live = null, liveP = null;
       /* Gemini가 "가이드에 해당 내용이 없습니다"로 시작하면, 그 문장이 끝날 때까지 화면에 띄우지 않고
@@ -1009,8 +942,9 @@ function ask(q, typed){
         paintHex(liveP, mdPlain(t));
         scrollDown();
       };
-      window.moaAsk(q, S.key, { onStep:onStep, onDelta:onDelta, topic:S.topic, history:(S.convo || []).slice() }).then(function(res){
+      window.moaAsk(q, S.key, { onStep:onStep, onDelta:null, topic:S.topic, compareTopics:cmp, history:(S.convo || []).slice() }).then(function(res){
         setIng(false);
+        if(res.model) setApiStatus(true);
         if(res.grounded === false){
           renderAnswer(body, { kind:'text', title:'답변할 수 없어요', desc:'', text:res.text + (res.reason ? '\n\n이유: ' + res.reason : ''), topics:res.topics });
           return;
@@ -1036,6 +970,7 @@ function ask(q, typed){
         }
       }).catch(function(err){
         setIng(false);
+        if(err && err.moa && (/네트워크|API 키|끊겼/.test(err.message) || [400, 401, 403, 500, 503].indexOf(err.status) > -1)) setApiStatus(false);
         if(live && live.parentNode) live.parentNode.removeChild(live);
         var at = err.step > -1 ? (err.step + 1) + '단계(' + window.MOA_STEPS[err.step] + ')에서 ' : '';
         renderAnswer(body, { kind:'text', title:'답변을 가져오지 못했어요', desc:'', text:at + '오류가 발생했어요.\n\n이유: ' + err.message });
@@ -1043,12 +978,15 @@ function ask(q, typed){
       return;
     }
     var g = GUIDE[S.cat];
-    var a = (g && g.a[q]) || X(q, S.cat || '', 'data/ 폴더에 가이드 파일을 넣고 빌드하면 실제 답변이 표시됩니다.');
+    var a = (g && g.a[q]) || X(q, S.cat || '', 'data/DB_guide 폴더에 가이드 파일을 넣고 빌드하면 실제 답변이 표시됩니다.');
     renderAnswer(body, a);
   }, 900);
 }
 
 function renderAnswer(body, a){
+  /* 답변이 모두 준비된 뒤에 로딩을 한 번에 끝냄 */
+  Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
+  setIng(false);
   if(S.curQ != null){
     var memo = a.text || (a.rows ? [].concat.apply([], a.rows).map(function(it){ return it[0] + ' ' + it[1]; }).join('\n') : '') || (a.items ? a.items.map(function(i){ return i[0] + ' · ' + i[1]; }).join('\n') : '');
     remember(S.curQ, (a.title ? a.title + '\n' : '') + memo, a.topics);
@@ -1216,7 +1154,7 @@ function send(){
   if(!v) return;
   if(!S.connected){ $('discOverlay').classList.remove('hide'); return; }
   msg.value = ''; $('bar').classList.remove('typing'); autoGrow();
-  if(S.screen !== 'chat'){ var tp = detectTopics(v)[0]; if(tp){ openCategory(tp, tp); ask(v); return; } S.cat = S.cat || (TOPICS[0] || 'Color'); openCategory(S.cat, S.topic); }
+  if(S.screen !== 'chat'){ var tp = detectTopics(v)[0]; if(tp && compareTopics(v)){ openCategory(tp, tp); ask(v); return; } if(tp){ openCategory(tp, tp); ask(v); return; } S.cat = S.cat || (TOPICS[0] || 'Color'); openCategory(S.cat, S.topic); }
   ask(v, true);
 }
 
@@ -1240,9 +1178,23 @@ $('statusDot').parentNode.addEventListener('contextmenu', function(e){ e.prevent
 $('discClose').onclick = function(){ $('discOverlay').classList.add('hide'); };
 $('discGo').onclick = function(){ $('discOverlay').classList.add('hide'); show('key'); };
 
+/* Gemini API 연결 상태 → 설정 아이콘 위 점 (초록: 연결 / 빨강: 끊김) */
+function setApiStatus(ok){
+  S.apiOk = !!ok;
+  $('statusDot').classList.toggle('off', !ok);
+  $('statusDot').title = ok ? 'Gemini API 연결됨' : 'Gemini API 연결 끊김';
+}
+function checkApi(){
+  if(typeof moaPing !== 'function') return;
+  moaPing(S.key).then(setApiStatus);
+}
+setApiStatus(false);
+setInterval(function(){ if(S.key) checkApi(); }, 60000);
+window.addEventListener('offline', function(){ setApiStatus(false); });
+window.addEventListener('online', checkApi);
 function setConnected(v){
   S.connected = v;
-  $('statusDot').classList.toggle('off', !v);
+  if(!v) setApiStatus(false); else checkApi();
   if(!v) $('discOverlay').classList.remove('hide');
 }
 
@@ -1258,7 +1210,7 @@ $('keyClear').onclick = function(){ keyInput.value=''; keyBox.classList.remove('
 keySave.onclick = function(){
   var v = keyInput.value.trim();
   if(v.length < 20 || v.indexOf(' ') > -1){ keyBox.classList.remove('on'); keyBox.classList.add('err'); return; }
-  S.key = v; S.hasKey = true; setConnected(true);
+  S.key = v; S.hasKey = true; setConnected(true); checkApi();
   toast('API 키를 저장했어요');
   S.history = [];
   show('home');
@@ -1267,7 +1219,7 @@ keySave.onclick = function(){
 window.onmessage = function(e){
   var m = e.data.pluginMessage; if(!m) return;
   if(m.type === 'key'){
-    if(m.key){ keyInput.value = m.key; keyBox.classList.add('on'); keySave.disabled = false; S.key = m.key; S.hasKey = true; }
+    if(m.key){ keyInput.value = m.key; keyBox.classList.add('on'); keySave.disabled = false; S.key = m.key; S.hasKey = true; checkApi(); }
   }
   if(m.type === 'toast') toast(m.text);
 };

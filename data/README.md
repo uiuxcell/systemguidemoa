@@ -1,10 +1,17 @@
 # DB 데이터
 
-챗봇이 답변에 사용하는 **유일한** 데이터 소스입니다. 이 폴더의 `.md` / `.csv` 파일만 읽습니다.
+챗봇이 답변에 사용하는 **유일한** 데이터 소스입니다. `DB_guide/`의 `.md` / `.csv`와 `DB_tokens/`의 토큰만 읽습니다.
+
+```
+data/
+  DB_guide/    가이드 문서 (.md / .csv) → MOA_DB
+  DB_tokens/   Figma Variables 토큰 (*.tokens.json, tokens.json) → MOA_TOKENS
+  prompts/     Gemini system instruction
+```
 
 ## 넣는 방법
 
-1. 이 폴더에 markdown / CSV 파일을 넣습니다. **파일명이 챗봇의 주제(홈 카테고리 칩) 이름이 됩니다.**
+1. `data/DB_guide/`에 markdown / CSV 파일을 넣습니다. **파일명이 챗봇의 주제(홈 카테고리 칩) 이름이 됩니다.**
 2. `src/build.md`의 빌드를 다시 실행합니다 → 내용이 `index.html` 안으로 인라인됩니다.
 3. Figma에서 플러그인을 껐다 켭니다.
 
@@ -42,7 +49,7 @@ Skyblue,#2189FF,핵심 액션
 `hex`(또는 `color`, `value`) 열이 있으면 답변이 컬러 스와치로 렌더되고, 클릭 시 선택한 Figma 요소에 적용됩니다.
 `size`(또는 `fontSize`) 열이 있으면 같은 방식으로 fontSize가 적용됩니다.
 
-## 현재 등록된 파일
+## 현재 등록된 파일 (data/DB_guide/)
 
 | 파일 | 주제 | 섹션 수 |
 |---|---|---|

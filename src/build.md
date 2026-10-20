@@ -5,7 +5,8 @@
 | 토큰 | 치환 값 |
 |---|---|
 | `__FONT_CSS__` | `assets/pretendard-inline.css` 내용 (base64 @font-face) |
-| `__DB_JSON__` | `data/` 폴더의 md/csv를 파싱한 chunk 배열 |
+| `__DB_JSON__` | `data/DB_guide/` 폴더의 md/csv를 파싱한 chunk 배열 |
+| `__TOKENS_JSON__` | `data/DB_tokens/tokens.json` (토큰 chunk 배열) |
 | `__GEMINI_JS__` | `src/gemini.js` 내용 |
 | `__PROMPTS_JSON__` | `data/prompts/*.md` 본문 배열 `[{file, text}]` (Gemini system instruction) |
 | `__IMG_HOME__` | 홈 마스코트 |
@@ -77,11 +78,15 @@ const splitCsv = (line) => {
 };
 
 const chunks = [];
-for (const name of fs.readdirSync('data').sort()) {
-  if (name === 'README.md' || !/\.(md|csv)$/i.test(name)) continue;   // tokens/, prompts/ 폴더 제외
+const GUIDE_DIR  = 'data/DB_guide';
+const TOKENS_DIR = 'data/DB_tokens';
+const PROMPT_DIR = 'data/prompts';
+
+for (const name of fs.readdirSync(GUIDE_DIR).sort()) {
+  if (name === 'README.md' || !/\.(md|csv)$/i.test(name)) continue;
   const key  = name.replace(/\.(md|csv)$/i, '');
   const base = label(key);
-  const raw  = fs.readFileSync(path.join('data', name), 'utf8');
+  const raw  = fs.readFileSync(path.join(GUIDE_DIR, name), 'utf8');
 
   if (/\.csv$/i.test(name)) {
     const rows = raw.trim().split(/\r?\n/).map(splitCsv);
@@ -128,7 +133,9 @@ const promptBody = (md) => {
   if (i > 0) L = L.slice(i);
   return L.filter(l => !/^!\[/.test(l.trim())).join('\n').replace(/\n{3,}/g, '\n\n').trim();
 };
-const prompts = PROMPT_FILES.map(f => ({ file: f, text: promptBody(fs.readFileSync(path.join('data/prompts', f), 'utf8')) }));
+const prompts = PROMPT_FILES.map(f => ({ file: f, text: promptBody(fs.readFileSync(path.join(PROMPT_DIR, f), 'utf8')) }));
+
+const tokens = fs.readFileSync(path.join(TOKENS_DIR, 'tokens.json'), 'utf8');
 
 const map = {
   __IMG_HOME__: 'home', __IMG_KEY__: 'key', __IMG_KEYBG__: 'keybg',
@@ -141,30 +148,32 @@ const build = (get) => {
     .split('__FONT_CSS__').join(font)
     .split('__DB_JSON__').join(JSON.stringify(chunks))
     .split('__GEMINI_JS__').join(gem)
+    .split('__TOKENS_JSON__').join(tokens.replace(/<\//g, '<\\/'))
     .split('__PROMPTS_JSON__').join(JSON.stringify(prompts).replace(/<\//g, '<\\/'));
   for (const [tok, name] of Object.entries(map)) h = h.split(tok).join(get(name));
-  if (/__(IMG|DB|GEMINI|FONT|PROMPTS)_/.test(h)) throw new Error('unresolved token');
+  if (/__(IMG|DB|GEMINI|FONT|PROMPTS|TOKENS)_/.test(h)) throw new Error('unresolved token');
   return h;
 };
 
 fs.writeFileSync('index.html', build(n => imgs[n]));
 fs.mkdirSync('preview', { recursive: true });
-fs.writeFileSync('preview/ui.preview.html', build(n => `../assets/img-${n}.png`));
+fs.writeFileSync('preview/ui.preview.html', build(n => `../assets/img-${n}.${/^data:image\/jpe?g/.test(imgs[n]) ? 'jpg' : 'png'}`));
 
 console.log(`chunks: ${chunks.length}`);
 ```
 
 
-## 디자인 토큰 (data/tokens/)
+## 디자인 토큰 (data/DB_tokens/)
 
-Figma Variables를 W3C 토큰 형식(`*.tokens.json`)으로 내보내 `data/tokens/`에 둡니다.
+Figma Variables를 W3C 토큰 형식(`*.tokens.json`)으로 내보내 `data/DB_tokens/`에 둡니다.
 
 - `Value.tokens.json` — Primitive
 - `Light BG.tokens.json` — Semantic
 - `Typography.tokens.json` — Typeface
 - `Component/Light.tokens.json`, `Component/Dark.tokens.json` — Component (Light/Dark 모드)
 
-빌드 시 `$value`가 있는 노드를 경로(예: `tab/standard/label/normal`)로 펼치고, 이름 앞 두 단계로 묶어 `tokens.json`을 만든 뒤
+빌드 시 `$value`가 있는 노드를 경로(예: `tab/standard/label/normal`)로 펼치고, 이름 앞 두 단계로 묶어 `data/DB_tokens/tokens.json`을 만든 뒤
 `__TOKENS_JSON__` 토큰을 그 내용으로 치환해 `window.MOA_TOKENS`에 넣습니다.
 색상은 `hex`(알파가 1 미만이면 %), 별칭은 `com.figma.aliasData.targetVariableName`을 괄호 안에, 모드가 여럿이면 `Light … · Dark …`로 적습니다.
+`data/db_glossary/*.md`의 `` - `term`: 별칭, 별칭 `` 줄을 파싱해 `__GLOSSARY_JSON__`(→ `window.MOA_GLOSSARY_DB`)으로 넣습니다. 챗봇 2단계는 이 파일만으로 용어·주제를 맵핑합니다(하드코딩 맵 없음).
 챗봇은 3단계에서 가이드 문서(MOA_DB)와 토큰(MOA_TOKENS)을 병렬로 검색해 가이드 최대 5건, 토큰 최대 4건을 근거로 씁니다.
