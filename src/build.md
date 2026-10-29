@@ -46,7 +46,7 @@ const gem  = fs.readFileSync('src/gemini.js', 'utf8');
 const imgs = JSON.parse(fs.readFileSync('assets/images.json', 'utf8'));
 
 /* 파일명 → 화면에 보일 주제명 (특수문자 치환용) */
-const LABEL = { DimmedShadow: 'Dimmed & Shadow' };
+const LABEL = { DimmedShadow: 'Dimmed & Shadow', CTAButtonIcon: 'CTA Button Icon' };
 
 /* 파일명 01_CTAButton.md → 주제명 "CTA Button" */
 const label = (key) => {

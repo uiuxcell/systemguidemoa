@@ -123,6 +123,18 @@ var MOA_USAGE_RE = /언제|어떤(상황|경우|때)|어디에?(써|쓰|사용)|
 var MOA_USAGE_HEAD = /적용 ?상황|사용처|사용 ?용도|사용 ?기준|케이스별/;
 var MOA_COMPARE_RE = /비교|차이|다른점|다른가|다르|달라|구분|vs|versus|compare|difference/i;
 var MOA_COMPARE_HINT = '\n\n(질문 의도: 비교 — 반드시 아래 순서로 답하세요.\n1) 카테고리별로 [카테고리명] 제목 아래 "정의"와 "용도(언제 쓰는지)"를 context의 정의·적용 상황 항목으로 각각 설명\n2) 그 다음 "차이" 항목에서 같은 기준(용도, 형태, 크기, 상태 등)으로 차이를 정리\n한쪽 근거가 없으면 없다고 밝히세요.)';
+var MOA_LEADS = ['~을 정리해드릴게요.','~에 대해 확인해봤어요.','~ 가이드를 살펴봤어요.','~ 기준을 짚어볼게요.','~에 대한 내용이에요.','~ 관련 규격을 모아봤어요.','~은 이렇게 쓰면 돼요.','~이 궁금하시군요!'];
+var moaLeadRecent = [];
+/* 설명구 마무리 문구: 직전 3개와 겹치지 않게 랜덤 선택 */
+function moaPickLead(){
+  var pool = MOA_LEADS.filter(function(l){ return moaLeadRecent.indexOf(l) < 0; });
+  var l = pool[Math.floor(Math.random() * pool.length)];
+  moaLeadRecent.push(l); if(moaLeadRecent.length > 3) moaLeadRecent.shift();
+  return l;
+}
+function moaLeadHint(){
+  return '\n\n(답변의 첫 줄은 제목 한 문장만 단독으로 쓰고 줄을 바꾸세요. 제목은 반드시 "' + moaPickLead() + '" 형식으로 끝내세요. ~ 자리에 질문의 핵심 키워드를 넣고, 받침에 따라 조사(을/를, 이/가, 은/는)를 자연스럽게 맞추세요. 제목에는 기호를 붙이지 마세요. 예: "프라이머리 버튼과 세컨더리 버튼 차이를 정리해드릴게요." 둘째 줄부터 설명구와 본문을 이어서 쓰세요.)';
+}
 var MOA_USAGE_HINT = '\n\n(질문 의도: 적용 상황 — 언제, 어떤 상황에서 쓰는지를 context의 적용 상황 항목으로 답하세요.)';
 var MOA_TOKEN_STOP = ['언제','사용','사용해','써','쓰는','쓰는건데','사용하는건데','상황','토큰','token','tokens','변수','컬러','색','색상','color','값','알려줘','뭐야','무엇','어떻게','무슨','어떤','있어','코드','hex'];
 var MOA_FOUNDATION = ['Color','Typeface','Spacing','Radius','Dimmed & Shadow','Opacity','Motion','Border','Gradient'];
@@ -420,7 +432,7 @@ function moaAsk(question, apiKey, opts){
         systemInstruction: { parts: [{ text: moaSystem() }] },
         contents: [].concat.apply([], hist.map(function(h){
           return [{ role: 'user', parts: [{ text: h.q }] }, { role: 'model', parts: [{ text: String(h.a || '').slice(0, 1200) }] }];
-        })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') }] }]),
+        })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') + moaLeadHint() }] }]),
       };
       var tried = [], fails = [], plain = false;
       function next(i){

@@ -43,6 +43,18 @@ input{font:inherit;border:0;outline:0;background:none}
 #app{position:relative;width:360px;height:640px;min-height:640px;flex:0 0 auto;margin:auto;overflow:hidden;background:#fff}
 .hide{display:none !important}
 
+/* ── web: draggable window (브라우저에서만, Figma 플러그인 안에서는 미적용) ── */
+body.web{display:block;padding:0 !important;overflow:hidden;height:100vh}
+#win{position:fixed;left:0;top:0;width:360px;border-radius:13px;overflow:hidden;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 2px 14px rgba(0,0,0,.15),0 24px 48px rgba(0,0,0,.18);z-index:1000}
+body.web #app{margin:0}
+#webbg{position:fixed;inset:0;min-width:790px;min-height:641px;overflow:hidden;z-index:0;user-select:none;-webkit-user-select:none;pointer-events:none;letter-spacing:0;box-sizing:border-box}
+#webbg .fr{position:absolute;inset:0;border-style:solid;border-width:561.5px 245.5px 79.5px 504.5px;border-image-slice:1123 491 159 1009 fill;border-image-repeat:stretch;box-sizing:border-box}
+#webbg .tx{position:absolute;white-space:nowrap;line-height:1}
+#webbg .tool{position:absolute;left:calc(504.5px + (100% - 750px)/2);bottom:2.5px;height:63.5px;transform:translateX(-50%)}
+body.web{background:#1E1E1E}
+
+
+
 /* ── header  (2:288 / 2:304) ── */
 .head{position:absolute;left:0;top:0;width:360px;height:40px;background:#fff;display:flex;padding:16px;justify-content:space-between;align-items:center;z-index:30}
 .head.transparent{background:#fff}
@@ -327,6 +339,28 @@ input{font:inherit;border:0;outline:0;background:none}
 .modal-bottom{height:72px;padding:12px 16px 16px;display:flex;align-self:stretch}
 .toast{position:absolute;left:50%;top:512px;transform:translateX(-50%);background:rgba(0,0,0,.82);color:#fff;font-size:12px;font-weight:600;padding:8px 14px;border-radius:999px;z-index:80;opacity:0;transition:opacity .18s;pointer-events:none;white-space:nowrap}
 .toast.on{opacity:1}
+.bub-ing{width:auto;min-width:60px}
+.bub-ing .ing-t{font-size:13px;font-weight:500;line-height:19px;letter-spacing:-0.02em;color:#424751;white-space:nowrap;animation:stepIn .25s cubic-bezier(.22,1,.36,1)}
+.sheet-banner{padding:10px 24px}
+.sheet-banner span{font-size:13px;line-height:16px;letter-spacing:-0.02em}
+.sheet-banner .img{left:250px;top:7px;width:79px;height:56px}
+.sheet-banner .img .s1{left:45px}
+.sec-h .en{letter-spacing:-0.02em}
+.sec-h .ko{font-size:13px;line-height:17px;letter-spacing:-0.02em}
+.sec-chips{flex-direction:column;flex-wrap:nowrap;gap:8px}
+.sec-row{display:flex;flex-direction:row;gap:6px;align-items:center}
+.sec .chip.sm{letter-spacing:-0.02em;transition:background .15s,box-shadow .15s}
+.sec .chip.sm:hover{background:#E0E3E9;box-shadow:none}
+.lcard{align-self:flex-start;width:276px;max-width:100%;border-radius:8px;background:#fff;padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px;box-sizing:border-box;animation:stepIn .25s cubic-bezier(.22,1,.36,1)}
+.lcard .lt{display:flex;flex-direction:column;gap:2px}
+.lcard .lt b{font-size:14px;font-weight:600;line-height:20px;letter-spacing:-0.02em;color:#000;white-space:pre-line}
+.lcard .lt span{font-size:12px;font-weight:400;line-height:16px;letter-spacing:-0.02em;color:#424751;white-space:pre-line}
+.lcard .lrows{display:flex;flex-direction:column;gap:8px}
+.lcard .lrow{display:flex;gap:8px;align-items:flex-start}
+.lcard .lrow .a{font-size:13px;font-weight:500;line-height:1.33;letter-spacing:-0.02em;color:#000;white-space:nowrap}
+.lcard .lrow .b{flex:1;font-size:12px;font-weight:400;line-height:1.33;letter-spacing:-0.02em;color:#5C6473;text-align:right}
+.lcard .lnote{display:flex;gap:2px;font-size:13px;font-weight:400;line-height:20px;letter-spacing:-0.02em;color:#5C6473}
+.lcard .limg{display:block;width:100%;height:auto;border-radius:4px}
 </style>
 </head>
 <body>
@@ -357,10 +391,10 @@ input{font:inherit;border:0;outline:0;background:none}
   <div class="page hide" id="pgIntro">
     <div class="ibg" style="background:url(__IMG_INTROBG__) center/cover no-repeat"></div>
     <div class="itxt">
-      <h1><span>반가워요!</span>
-디자인시스템 가이드 봇
+      <h1 style="font-size:24px"><span style="font-weight:700">반가워요!</span>
+디자인시스템 가이드 챗봇
 모아입니다</h1>
-      <p>컴포넌트에 대해 궁금하신 점을
+      <p style="font-weight:400">컴포넌트에 대해 궁금하신 점을
 물어보면 바로 찾아드릴게요</p>
     </div>
     <div class="ibottom"><button class="icta" id="btnAsk">물어보러 가기</button></div>
@@ -492,7 +526,7 @@ Gemini API 키가 필요해요</h1>
         <button class="iconbtn" id="menuClose" aria-label="닫기"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M0.75 0.75 L11.25 11.25 M11.25 0.75 L0.75 11.25" stroke="#000" stroke-width="1.2" stroke-linecap="round"/></svg></button>
       </div>
       <div class="sheet-banner" id="menuEtc" role="button" tabindex="0" style="cursor:pointer">
-        <span>기타 문의사항이 있으신가요?</span>
+        <span>기타 문의가 있으신가요?</span>
         <div class="img"><img class="s1" src="__IMG_SMALL__" alt=""><img class="s2" src="__IMG_MASCOT__" alt=""></div>
       </div>
       <div class="sheet-list" id="sheetList"></div>
@@ -526,12 +560,13 @@ Gemini API 키가 필요해요</h1>
 <script>window.MOA_PROMPTS = __PROMPTS_JSON__;</script>
 <script>window.MOA_GLOSSARY_DB = __GLOSSARY_JSON__;</script>
 <script>__GEMINI_JS__</script>
+<script>window.MOA_LANDING = {"CTA Button":{"title":"CTA Button의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Primary Action Button","Secondary Action Button","Tertiary Action Button"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"CTA Button의 공통 규칙","rows":[["Primary","요소의 내부 여백"],["Secondary","컴포넌트의 내부 여백"],["Tertiary","섹션 영역의 내부 여백"]],"img":{"name":"img_CTA Button_all_01"},"text":"• 배치: PC는 가로, 중요한 버튼을 오른쪽에,\n   MO는 세로, 중요한 버튼을 위에\n• 문구: 동사로 시작, 첫 글자만 대문자, 26자 이내\n• 같은 액션에는 같은 문구를 써요.\n   (예: Buy now, Learn more, Add to cart)\n• 중요도가 높을수록 피라미드 위쪽 버튼을 써요."},{"title":"Primary Action Button","img":{"name":"img_CTA Button_all_02"},"text":"페이지의 핵심 액션일 때"},{"title":"Secondary Action Button","img":{"name":"img_CTA Button_all_03"},"text":"핵심 액션을 보조할 때"},{"title":"Tertiary Action Button","img":{"name":"img_CTA Button_all_04"},"text":"강조 없이 가볍게 제공할 때"}]},"Primary Action Button":{"bubbles":[{"title":"Primary Action Button","text":"페이지의 핵심 액션이나,\n강하게 강조해야 하는 액션에 사용해요.\n사용 용도에 따라서 Filled, Emphasis 이렇게 두가지 타입이 있어요."},{"title":"Filled (Primary)","rows":[["Default","40px"],["Small","32px"]],"img":{"name":"img_CTA Button_Primary_01"},"text":"대부분의 주요 액션에 사용해요.\n(예: Buy now, Add to cart)"},{"title":"Filled (Emphasis)","rows":[["Default","40px"],["Small","32px"]],"note":"리뷰 보기처럼 보조 액션에는 쓰지 않아요.","img":{"name":"img_CTA Button_Primary_02"},"text":"즉각적인 주목이 필요한 최우선 액션에만 사용하며,\n페이지당 1개, 오른쪽 상단 배치를 권장해요."}],"followups":["스펙 및 토큰"]},"Secondary Action Button":{"bubbles":[{"title":"Secondary Action Button","text":"핵심 액션을 보조하는 중간 강조의 액션에 써요.\nOutlined / Standard이 있어요."},{"title":"Outlined (Standard)","rows":[["Default","40px"],["Small","32px"]],"img":{"name":"img_CTA Button_Secondary_01"},"text":"Primary 버튼 오른쪽에 함께 배치하며, 추가 정보, 더보기 등에 사용해요.\n앞이나 뒤에 아이콘을 붙일 수 있어요.\n(예: ∨ 펼치기, ↗ 새 창)"}],"followups":["스펙 및 토큰"]},"Tertiary Action Button":{"bubbles":[{"title":"Tertiary Action Button","text":"Primary, Secondary보다 가볍게 제공하는 선택적\n액션에 써요."},{"title":"Underlined (Standard)","rows":[["Large","16px"],["Default","14px"],["Small (MO only)","12px"]],"img":{"name":"img_CTA Button_Tertiary_01"},"text":"강조를 최소화한 텍스트 액션이며, 밑줄이 가운데에서 양옆으로 늘어나요. (예외: 모바일은 Pressed)"},{"title":"Label (Standard)","rows":[["Default","14px"]],"img":{"name":"img_CTA Button_Tertiary_02"},"text":"강조 없이 덧붙이는 보조 액션이며,\n앞이나 뒤에 16px 아이콘을 붙일 수 있어요."}],"followups":["스펙 및 토큰"]}}},"CTA Button Icon":{"title":"CTA Button Icon의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Standard","Toggle","Play"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Standard 버튼 아이콘","img":{"name":"img_CTA Button Icon_all_01"},"text":"누르면 한 번 실행되는 동작을 아이콘으로 제공할 때"},{"title":"Toggle 버튼 아이콘","img":{"name":"img_CTA Button Icon_all_02"},"text":"켜고 끄는 동작을 아이콘으로 제공할 때"},{"title":"Play 버튼 아이콘","img":{"name":"img_CTA Button Icon_all_03"},"text":"영상을 재생하거나 멈출 때"}]},"Standard":{"bubbles":[{"title":"Standard는 누르면 한 번 실행되는 동작을 아이콘으로 제공할 때 사용해요.","img":{"name":"img_CTA Button Icon_Standard_01"},"text":"장바구니·비교함에서 항목 삭제 (휴지통)\n\n제품 페이지 공유, 메뉴얼·자료 다운로드\n\n안내 문구 옆 정보(i) 아이콘으로 툴팁 열기"}]},"Toggle":{"bubbles":[{"title":"Toggle 버튼 아이콘은 켜고 끄는 동작을 아이콘으로 제공할 때 사용해요.","img":{"name":"img_CTA Button Icon_Toggle_01"},"text":"제품 목록 카드의 이미지 모서리에 둔 위시리스트 및 제품 상세 페이지의 위시리스트 담기·빼기는 하트 아이콘을, 품절 제품의 재입고 알림 받기·끄기는 벨 아이콘을 사용해요.\n\n실제 사용 크기는 Container 40x40, Icon 24x24로 구성됩니다."}]},"Play":{"bubbles":[{"title":"Play 버튼 아이콘은 영상을 재생하거나\n멈출 때 사용해요.","rows":[["Default","PC 96 x 96, MO 56 x 56"],["Small","PC 36 x 36, MO 24 x 24"]],"img":{"name":"img_CTA Button Icon_Play_01"},"text":"메인 KV·제품 소개 영역의 영상 재생 Default 사이즈 사용, 제품 갤러리 썸네일·카드 안의 영상 Small 사이즈를 사용해요."}]}}}};</script>
 <script>
 /* ── 기본 데이터: 기타 문의 고정 답변 (가이드 데이터는 data/ 폴더에서) ── */
 var MENU = []; /* data/DB_guide 기준으로 아래에서 구성 */
 var HOME_CHIPS = [
   ['Color','Typeface','Spacing'],
-  ['CTA Button','Utility Button'],
+  ['CTA Button','CTA Button Icon'],
   ['Popup','Chip','Option Chip'],
   ['Tab','Radius']
 ];
@@ -579,20 +614,11 @@ if(USE_DB){
     if(TOPICS.indexOf(ch.topic) < 0){ TOPICS.push(ch.topic); SECTIONS[ch.topic] = []; }
     if(ch.section && SECTIONS[ch.topic].indexOf(ch.section) < 0) SECTIONS[ch.topic].push(ch.section);
   });
-  var GROUPS = [
-    {en:'Foundation', ko:'공통 스타일', items:['Color','Typeface','Spacing','Dimmed & Shadow','Iconography','Radius']},
-    {en:'Element', ko:'기본 요소', items:['CTA Button','Utility Button','Badge','Chip','Option Chip','Option Selector','Selection Control','Indicator','Divider']},
-    {en:'Component', ko:'조합 UI', items:['Popup']}
+  MENU = [
+    {en:'Foundation', ko:'공통 스타일', rows:[['Color','Typeface','Spacing'],['Dimmed & Shadow','Iconography','Radius']]},
+    {en:'Element', ko:'기본 요소', rows:[['CTA Button','CTA Button Icon','Badge'],['Chip','Selection Control','Indicator'],['Divider','Option Chip','Option Selector']]},
+    {en:'Component', ko:'조합 UI', rows:[['Tooltip','Tab','List','menu','Filter'],['Text Field']]}
   ];
-  var grouped = [];
-  MENU = GROUPS.map(function(g){
-    var items = g.items.filter(function(t){ return TOPICS.indexOf(t) > -1; });
-    grouped = grouped.concat(items);
-    return { en:g.en, ko:g.ko, items:items };
-  });
-  var rest = TOPICS.filter(function(t){ return grouped.indexOf(t) < 0; });
-  if(rest.length) MENU.push({ en:'Etc', ko:'기타', items:rest });
-  MENU = MENU.filter(function(s){ return s.items.length; });
 }
 
 function isTopic(name){ return TOPICS.indexOf(name) > -1; }
@@ -657,6 +683,7 @@ function show(screen){
   $('topbar').classList.toggle('hide', screen!=='chat' && screen!=='key');
   $('bar').classList.toggle('hide', screen!=='chat' && screen!=='home');
   $('head').classList.toggle('transparent', screen==='key');
+  document.querySelector('#topbar .tools').classList.toggle('hide', screen==='key');
   if(screen==='chat') $('topTitle').textContent = (S.topic && S.topic !== S.cat ? S.topic + ' · ' : '') + (S.cat || 'Chat');
   if(screen==='key') $('topTitle').textContent = '설정';
   if(prevScreen && prevScreen !== screen) slideIn(screen, S.navDir || 'fwd');
@@ -710,11 +737,119 @@ HOME_CHIPS.forEach(function(row){
 });
 
 var OVERVIEW = '한 눈에 보기';
+/* DB에서 바로 찾은 답변(하위 칩 등)도 타이틀을 "키워드 + 마무리 문구"로 */
+function moaJosa(word, pair){
+  var s = String(word).trim(), ch = s.charCodeAt(s.length - 1), has;
+  if(ch >= 0xAC00 && ch <= 0xD7A3) has = (ch - 0xAC00) % 28 > 0;
+  else has = /[lmnkpbt]$/i.test(s);
+  return has ? pair[0] : pair[1];
+}
+function moaLeadTitle(key){
+  if(typeof moaPickLead !== 'function') return null;
+  var l = moaPickLead(), k = String(key).trim();
+  if(l.indexOf('~을') === 0) return k + moaJosa(k, ['을','를']) + l.slice(2);
+  if(l.indexOf('~이') === 0) return k + moaJosa(k, ['이','가']) + l.slice(2);
+  if(l.indexOf('~은') === 0) return k + moaJosa(k, ['은','는']) + l.slice(2);
+  return k + l.slice(1);
+}
+function withLead(a, key){ var t = moaLeadTitle(key); if(t) a.title = t; return a; }
+
+/* ── 진행 상황 (답변 대기 중 순서대로 바뀌는 문구) ── */
+var MOA_PROGRESS = ['질문을 이해하고 있어요','관련 가이드를 찾고 있어요','딱 맞는 내용을 확인하고 있어요','답변을 정리하고 있어요'];
+var PROGRESS_MS = 1500;
+var LANDING_DELAY_MS = 1200; /* 랜딩메뉴: 로딩 점 애니메이션 한 번 보여준 뒤 답변 */
+function runProgress(ing){
+  var i = 0, t = el('span','ing-t',MOA_PROGRESS[0]); ing.appendChild(t);
+  var tm = setInterval(function(){
+    if(!ing.isConnected || ++i >= MOA_PROGRESS.length){ clearInterval(tm); return; }
+    var n = el('span','ing-t',MOA_PROGRESS[i]); ing.replaceChild(n, t); t = n; scrollDown();
+  }, PROGRESS_MS);
+}
+/* ── 랜딩 메뉴: data/landingmenu/<카테고리>/text/landing.json · images/img_*.png ── */
+var LANDING = window.MOA_LANDING || {};
+var LANDING_ROOT = /^(data|about|blob):/.test(location.protocol) ? 'https://cdn.jsdelivr.net/gh/hveju/systemguidemoa@main/' : (/\/(preview|src)\//.test(location.pathname) ? '../' : '');
+function landingPath(cat){ return LANDING_ROOT + 'data/landingmenu/' + encodeURIComponent(cat) + '/'; }
+function landingImg(cat, name){ return landingPath(cat) + 'images/' + encodeURIComponent(name) + '.png'; }
+function moaParseLanding(md){
+  var out = { title:'', chips:[], answers:{} }, mode = null, cur = null, bub = null, buf = [];
+  var flush = function(){
+    if(!bub) return;
+    var t = buf.join('\n').replace(/^\n+|\n+$/g, '');
+    if(t) bub.text = t;
+    buf = []; bub = null;
+  };
+  String(md).replace(/\r/g, '').split('\n').forEach(function(line){
+    var m;
+    if(/^#\s+/.test(line)){ flush(); mode = /타이틀|title/i.test(line) ? 'title' : null; return; }
+    if((m = /^##\s+(.+)$/.exec(line))){ flush(); mode = 'chip'; var k = m[1].trim(); out.chips.push(k); cur = out.answers[k] = { bubbles:[] }; return; }
+    if((m = /^###\s+(.+)$/.exec(line)) && cur){ flush(); bub = { title:m[1].trim().replace(/\\n/g, '\n') }; cur.bubbles.push(bub); return; }
+    if(mode === 'title'){ if(line.trim()) out.title += (out.title ? '\n' : '') + line.trim(); return; }
+    if(!cur) return;
+    if((m = /^추가 질문\s*:\s*(.+)$/.exec(line.trim()))){ cur.followups = m[1].split(',').map(function(s){ return s.trim(); }).filter(Boolean); return; }
+    if(!bub) return;
+    if((m = /^!\[[^\]]*\]\(([^)]+)\)/.exec(line.trim()))){ bub.img = { name:m[1].trim().replace(/\.png$/i, '') }; return; }
+    if((m = /^\|(.+)\|\s*$/.exec(line.trim()))){ var cells = m[1].split('|').map(function(s){ return s.trim(); }); if(!/^-+$/.test(cells[0])) (bub.rows = bub.rows || []).push([cells[0], cells[1] || '']); return; }
+    if((m = /^※\s*(.+)$/.exec(line.trim()))){ bub.note = m[1].trim(); return; }
+    buf.push(line.replace(/\s+$/, ''));
+  });
+  flush();
+  return out;
+}
+function landingFor(cat, q){
+  var L = LANDING[cat], a = L && L.answers && L.answers[q];
+  if(!a) return null;
+  return { cat:cat, bubbles:a.bubbles || a, followups:a.followups || null };
+}
+if(window.fetch && LANDING_ROOT.indexOf('http') !== 0) Object.keys(LANDING).forEach(function(cat){
+  fetch(landingPath(cat) + 'text/landing.md', {cache:'no-store'}).then(function(r){ return r.ok ? r.text() : null; }).then(function(t){ var j = t && moaParseLanding(t); if(j && j.chips.length) LANDING[cat] = j; }).catch(function(){});
+});
+function renderLanding(body, lp){
+  Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
+  setIng(false);
+  var memo = [], q = S.curQ; S.curQ = null;
+  /* 채팅 답변처럼 카드를 하나씩: 제목 → 본문 타이핑 → 표·이미지 → 다음 카드 */
+  (function next(i){
+    if(i >= lp.bubbles.length){
+      if(q != null) remember(q, memo.join('\n\n'));
+      addActions(body, memo.join('\n\n'), '', lp.followups);
+      scrollDown();
+      return;
+    }
+    var b = lp.bubbles[i];
+    var c = el('div','lcard'), lt = el('div','lt');
+    if(b.title) lt.appendChild(el('b',null,b.title));
+    c.appendChild(lt);
+    body.appendChild(c); scrollDown();
+    memo.push([b.title, b.text].concat((b.rows || []).map(function(r){ return r.join(' '); })).concat(b.note ? ['※ ' + b.note] : []).filter(Boolean).join('\n'));
+    var rest = function(){
+      var parts = [];
+      if(b.rows && b.rows.length){
+        var rs = el('div','lrows');
+        b.rows.forEach(function(r){ var w = el('div','lrow'); w.appendChild(el('span','a',r[0])); w.appendChild(el('span','b',r[1])); rs.appendChild(w); });
+        parts.push(rs);
+      }
+      if(b.note){ var nt = el('div','lnote'); nt.appendChild(el('span',null,'※')); nt.appendChild(el('span',null,b.note)); parts.push(nt); }
+      if(b.img && b.img.name){
+        var im = new Image(); im.className = 'limg'; im.alt = b.img.name;
+        im.onerror = function(){ if(im.parentNode) im.parentNode.removeChild(im); };
+        im.onload = scrollDown;
+        im.src = landingImg(lp.cat, b.img.name); parts.push(im);
+      }
+      parts.forEach(function(p){ p.style.animation = 'stepIn .3s cubic-bezier(.22,1,.36,1)'; c.appendChild(p); });
+      scrollDown();
+      setTimeout(function(){ next(i + 1); }, parts.length ? 350 : 200);
+    };
+    if(b.text){ var sp = el('span'); lt.appendChild(sp); typeText(sp, b.text, rest); }
+    else rest();
+  })(0);
+}
+
 var TYPE_CHIPS = {
   'Color':['Primary Color','Secondary Color','GrayScale','Neutral Color','Theme'],
   'Typeface':['Display','Heading','Title','Body','Label','Caption'],
   'Spacing':['Inset','Gap','Grid','Section'],
   'CTA Button':['Primary Action Button','Secondary Action Button','Tertiary Action Button'],
+  'CTA Button Icon':['Standard','Toggle','Play'],
   'Popup':['Confirmation','Contents','Input Data','Notification'],
   'Chip':['Action','Select'],
   'Option Chip':['Color','Label'],
@@ -755,10 +890,14 @@ MENU.forEach(function(sec, i){
   h.appendChild(el('span','ko',sec.ko));
   inner.appendChild(h);
   var chips = el('div','sec-chips');
-  sec.items.forEach(function(label){
-    var b = el('button','chip sm',label);
-    b.onclick = function(){ closeMenu(); openCategory(label, USE_DB ? label : sec.en); };
-    chips.appendChild(b);
+  sec.rows.forEach(function(row){
+    var rw = el('div','sec-row');
+    row.forEach(function(label){
+      var b = el('button','chip sm',label);
+      b.onclick = function(){ closeMenu(); openCategory(label, USE_DB ? label : sec.en); };
+      rw.appendChild(b);
+    });
+    chips.appendChild(rw);
   });
   inner.appendChild(chips);
   s.appendChild(inner);
@@ -780,7 +919,7 @@ function openCategory(cat, topic){
   var title = el('div','title');
   title.innerHTML = STAR;
   var h1 = el('h1');
-  h1.textContent = (cat === '기타 문의')
+  h1.textContent = (LANDING[cat] && LANDING[cat].title) ? LANDING[cat].title : (cat === '기타 문의')
     ? '기타문의사항이에요.\n어떤게 궁금하신가요?'
     : cat + '의 구성이에요.\n어떤게 궁금하신가요?';
   h1.className = 'sweep';
@@ -800,7 +939,7 @@ function openCategory(cat, topic){
     S.topic = owner || null;
     qlist = owner ? chipsFor(owner) : [cat];
   }
-  (qlist || [OVERVIEW]).forEach(function(q){
+  (LANDING[cat] && LANDING[cat].chips ? LANDING[cat].chips : (qlist || [OVERVIEW])).forEach(function(q){
     var b = el('button','chip',q);
     b.onclick = function(){
       Array.prototype.forEach.call(qs.children, function(c){c.classList.remove('sel');});
@@ -849,7 +988,7 @@ function detectTopics(q, keepAll){
   });
   gm.topics.forEach(function(hit){ if(found.indexOf(hit) < 0 && (isTopic(hit) || hit === 'Tab')) found.push(hit); });
   /* 더 구체적인 주제가 있으면 일반 주제는 뺌 (유틸리티 버튼 > 버튼, 옵션칩 > 칩) */
-  if(!keepAll) [['Utility Button','CTA Button'],['Option Chip','Chip']].forEach(function(p){ if(found.indexOf(p[0]) > -1) found = found.filter(function(t){ return t !== p[1]; }); });
+  if(!keepAll) [['CTA Button Icon','CTA Button'],['Option Chip','Chip']].forEach(function(p){ if(found.indexOf(p[0]) > -1) found = found.filter(function(t){ return t !== p[1]; }); });
   var comp = found.filter(function(t){ return MOA_FOUNDATION.indexOf(t) < 0; });
   return comp.concat(found.filter(function(t){ return comp.indexOf(t) < 0; }));
 }
@@ -905,7 +1044,12 @@ function ask(q, typed){
   ing.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
   body.appendChild(ing);
   botRow.appendChild(av); botRow.appendChild(body);
-  con.appendChild(botRow); scrollDown();
+  con.appendChild(botRow);
+  /* 랜딩메뉴(정해진 답변)는 진행 과정 없이 바로 답변 */
+  var lp = landingFor(S.cat, q);
+  if(lp){ scrollDown(); setIng(true); setTimeout(function(){ renderLanding(body, lp); }, LANDING_DELAY_MS); return; }
+  runProgress(ing);
+  scrollDown();
   setIng(true);
 
   setTimeout(function(){
@@ -920,11 +1064,11 @@ function ask(q, typed){
       return;
     }
     if(USE_DB){
-      if(q === OVERVIEW && S.topic && isTopic(S.topic)){ renderAnswer(body, overviewFor(S.topic)); return; }
+      if(q === OVERVIEW && S.topic && isTopic(S.topic)){ renderAnswer(body, withLead(overviewFor(S.topic), S.topic)); return; }
       var exact = dbFor(S.topic, q);
-      if(exact.length){ renderAnswer(body, dbAnswer(q, exact)); return; }
+      if(exact.length){ renderAnswer(body, withLead(dbAnswer(q, exact), q)); return; }
       var typed = S.topic ? typeChunks(S.topic, q) : [];
-      if(typed.length){ renderAnswer(body, dbAnswer(q, typed)); return; }
+      if(typed.length){ renderAnswer(body, withLead(dbAnswer(q, typed), q)); return; }
       var onStep = function(){};
       var live = null, liveP = null;
       /* Gemini가 "가이드에 해당 내용이 없습니다"로 시작하면, 그 문장이 끝날 때까지 화면에 띄우지 않고
@@ -962,18 +1106,20 @@ function ask(q, typed){
           renderAnswer(body, { kind:'text', title:'답변할 수 없어요', desc:'', text:NA + '\n\n이유: 6단계(최종 답변 생성) · 검색된 근거 안에서 질문에 맞는 답을 찾지 못했어요', topics:res.topics });
           return;
         }
-        res.text = finRaw;
+        var sp = moaSplitTitle(finRaw, q);
+        res.text = sp.text;
         if(live){
           var fin = mdPlain(res.text);
+          live.querySelector('.card-h .t').textContent = sp.title;
           paintHex(liveP, fin);
           var caret = live.querySelector('.caret'); if(caret) caret.parentNode.removeChild(caret);
           var src = res.sources && res.sources[0];
           if(src) live.querySelector('.card-h').appendChild(el('div','d', src));
-          remember(q, q + '\n' + fin, res.topics); S.curQ = null;
+          remember(q, sp.title + '\n' + fin, res.topics); S.curQ = null;
           addActions(body, fin, '');
           scrollDown();
         } else {
-          renderAnswer(body, { kind:'text', title:q, desc:(res.sources && res.sources[0]) || '', text:res.text, topics:res.topics });
+          renderAnswer(body, { kind:'text', title:sp.title, desc:(res.sources && res.sources[0]) || '', text:res.text, topics:res.topics });
         }
       }).catch(function(err){
         setIng(false);
@@ -1104,10 +1250,10 @@ function undoLast(){
   }
 }
 
-function addActions(body, copyText, cta){
+function addActions(body, copyText, cta, chipsOverride){
   var after = el('div','after');
 
-  var rel = relatedFor(S.cat);
+  var rel = chipsOverride || relatedFor(S.cat);
   if(rel.length){
     var chips = el('div','qchips');
     rel.forEach(function(q){
@@ -1235,6 +1381,13 @@ keySave.onclick = function(){
   show('home');
 };
 
+function moaSplitTitle(t, q){
+  var s = String(t || '').replace(/^\s+/, ''), i = s.indexOf('\n');
+  var head = (i < 0 ? s : s.slice(0, i)).replace(/^[#>*\-\s]+|[*\s]+$/g, '');
+  var rest = i < 0 ? '' : s.slice(i + 1).replace(/^\s+/, '');
+  if(!head || !rest || head.length > 80) return { title: q, text: s };
+  return { title: head, text: rest };
+}
 window.onmessage = function(e){
   var m = e.data.pluginMessage; if(!m) return;
   if(m.type === 'key'){
@@ -1243,6 +1396,56 @@ window.onmessage = function(e){
   if(m.type === 'toast') toast(m.text);
 };
 show('intro');
+</script>
+<script>
+(function(){
+  var ao=location.ancestorOrigins,inFigma=location.protocol==='data:'||/figma\.com/.test(document.referrer)||(ao&&[].some.call(ao,function(o){return /figma\.com/.test(o);}));
+  if(inFigma) return; // Figma 플러그인 내부면 그대로
+  var app=document.getElementById('app'); if(!app||document.getElementById('win')) return;
+  document.body.classList.add('web');
+  var A=/\/preview\//.test(location.pathname)?'../assets/':'assets/';
+  var bg=document.createElement('div'); bg.id='webbg';
+  
+  /* 배경 텍스트 — 여기서 수정 (x,y: 좌측 패널은 화면 왼쪽 위 기준, 우측 패널은 우측 패널 왼쪽 위 기준 css px) */
+  var WEB_TEXT=[{"k":"file","t":"CoP: 챗봇 플러그인","s":"L","x":74,"y":15.8,"fs":13,"fw":600,"c":"#fff"},{"k":"drafts","t":"Drafts","s":"L","x":73,"y":42,"fs":11,"fw":400,"c":"rgb(191,191,191)"},{"k":"pages","t":"Pages","s":"L","x":73,"y":79.5,"fs":11,"fw":600,"c":"#fff"},{"k":"page1","t":"여기에다가 텍스트 설명같은거 넣으면 될것같...","s":"L","x":73,"y":115.5,"fs":11,"fw":500,"c":"#fff"},{"k":"layers","t":"아니면 우리 이름이라도 넣을까요","s":"L","x":73,"y":160.5,"fs":11,"fw":600,"c":"#fff"},{"k":"design","t":"Design","s":"R","x":22,"y":54,"fs":11,"fw":600,"c":"#fff"},{"k":"proto","t":"Prototype","s":"R","x":79.5,"y":54.5,"fs":11,"fw":500,"c":"rgb(191,191,191)"},{"k":"zoom","t":"100%","s":"R","x":188.5,"y":54,"fs":11,"fw":500,"c":"#fff"},{"k":"page","t":"Page","s":"R","x":22,"y":95.5,"fs":11,"fw":600,"c":"#fff"},{"k":"hex","t":"1E1E1E","s":"R","x":46,"y":131.5,"fs":11,"fw":400,"c":"#fff"},{"k":"op","t":"100","s":"R","x":160,"y":131,"fs":11,"fw":400,"c":"#fff"},{"k":"pct","t":"%","s":"R","x":190,"y":131,"fs":11,"fw":400,"c":"rgb(195,195,195)"},{"k":"styles","t":"Styles","s":"R","x":22,"y":180,"fs":11,"fw":600,"c":"#fff"},{"k":"exp","t":"Export","s":"R","x":22,"y":221.5,"fs":11,"fw":600,"c":"rgb(191,191,191)"},{"k":"share","t":"Share","s":"R","x":195.5,"y":18,"fs":11,"fw":600,"c":"#fff"}];
+  bg.innerHTML='<div class="fr" style="border-image-source:url('+A+'web-bg.png)"></div>'+WEB_TEXT.map(function(i){var x=i.s==='R'?'calc(100% - 245.5px + '+i.x+'px)':i.x+'px';return '<span class="tx" data-k="'+i.k+'" style="left:'+x+';top:'+i.y+'px;height:'+i.fs+'px;font-size:'+i.fs+'px;font-weight:'+i.fw+';color:'+i.c+'">'+i.t+'</span>';}).join('')+'<img class="tool" src="'+A+'web-bg-toolbar.png" alt="">';
+  document.body.insertBefore(bg,document.body.firstChild);
+  var win=document.createElement('div'); win.id='win';
+  app.parentNode.insertBefore(win,app); win.appendChild(app);
+  var KEY='moa-web-win-pos2', HANDLE=40, x, y, fx, fy;
+  function free(){return [innerWidth-win.offsetWidth,innerHeight-win.offsetHeight];}
+  function c01(v){return Math.min(1,Math.max(0,v));}
+  function toFrac(){var f=free();if(f[0]>0)fx=c01(x/f[0]);else if(fx==null)fx=.5;if(f[1]>0)fy=c01(y/f[1]);else if(fy==null)fy=.5;}
+  function fromFrac(){var f=free();fx=c01(fx);fy=c01(fy);x=f[0]>0?fx*f[0]:(x==null||isNaN(x)?0:x);y=f[1]>0?fy*f[1]:(y==null||isNaN(y)||y>0?0:y);}
+  function clamp(){
+    var w=win.offsetWidth,h=win.offsetHeight,W=innerWidth,H=innerHeight;
+    x=Math.min(Math.max(x,-w+80),W-80);
+    y=Math.min(Math.max(y,Math.min(0,H-h-16)),H-40);
+    win.style.transform='translate('+x+'px,'+y+'px)';
+  }
+  function center(){x=(innerWidth-win.offsetWidth)/2;y=Math.max(16,(innerHeight-win.offsetHeight)/2);clamp();save();}
+  function save(){toFrac();try{localStorage.setItem(KEY,JSON.stringify({fx:fx,fy:fy}));}catch(_){}}
+  try{var p=JSON.parse(localStorage.getItem(KEY));if(p&&p.fx!=null){fx=p.fx;fy=p.fy;fromFrac();}}catch(e){}
+  if(x==null) center(); else clamp();
+  function onHandle(e){
+    if(e.target.closest('button,a,input,textarea,select,[contenteditable]')) return false;
+    return e.clientY-win.getBoundingClientRect().top<HANDLE;
+  }
+  var sx,sy,ox,oy,id=null;
+  win.addEventListener('pointermove',function(e){
+    if(id===null){win.style.cursor=onHandle(e)?'grab':'';return;}
+    if(e.pointerId!==id) return; x=ox+e.clientX-sx; y=oy+e.clientY-sy; clamp();
+  });
+  win.addEventListener('pointerdown',function(e){
+    if(e.button!==0||!onHandle(e)) return; e.preventDefault();
+    id=e.pointerId; win.setPointerCapture(id);
+    sx=e.clientX; sy=e.clientY; ox=x; oy=y; win.style.cursor='grabbing';
+  });
+  function end(e){ if(e.pointerId!==id) return; id=null; win.style.cursor=''; save(); }
+  win.addEventListener('pointerup',end); win.addEventListener('pointercancel',end);
+  win.addEventListener('dblclick',function(e){ if(onHandle(e)) center(); });
+  addEventListener('resize',function(){if(fx==null)toFrac();fromFrac();clamp();});
+})();
 </script>
 </body>
 </html>
