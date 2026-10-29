@@ -57,7 +57,7 @@ Skyblue,#2189FF,핵심 액션
 | `02_Typeface.md` | Typeface | 13 |
 | `03_Spacing.md` | Spacing | 9 |
 | `04_CTAButton.md` | CTA Button | 8 |
-| `05_UtilityButton.md` | Utility Button | 7 |
+| `05_CTAButtonIcon.md` | CTA Button Icon | 7 |
 | `06_Popup.md` | Popup | 10 |
 | `07_DimmedShadow.md` | Dimmed & Shadow | 6 |
 | `08_Iconography.md` | Iconography | 16 |
