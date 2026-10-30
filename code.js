@@ -16,8 +16,6 @@ function notifyUI(text) {
   figma.ui.postMessage({ type: 'toast', text: text });
 }
 
-/* 예전 버전이 영구 저장한 키 삭제 */
-figma.clientStorage.deleteAsync('moa-gemini-key').catch(function(){});
 
 figma.ui.onmessage = async function (msg) {
   if (msg.type === 'close') {
@@ -25,9 +23,16 @@ figma.ui.onmessage = async function (msg) {
     return;
   }
 
-  /* API 키는 플러그인 창이 열려 있는 동안 UI 메모리에만 보관합니다.
-     창을 닫으면 사라지고, 다음 실행 때 다시 입력합니다. */
-  if (msg.type === 'load-key' || msg.type === 'save-key') return;
+  /* API 키: Figma clientStorage에 저장 (이 기기·이 계정에만 남고, 다음 실행 때 자동 입력) */
+  if (msg.type === 'save-key') {
+    await figma.clientStorage.setAsync('moa-gemini-key', msg.key || '');
+    return;
+  }
+  if (msg.type === 'load-key') {
+    var k = await figma.clientStorage.getAsync('moa-gemini-key');
+    if (k) figma.ui.postMessage({ type: 'key', key: k });
+    return;
+  }
 
   if (msg.type === 'apply-fill') {
     var sel = figma.currentPage.selection;
