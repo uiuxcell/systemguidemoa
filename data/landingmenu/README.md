@@ -9,7 +9,8 @@ data/landingmenu/
     images/img_*.png    답변 이미지 (Figma img_ 레이어 전체를 PNG 3x로)
 ```
 
-- 폴더명 = 카테고리명 (전체 메뉴 칩 이름과 똑같이). 현재: `CTA Button`, `CTA Button Icon`
+- 폴더명 = 카테고리명 (전체 메뉴 칩 이름과 똑같이). `&`는 폴더명에 못 써서 ` - `로 바꿔요 (`Dimmed & Shadow` → `Dimmed - Shadow`).
+- 현재 16개: Color, Typeface, Spacing, Radius, Dimmed & Shadow, Iconography, CTA Button, CTA Button Icon, Badge, Chip, Selection Control, Indicator, Divider, Option Chip, Option Selector, Popup
 - 이미지 = Figma에서 `img_`로 시작하는 레이어 전체(회색 배경·여백 포함)를 내보낸 파일. 파일명 = 레이어명 + `.png`
 
 ## landing.md 작성법
@@ -29,12 +30,15 @@ CTA Button의 구성이에요.
 
 ※ 회색 안내 문구
 
-![](img_CTA Button_all_01)  ← images/ 폴더의 파일명 (.png 생략)
+![](img_CTA Button_all_01)  ← images/ 폴더의 파일명 (.png 생략). 여러 줄 쓰면 이미지 여러 장
 
 추가 질문: 스펙 및 토큰      ← 답변 아래 칩 (쉼표로 여러 개)
 ```
 
-- 카드 제목 안에서 줄을 바꾸려면 `\n`을 쓰세요.
+- 카드 제목 안에서 줄을 바꾸려면 `\n`을 쓰세요. 제목 없는 카드는 `###`만 쓰면 돼요.
+- `추가 질문`에 카테고리 이름(예: Popup)을 쓰면 누를 때 그 카테고리로 이동해요.
+- `- 제목: 설명` 줄은 제목 아래 설명이 붙는 1열 항목으로 보여요.
+- `| 이름 | #HEX |` 줄은 컬러칩(16×16 색 견본, 2열)으로 보여요.
 - `##` 칩 아래에 `###`이 없으면, 그 칩은 일반 챗봇 답변으로 넘어가요.
 
 ## 반영
