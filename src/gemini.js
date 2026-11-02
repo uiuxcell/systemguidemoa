@@ -222,6 +222,21 @@ function moaContext(chunks){
   }).join('\n\n');
 }
 
+/* 답변 형식: 의도 파악 불가 → {"valid": false} / 가능 → {"valid": true, "answer": "..."} */
+var MOA_JSON_RULE = '\n\n[출력 형식 — 반드시 지킬 것]\n질문의 의도를 파악할 수 없으면 {"valid": false}\n파악되면 {"valid": true, "answer": "..."} 형식으로만 답하세요.\n- valid=false는 질문 자체가 무슨 뜻인지 알 수 없을 때(무의미한 문자열, 디자인 시스템과 무관해 해석 불가한 표현)에만 쓰세요.\n- 질문 의도는 이해했지만 context(가이드)에서 답을 찾지 못하면 valid=false를 쓰지 말고 {"valid": true, "answer": "가이드에 해당 내용이 없습니다. 디자인 시스템 담당자에게 문의해 주세요."}로 답하세요.\nanswer 안에는 기존 답변 규칙(마크다운 포함)을 그대로 따른 답변 본문을 넣으세요. JSON 외의 텍스트는 쓰지 마세요.';
+function moaParseValid(raw){
+  var s = String(raw || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  try {
+    var j = JSON.parse(s);
+    if(j && j.valid === false) return { valid: false };
+    if(j && typeof j.answer === 'string') return { valid: true, answer: j.answer.trim() };
+  } catch(_){
+    if(/^\{\s*"valid"\s*:\s*false/.test(s)) return { valid: false };
+    var m = s.match(/"answer"\s*:\s*"([\s\S]*?)(?:"\s*\}?\s*)?$/);
+    if(m){ try { return { valid: true, answer: JSON.parse('"' + m[1] + '"') }; } catch(__){ return { valid: true, answer: m[1].replace(/\\n/g, '\n') }; } }
+  }
+  return { valid: true, answer: s };
+}
 function moaText(json){
   var cand = json && json.candidates && json.candidates[0];
   var parts = (cand && cand.content && cand.content.parts) || [];
@@ -348,7 +363,24 @@ function moaCall(model, apiKey, body, onDelta){
 }
 
 /* ── 6단계 파이프라인 ───────────────────────────────────────── */
+/* 지금 카테고리에서 먼저 답을 찾고, 없으면 다른 카테고리에서 다시 찾음 */
 function moaAsk(question, apiKey, opts){
+  opts = opts || {};
+  var own = opts.topic;
+  return moaAskOnce(question, apiKey, opts).then(function(res){
+    var none = !res.grounded || /가이드에 해당 내용이 없/.test(String(res.text || '').slice(0, 80));
+    if(!own || opts.compareTopics || !none || !apiKey) return res;
+    var o2 = {}; Object.keys(opts).forEach(function(k){ o2[k] = opts[k]; });
+    o2.topic = null; o2.excludeTopic = own;
+    return moaAskOnce(question, apiKey, o2).then(function(r2){
+      var none2 = !r2.grounded || /가이드에 해당 내용이 없/.test(String(r2.text || '').slice(0, 80));
+      if(none2) return res;
+      r2.movedTo = (r2.hitTopics || []).filter(function(t){ return t && t !== own; })[0] || null;
+      return r2;
+    }, function(){ return res; });
+  });
+}
+function moaAskOnce(question, apiKey, opts){
   opts = opts || {};
   var report = opts.onStep || function(){};
   var cur = -1;
@@ -428,6 +460,7 @@ function moaAsk(question, apiKey, opts){
     var rank = function(list, n){
       /* 지금 카테고리 안에서 먼저 찾고, 없을 때만 다른 카테고리 */
       if(opts.topic && !opts.compareTopics){ var own = list.filter(function(r){ return r.ch.topic === opts.topic; }); if(own.length) list = own; }
+      if(opts.excludeTopic){ var other = list.filter(function(r){ return r.ch.topic !== opts.excludeTopic; }); if(other.length) list = other; }
       list.forEach(function(r){ if(topics.indexOf(r.ch.topic) > -1) r.score *= 2; });
       list.sort(function(a,b){ return b.score - a.score; });
       return list.slice(0, n).map(function(r){ return r.ch; });
@@ -470,7 +503,7 @@ function moaAsk(question, apiKey, opts){
     return begin(5).then(function(){ return moaLoadPrompts(); }).then(function(){
       report(5, 'run', '프롬프트: ' + moaPromptSource());
       var body = {
-        systemInstruction: { parts: [{ text: moaSystem() }] },
+        systemInstruction: { parts: [{ text: moaSystem() + MOA_JSON_RULE }] },
         contents: [].concat.apply([], hist.map(function(h){
           return [{ role: 'user', parts: [{ text: h.q }] }, { role: 'model', parts: [{ text: String(h.a || '').slice(0, 1200) }] }];
         })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') + moaLeadHint() }] }]),
@@ -482,8 +515,8 @@ function moaAsk(question, apiKey, opts){
         report(5, 'run', model + ' 호출 중');
         var req = JSON.parse(JSON.stringify(body));
         req.generationConfig = /^gemini-3/.test(model)
-          ? { maxOutputTokens: 4096, thinkingConfig: { thinkingLevel: 'minimal' } }
-          : { temperature: 0, maxOutputTokens: 4096, thinkingConfig: { thinkingBudget: 0 } };
+          ? { maxOutputTokens: 4096, thinkingConfig: { thinkingLevel: 'minimal' }, responseMimeType: 'application/json' }
+          : { temperature: 0, maxOutputTokens: 4096, thinkingConfig: { thinkingBudget: 0 }, responseMimeType: 'application/json' };
         return moaCall(model, apiKey, req, opts.onDelta).catch(function(err){
           if([400, 404, 429, 500, 503].indexOf(err.status) > -1 && !/API key/i.test(err.message) && i + 1 < MOA_MODELS.length){
             fails.push(model + ' ' + err.status);
@@ -503,7 +536,7 @@ function moaAsk(question, apiKey, opts){
             plain = true;
             report(5, 'run', model + ' 빈 응답 (' + why + ') · 기본 설정으로 재시도');
             var retry = JSON.parse(JSON.stringify(body));
-            retry.generationConfig = { maxOutputTokens: 8192 };
+            retry.generationConfig = { maxOutputTokens: 8192, responseMimeType: 'application/json' };
             return moaCall(model, apiKey, retry, opts.onDelta).then(function(j2){
               var t2 = moaText(j2);
               if(t2) return { text: t2, model: model };
@@ -529,9 +562,14 @@ function moaAsk(question, apiKey, opts){
         return next(0).catch(function(){ return r; });
       });
     }).then(function(r){
-      var text = r.text;
+      var pj = moaParseValid(r.text);
+      if(pj.valid === false){
+        end(5, r.model + ' · 질문 의도 파악 불가', 'warn');
+        return { text: '', invalid: true, sources: [], grounded: true, model: r.model, topics: topics };
+      }
+      var text = pj.answer;
       end(5, r.model + ' · 완료 · 프롬프트: ' + moaPromptSource());
-      return { text: text, sources: hits.map(function(h){ return h.source; }), grounded: true, model: r.model, topics: topics };
+      return { text: text, sources: hits.map(function(h){ return h.source; }), hitTopics: hits.map(function(h){ return h.topic; }), grounded: true, model: r.model, topics: topics };
     });
   })
   .catch(function(err){
