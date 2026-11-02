@@ -1705,6 +1705,21 @@ function moaContext(chunks){
   }).join('\n\n');
 }
 
+/* 답변 형식: 의도 파악 불가 → {"valid": false} / 가능 → {"valid": true, "answer": "..."} */
+var MOA_JSON_RULE = '\n\n[출력 형식 — 반드시 지킬 것]\n질문의 의도를 파악할 수 없으면 {"valid": false}\n파악되면 {"valid": true, "answer": "..."} 형식으로만 답하세요.\n- valid=false는 질문 자체가 무슨 뜻인지 알 수 없을 때(무의미한 문자열, 디자인 시스템과 무관해 해석 불가한 표현)에만 쓰세요.\n- 질문 의도는 이해했지만 context(가이드)에서 답을 찾지 못하면 valid=false를 쓰지 말고 {"valid": true, "answer": "가이드에 해당 내용이 없습니다. 디자인 시스템 담당자에게 문의해 주세요."}로 답하세요.\nanswer 안에는 기존 답변 규칙(마크다운 포함)을 그대로 따른 답변 본문을 넣으세요. JSON 외의 텍스트는 쓰지 마세요.';
+function moaParseValid(raw){
+  var s = String(raw || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+  try {
+    var j = JSON.parse(s);
+    if(j && j.valid === false) return { valid: false };
+    if(j && typeof j.answer === 'string') return { valid: true, answer: j.answer.trim() };
+  } catch(_){
+    if(/^\{\s*"valid"\s*:\s*false/.test(s)) return { valid: false };
+    var m = s.match(/"answer"\s*:\s*"([\s\S]*?)(?:"\s*\}?\s*)?$/);
+    if(m){ try { return { valid: true, answer: JSON.parse('"' + m[1] + '"') }; } catch(__){ return { valid: true, answer: m[1].replace(/\\n/g, '\n') }; } }
+  }
+  return { valid: true, answer: s };
+}
 function moaText(json){
   var cand = json && json.candidates && json.candidates[0];
   var parts = (cand && cand.content && cand.content.parts) || [];
@@ -1831,7 +1846,24 @@ function moaCall(model, apiKey, body, onDelta){
 }
 
 /* ── 6단계 파이프라인 ───────────────────────────────────────── */
+/* 지금 카테고리에서 먼저 답을 찾고, 없으면 다른 카테고리에서 다시 찾음 */
 function moaAsk(question, apiKey, opts){
+  opts = opts || {};
+  var own = opts.topic;
+  return moaAskOnce(question, apiKey, opts).then(function(res){
+    var none = !res.grounded || /가이드에 해당 내용이 없/.test(String(res.text || '').slice(0, 80));
+    if(!own || opts.compareTopics || !none || !apiKey) return res;
+    var o2 = {}; Object.keys(opts).forEach(function(k){ o2[k] = opts[k]; });
+    o2.topic = null; o2.excludeTopic = own;
+    return moaAskOnce(question, apiKey, o2).then(function(r2){
+      var none2 = !r2.grounded || /가이드에 해당 내용이 없/.test(String(r2.text || '').slice(0, 80));
+      if(none2) return res;
+      r2.movedTo = (r2.hitTopics || []).filter(function(t){ return t && t !== own; })[0] || null;
+      return r2;
+    }, function(){ return res; });
+  });
+}
+function moaAskOnce(question, apiKey, opts){
   opts = opts || {};
   var report = opts.onStep || function(){};
   var cur = -1;
@@ -1911,6 +1943,7 @@ function moaAsk(question, apiKey, opts){
     var rank = function(list, n){
       /* 지금 카테고리 안에서 먼저 찾고, 없을 때만 다른 카테고리 */
       if(opts.topic && !opts.compareTopics){ var own = list.filter(function(r){ return r.ch.topic === opts.topic; }); if(own.length) list = own; }
+      if(opts.excludeTopic){ var other = list.filter(function(r){ return r.ch.topic !== opts.excludeTopic; }); if(other.length) list = other; }
       list.forEach(function(r){ if(topics.indexOf(r.ch.topic) > -1) r.score *= 2; });
       list.sort(function(a,b){ return b.score - a.score; });
       return list.slice(0, n).map(function(r){ return r.ch; });
@@ -1953,7 +1986,7 @@ function moaAsk(question, apiKey, opts){
     return begin(5).then(function(){ return moaLoadPrompts(); }).then(function(){
       report(5, 'run', '프롬프트: ' + moaPromptSource());
       var body = {
-        systemInstruction: { parts: [{ text: moaSystem() }] },
+        systemInstruction: { parts: [{ text: moaSystem() + MOA_JSON_RULE }] },
         contents: [].concat.apply([], hist.map(function(h){
           return [{ role: 'user', parts: [{ text: h.q }] }, { role: 'model', parts: [{ text: String(h.a || '').slice(0, 1200) }] }];
         })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') + moaLeadHint() }] }]),
@@ -1965,8 +1998,8 @@ function moaAsk(question, apiKey, opts){
         report(5, 'run', model + ' 호출 중');
         var req = JSON.parse(JSON.stringify(body));
         req.generationConfig = /^gemini-3/.test(model)
-          ? { maxOutputTokens: 4096, thinkingConfig: { thinkingLevel: 'minimal' } }
-          : { temperature: 0, maxOutputTokens: 4096, thinkingConfig: { thinkingBudget: 0 } };
+          ? { maxOutputTokens: 4096, thinkingConfig: { thinkingLevel: 'minimal' }, responseMimeType: 'application/json' }
+          : { temperature: 0, maxOutputTokens: 4096, thinkingConfig: { thinkingBudget: 0 }, responseMimeType: 'application/json' };
         return moaCall(model, apiKey, req, opts.onDelta).catch(function(err){
           if([400, 404, 429, 500, 503].indexOf(err.status) > -1 && !/API key/i.test(err.message) && i + 1 < MOA_MODELS.length){
             fails.push(model + ' ' + err.status);
@@ -1986,7 +2019,7 @@ function moaAsk(question, apiKey, opts){
             plain = true;
             report(5, 'run', model + ' 빈 응답 (' + why + ') · 기본 설정으로 재시도');
             var retry = JSON.parse(JSON.stringify(body));
-            retry.generationConfig = { maxOutputTokens: 8192 };
+            retry.generationConfig = { maxOutputTokens: 8192, responseMimeType: 'application/json' };
             return moaCall(model, apiKey, retry, opts.onDelta).then(function(j2){
               var t2 = moaText(j2);
               if(t2) return { text: t2, model: model };
@@ -2012,9 +2045,14 @@ function moaAsk(question, apiKey, opts){
         return next(0).catch(function(){ return r; });
       });
     }).then(function(r){
-      var text = r.text;
+      var pj = moaParseValid(r.text);
+      if(pj.valid === false){
+        end(5, r.model + ' · 질문 의도 파악 불가', 'warn');
+        return { text: '', invalid: true, sources: [], grounded: true, model: r.model, topics: topics };
+      }
+      var text = pj.answer;
       end(5, r.model + ' · 완료 · 프롬프트: ' + moaPromptSource());
-      return { text: text, sources: hits.map(function(h){ return h.source; }), grounded: true, model: r.model, topics: topics };
+      return { text: text, sources: hits.map(function(h){ return h.source; }), hitTopics: hits.map(function(h){ return h.topic; }), grounded: true, model: r.model, topics: topics };
     });
   })
   .catch(function(err){
@@ -2401,9 +2439,11 @@ MENU.forEach(function(sec, i){
 /* ── chat ────────────────────────────────────────────────────── */
 var STAR = '<svg width="20" height="20" viewBox="0 0 20 20"><defs><linearGradient id="ti1" x1="0.208" y1="0.094" x2="0.792" y2="0.906"><stop offset="0.26%" stop-color="#A3E7FF"/><stop offset="99.86%" stop-color="#3790FF"/></linearGradient><linearGradient id="ti3" x1="0.175" y1="0.120" x2="0.825" y2="0.880"><stop offset="0%" stop-color="#2063FF"/><stop offset="100%" stop-color="#9383FF"/></linearGradient><linearGradient id="ti2" x1="0.161" y1="0.132" x2="0.839" y2="0.868"><stop offset="0.1%" stop-color="#37A1FF"/><stop offset="99.87%" stop-color="#D98DFF"/></linearGradient></defs><g transform="translate(1.851 1) scale(1.28565)"><path d="M 6.318 0 C 7.423 0 8.318 0.895 8.318 2 L 8.318 6.783 C 8.321 6.81 8.322 6.837 8.324 6.864 C 8.325 6.872 8.325 6.881 8.326 6.889 C 8.33 6.944 8.33 6.999 8.329 7.054 C 8.329 7.065 8.328 7.076 8.328 7.088 C 8.326 7.133 8.324 7.178 8.319 7.223 C 8.317 7.248 8.313 7.274 8.309 7.3 C 8.304 7.339 8.297 7.378 8.289 7.417 C 8.284 7.44 8.279 7.463 8.273 7.486 C 8.264 7.524 8.253 7.561 8.242 7.599 C 8.234 7.625 8.226 7.652 8.217 7.679 C 8.204 7.715 8.19 7.751 8.176 7.786 C 8.166 7.808 8.157 7.83 8.147 7.852 C 8.072 8.016 7.974 8.171 7.854 8.312 C 7.843 8.325 7.832 8.338 7.821 8.351 C 7.789 8.386 7.755 8.42 7.721 8.454 C 7.706 8.468 7.692 8.483 7.678 8.496 C 7.646 8.525 7.611 8.552 7.577 8.579 C 7.56 8.593 7.544 8.607 7.526 8.62 C 7.494 8.644 7.461 8.666 7.427 8.688 C 7.404 8.703 7.381 8.719 7.358 8.732 C 7.349 8.738 7.341 8.745 7.332 8.75 L 3.002 11.25 C 2.045 11.802 0.822 11.474 0.269 10.518 C -0.283 9.561 0.045 8.338 1.002 7.786 L 2.331 7.018 L 1 6.25 C 0.043 5.698 -0.284 4.474 0.268 3.518 C 0.821 2.561 2.043 2.234 3 2.786 L 4.318 3.547 L 4.318 2 C 4.318 0.895 5.214 0 6.318 0 Z" fill="url(#ti1)"/><rect x="4.318" y="9" width="4" height="5" rx="2" fill="url(#ti3)"/><path transform="translate(4.302 2.517)" d="M 5.329 0.268 C 6.286 -0.284 7.509 0.044 8.062 1.001 C 8.614 1.957 8.286 3.181 7.329 3.733 L 6 4.5 L 7.33 5.268 C 8.287 5.82 8.615 7.044 8.063 8.001 C 7.51 8.957 6.287 9.285 5.33 8.733 L 1 6.233 C 0.996 6.231 0.992 6.227 0.988 6.225 C 0.94 6.197 0.894 6.167 0.848 6.134 C 0.839 6.128 0.83 6.123 0.821 6.117 C 0.678 6.013 0.549 5.888 0.436 5.745 C 0.422 5.728 0.408 5.711 0.395 5.694 C 0.37 5.661 0.348 5.626 0.325 5.591 C 0.312 5.571 0.299 5.552 0.286 5.532 C 0.28 5.521 0.273 5.511 0.267 5.501 C 0.25 5.472 0.237 5.442 0.222 5.413 C 0.213 5.396 0.204 5.379 0.195 5.362 C 0.175 5.32 0.157 5.277 0.14 5.234 C 0.133 5.215 0.125 5.197 0.118 5.178 C 0.103 5.136 0.09 5.093 0.077 5.05 C 0.072 5.033 0.068 5.017 0.064 5 C 0.05 4.948 0.04 4.896 0.03 4.844 C 0.029 4.835 0.027 4.827 0.026 4.818 C 0.018 4.77 0.012 4.722 0.008 4.674 C 0.006 4.653 0.004 4.632 0.003 4.611 C 0.001 4.566 0 4.521 0 4.476 C 0 4.459 0 4.442 0.001 4.424 C 0.003 4.378 0.007 4.332 0.012 4.287 C 0.014 4.265 0.017 4.243 0.02 4.221 C 0.025 4.184 0.032 4.146 0.039 4.109 C 0.045 4.082 0.049 4.055 0.056 4.029 C 0.066 3.985 0.079 3.943 0.093 3.9 C 0.098 3.884 0.103 3.867 0.109 3.851 C 0.124 3.807 0.14 3.764 0.158 3.721 C 0.167 3.702 0.175 3.682 0.184 3.663 C 0.204 3.618 0.227 3.575 0.25 3.533 C 0.256 3.522 0.262 3.511 0.268 3.501 C 0.27 3.496 0.272 3.492 0.275 3.488 C 0.303 3.439 0.335 3.392 0.367 3.346 C 0.373 3.339 0.377 3.331 0.382 3.324 C 0.411 3.284 0.442 3.245 0.474 3.208 C 0.487 3.192 0.5 3.176 0.514 3.161 C 0.542 3.129 0.572 3.1 0.603 3.071 C 0.619 3.055 0.635 3.038 0.653 3.022 C 0.684 2.994 0.716 2.967 0.749 2.941 C 0.767 2.926 0.785 2.911 0.804 2.897 C 0.834 2.875 0.864 2.854 0.896 2.834 C 0.922 2.816 0.948 2.798 0.976 2.782 C 0.983 2.777 0.992 2.773 0.999 2.768 L 5.329 0.268 Z" fill="url(#ti2)"/></g></svg>';
 
+/* 카테고리가 정해지지 않은 창 (첫 화면에서 오타·의도 불명 질문 등) */
+var GENERAL = 'Moa';
 function openCategory(cat, topic){
   S.cat = cat;
-  S.topic = topic || (USE_DB && isTopic(cat) ? cat : null);
+  S.topic = cat === GENERAL ? null : (topic || (USE_DB && isTopic(cat) ? cat : null));
   S.convo = [];
   var g = GUIDE[cat];
   var con = $('chatCon');
@@ -2412,7 +2452,7 @@ function openCategory(cat, topic){
   var title = el('div','title');
   title.innerHTML = STAR;
   var h1 = el('h1');
-  h1.textContent = (LANDING[cat] && LANDING[cat].title) ? LANDING[cat].title : (cat === '기타 문의')
+  h1.textContent = cat === GENERAL ? 'Moa에게 질문하세요.\n어떤게 궁금하신가요?' : (LANDING[cat] && LANDING[cat].title) ? LANDING[cat].title : (cat === '기타 문의')
     ? '기타문의사항이에요.\n어떤게 궁금하신가요?'
     : cat + '의 구성이에요.\n어떤게 궁금하신가요?';
   h1.className = 'sweep';
@@ -2425,6 +2465,7 @@ function openCategory(cat, topic){
   title.appendChild(h1);
   intro.appendChild(title);
   var qs = el('div','qchips');
+  if(cat === GENERAL){ con.appendChild(intro); show('chat'); return; }
   var fromDb = USE_DB && inDb(cat);
   var qlist = (!fromDb && g) ? g.q : null;
   if(fromDb){
@@ -2491,21 +2532,45 @@ function detectTopics(q, keepAll){
     if(hit && found.indexOf(hit) < 0 && (isTopic(hit) || hit === 'Tab')) found.push(hit);
   });
   gm.topics.forEach(function(hit){ if(found.indexOf(hit) < 0 && (isTopic(hit) || hit === 'Tab')) found.push(hit); });
+  /* 여러 단어 카테고리: 단어가 순서 상관없이 모두 있으면 매칭 (Icon CTA Button, 아이콘 버튼 → CTA Button Icon) */
+  var spec = TOPICS.filter(function(t){ var w = topicWords(t); return w.length > 1 && w.every(function(x){ return hasWord(q, x); }); });
+  spec.sort(function(a, b){ return topicWords(b).length - topicWords(a).length; });
+  found = spec.concat(found.filter(function(t){ return spec.indexOf(t) < 0; }));
   /* 더 구체적인 주제가 있으면 일반 주제는 뺌 (유틸리티 버튼 > 버튼, 옵션칩 > 칩) */
   if(!keepAll) [['CTA Button Icon','CTA Button'],['Option Chip','Chip']].forEach(function(p){ if(found.indexOf(p[0]) > -1) found = found.filter(function(t){ return t !== p[1]; }); });
   var comp = found.filter(function(t){ return MOA_FOUNDATION.indexOf(t) < 0; });
   return comp.concat(found.filter(function(t){ return comp.indexOf(t) < 0; }));
 }
+var TOPIC_WORD_KO = { cta:['cta','씨티에이'], button:['button','버튼'], icon:['icon','아이콘'], option:['option','옵션'], chip:['chip','칩'],
+  selector:['selector','셀렉터','선택기'], selection:['selection','선택'], control:['control','컨트롤'], dimmed:['dimmed','딤드','딤'], shadow:['shadow','그림자','쉐도우','섀도우'] };
+function topicWords(t){ return String(t).toLowerCase().split(/[^a-z]+/).filter(function(w){ return w && w !== 'cta'; }); }
+function hasWord(q, w){
+  var s = String(q).toLowerCase().replace(/\s+/g, '');
+  return (TOPIC_WORD_KO[w] || [w]).some(function(x){ return s.indexOf(x) > -1; });
+}
 function relatedTopic(a, b){
   if(!a || !b) return false;
   return a === b || a.indexOf(b) > -1 || b.indexOf(a) > -1;
 }
+/* 지금 카테고리의 하위(더 구체적) 카테고리 고유 단어를 말하면 그쪽으로 (CTA Button + 아이콘 → CTA Button Icon, Chip + 옵션 → Option Chip) */
+function subTopicFor(cur, q){
+  var cw = topicWords(cur);
+  return TOPICS.filter(function(t){ return t !== cur && t.indexOf(cur) > -1; }).filter(function(t){
+    return topicWords(t).some(function(w){ return cw.indexOf(w) < 0 && hasWord(q, w); });
+  })[0] || null;
+}
 function redirectTopic(q){
   if(S.cat === '기타 문의' && etcIntent(q)) return null;
+  var cur = (S.cat === '기타 문의' || S.cat === GENERAL) ? null : (S.topic || S.cat);
+  var sub0 = cur && subTopicFor(cur, q); if(sub0) return sub0;
   var found = detectTopics(q);
   if(!found.length) return null;
-  var cur = S.cat === '기타 문의' ? null : (S.topic || S.cat);
-  if(cur && found.some(function(t){ return relatedTopic(t, cur); })) return null;
+  if(!cur) return found[0];
+  if(found.indexOf(cur) > -1) return null;                       /* 지금 카테고리 질문 */
+  if(found[0] !== cur && found[0].indexOf(cur) > -1) return found[0];
+  var fw = topicWords(found[0]); if(fw.length > 1 && fw.every(function(w){ return hasWord(q, w); })) return found[0]; /* 다른 카테고리 이름을 정확히 말함 (옵션 칩, 아이콘 버튼) */ /* 더 구체적인 카테고리 (CTA Button → CTA Button Icon) */
+  if(found.some(function(t){ return cur.indexOf(t) > -1; })) return null; /* 지금이 더 구체적 (CTA Button Icon에서 CTA Button 질문) */
+  if(topicWords(cur).some(function(w){ return hasWord(q, w); })) return null; /* 지금 카테고리 이름이 질문에 있음 */
   return found[0];
 }
 /* "비교/차이" 질문: 카테고리를 옮기지 않고 언급된 카테고리 데이터를 함께 불러옴 */
@@ -2518,6 +2583,24 @@ function compareTopics(q){
   if(!list.length){ if(cur) list.push(cur); found.forEach(function(t){ if(list.indexOf(t) < 0) list.push(t); }); }
   return list.length > 1 ? list : null;
 }
+/* 다른 카테고리로 넘어가기 전 동의 받기: 넘어가기 / 여기서 답변 */
+/* 현재 카테고리에 남아서 새 질문 받기 */
+function stayHere(){ var m = $('msgInput'); if(m){ m.value = ''; if($('bar')) $('bar').classList.remove('typing'); if(typeof autoGrow === 'function') autoGrow(); try{ m.focus(); }catch(e){} } }
+function askHere(q){ S.stayQ = q; S.noUserRow = true; ask(q); }
+function confirmMove(body, text, mv, onGo, onStay){
+  var here = S.topic || S.cat;
+  var note = el('div','bub-note'), tx = el('div'); tx.textContent = text;
+  var cs = el('div'); cs.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:10px';
+  var mk = function(label){ var b = el('button', '', label); b.style.cssText = 'all:unset;cursor:pointer;font-size:13px;font-weight:600;line-height:19px;color:#2063FF;text-decoration:underline;text-underline-offset:3px'; return b; };
+  var go = mk(mv + ' 질문창으로 넘어가기');
+  go.style.color = '#4185FF';
+  var hint = el('div'); hint.style.cssText = 'margin-top:8px'; hint.textContent = here + '에 대해 더 질문하고 싶으시면 하단 검색창에 질문을 남겨주세요.';
+  var done = function(){ go.style.pointerEvents = 'none'; };
+  go.onclick = function(){ done(); setTimeout(onGo, 250); };
+  cs.appendChild(go);
+  note.appendChild(tx); note.appendChild(cs); note.appendChild(hint);
+  body.appendChild(note); scrollDown();
+}
 function ask(q, typed){
   S.hold = false; /* 새 질문이면 자동 스크롤 다시 켬 */
   var cmp = compareTopics(q);
@@ -2528,18 +2611,22 @@ function ask(q, typed){
       var ur = el('div','row-user'); ur.appendChild(el('div','bub-user', q)); con0.appendChild(ur);
       var br = el('div','row-bot'), av0 = el('div','avatar');
       av0.innerHTML = AVATAR_HTML;
-      var bb = el('div','bot-body'), note = el('div','bub-note');
-      note.textContent = mv + ' 질문이라 ' + mv + ' 질문창으로 이동해서 답변할게요.';
-      bb.appendChild(note); br.appendChild(av0); br.appendChild(bb); con0.appendChild(br); scrollDown();
-      setTimeout(function(){ openCategory(mv, mv); ask(q); }, 1200);
+      var bb = el('div','bot-body');
+      br.appendChild(av0); br.appendChild(bb); con0.appendChild(br);
+      confirmMove(bb, mv + ' 관련 질문이에요. ' + mv + ' 질문창으로 넘어가서 답변할까요?', mv,
+        function(){ openCategory(mv, mv); ask(q); },
+        function(){ stayHere(); });
       return;
     }
   }
   S.curQ = q;
   var con = $('chatCon');
-  var r = el('div','row-user');
-  r.appendChild(el('div','bub-user',q));
-  con.appendChild(r); scrollDown();
+  if(!S.noUserRow){
+    var r = el('div','row-user');
+    r.appendChild(el('div','bub-user',q));
+    con.appendChild(r);
+  }
+  S.noUserRow = false; scrollDown();
 
   var botRow = el('div','row-bot');
   var av = el('div','avatar');
@@ -2626,9 +2713,33 @@ function ask(q, typed){
         paintHex(liveP, mdPlain(t));
         scrollDown();
       };
-      window.moaAsk(q, S.key, { onStep:onStep, onDelta:null, topic:S.topic, compareTopics:cmp, history:(S.convo || []).slice() }).then(function(res){
+      var pre = S.preRes && S.preRes.q === q ? S.preRes.res : null; S.preRes = null;
+      (pre ? Promise.resolve(pre) : window.moaAsk(q, S.key, { onStep:onStep, onDelta:null, topic:S.topic, compareTopics:cmp, history:(S.convo || []).slice() })).then(function(res){
         setIng(false);
+        /* 지금 카테고리에 답이 없어 다른 카테고리에서 찾았으면 그 카테고리로 이동해서 답변 */
+        var stay = S.stayQ === q; S.stayQ = null;
+        if(!pre && !stay && res.movedTo && isTopic(res.movedTo) && res.movedTo !== S.topic){
+          var mv = res.movedTo;
+          if(live && live.parentNode) live.parentNode.removeChild(live);
+          Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
+          S.curQ = null;
+          var here = S.topic || S.cat;
+          confirmMove(body, here + '에는 관련 내용이 없고, ' + mv + '에서 찾았어요. ' + mv + ' 질문창으로 넘어가서 답변할까요?', mv,
+            function(){ S.preRes = { q:q, res:res }; openCategory(mv, mv); ask(q); },
+            function(){ stayHere(); });
+          return;
+        }
         if(res.model) setApiStatus(true);
+        /* 용어 식별 불가: 제목 없이 바디 텍스트 한 줄만 */
+        /* 1) 의도 파악 불가일 때만 (2) 데이터 없음은 기존 '내용 없음' 답변 유지) */
+        if(res.invalid || (!/가이드에 해당 내용이 없/.test(String(res.text || '')) && /용어\s*식별|식별이\s*(불가|어려)|어떤 정보를 찾으시는지|용어인지 다시 확인/.test(String(res.text || '')))){
+          if(live && live.parentNode) live.parentNode.removeChild(live);
+          Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
+          S.curQ = null;
+          var un = el('div','bub-note'); un.style.whiteSpace = 'pre-line'; un.textContent = '입력하신 내용을 이해하지 못했어요.\n질문을 다시 입력해 주세요.';
+          body.appendChild(un); scrollDown();
+          return;
+        }
         if(res.grounded === false){
           renderAnswer(body, { kind:'text', title:'답변할 수 없어요', desc:'', text:res.text + (res.reason ? '\n\n이유: ' + res.reason : ''), topics:res.topics });
           return;
@@ -2856,12 +2967,41 @@ msg.addEventListener('keydown', function(e){
   if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); }
 });
 $('btnSend').onclick = send;
+/* 뻔한 오타·키보드 연타는 Gemini 호출 없이 바로 거름 */
+function isNoise(input){
+  var s = String(input || '').replace(/\s+/g, '');
+  if(!s) return true;
+  if(!/[a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ]/.test(s)) return true;                       /* 숫자·기호만 */
+  if(/^[ㄱ-ㅎㅏ-ㅣ!?.~^;,]+$/.test(s)) return true;
+  var core = s.replace(/[!?.~^;,]/g, '');
+  if(/^(아|어|오|우|음|흠|헐|엥|앗|응|으|에|와|오잉|흐음|글쎄|뭐|몰라|그냥|ㅎ|하|허|호|휴|헉)+$/.test(core)) return true; /* 감탄사·추임새만 */
+  if(/^[가-힣]$/.test(core) && ['칩','색','선','탭','팝'].indexOf(core) < 0) return true; /* 의미 없는 한 글자 */                         /* ㅋㅋㅋ, ㅁㄴㅇㄹ 등 자모만 */
+  var uniq = {}; s.split('').forEach(function(c){ uniq[c.toLowerCase()] = 1; });
+  if(s.length >= 3 && Object.keys(uniq).length <= 2 && !/[가-힣]{2}/.test(s.replace(/(.)\1+/g,'$1'))) return true; /* aaaa, 아아아아 */
+  var lat = s.replace(/[^a-zA-Z]/g, '');
+  if(lat.length >= 4 && lat.length === s.length && !/[aeiouyAEIOUY]/.test(lat)) return true; /* sdfgh, qjxms */
+  if(/(asdf|qwer|zxcv|sdfg|wert|xcvb|dfgh|hjkl|ㅁㄴㅇㄹ|ㅂㅈㄷㄱ)/i.test(s)) return true;      /* 키보드 줄 연타 */
+  return false;
+}
+function reply(q, text){
+  var con = $('chatCon');
+  var r = el('div','row-user'); r.appendChild(el('div','bub-user', q)); con.appendChild(r);
+  var br = el('div','row-bot'), av = el('div','avatar'); av.innerHTML = AVATAR_HTML;
+  var bb = el('div','bot-body'), ing = el('div','bub-ing');
+  ing.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
+  bb.appendChild(ing); br.appendChild(av); br.appendChild(bb); con.appendChild(br); scrollDown();
+  setTimeout(function(){ if(ing.parentNode) ing.parentNode.removeChild(ing); var n = el('div','bub-note'); n.style.whiteSpace = 'pre-line'; n.textContent = text; bb.appendChild(n); scrollDown(); }, 600);
+}
 function send(){
   var v = msg.value.trim();
   if(!v) return;
   if(!S.connected){ $('discOverlay').classList.remove('hide'); return; }
   msg.value = ''; $('bar').classList.remove('typing'); autoGrow();
-  if(S.screen !== 'chat'){ var tp = detectTopics(v)[0]; if(tp && compareTopics(v)){ openCategory(tp, tp); ask(v); return; } if(tp){ openCategory(tp, tp); ask(v); return; } S.cat = S.cat || (TOPICS[0] || 'Color'); openCategory(S.cat, S.topic); }
+  if(isNoise(v)){
+    if(S.screen !== 'chat') openCategory(GENERAL);
+    return reply(v, '입력하신 내용을 이해하지 못했어요.\n질문을 다시 입력해 주세요.');
+  }
+  if(S.screen !== 'chat'){ var tp = detectTopics(v)[0]; if(tp && compareTopics(v)){ openCategory(tp, tp); ask(v); return; } if(tp){ openCategory(tp, tp); ask(v); return; } openCategory(GENERAL); }
   ask(v, true);
 }
 
