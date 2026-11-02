@@ -2283,11 +2283,12 @@ function renderLanding(body, lp){
   Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
   setIng(false);
   var memo = [], q = S.curQ; S.curQ = null;
+  var fromIntro = q != null && S.introChip === q; S.introChip = null;
   /* 채팅 답변처럼 카드를 하나씩: 제목 → 본문 타이핑 → 표·이미지 → 다음 카드 */
   (function next(i){
     if(i >= lp.bubbles.length){
       if(q != null) remember(q, memo.join('\n\n'));
-      addActions(body, memo.join('\n\n'), '', q === OVERVIEW ? [] : lp.followups); /* 한 눈에 보기: 하단 칩 없음 */
+      addActions(body, memo.join('\n\n'), '', (q === OVERVIEW || !fromIntro) ? [] : lp.followups); /* 관련 칩: 카테고리 하위칩(한 눈에 보기 제외) 답변에만 */
       scrollDown();
       return;
     }
@@ -2436,6 +2437,7 @@ function openCategory(cat, topic){
     b.onclick = function(){
       Array.prototype.forEach.call(qs.children, function(c){c.classList.remove('sel');});
       b.classList.add('sel');
+      S.introChip = q;
       ask(q);
     };
     qs.appendChild(b);
@@ -2790,7 +2792,7 @@ function undoLast(){
 function addActions(body, copyText, cta, chipsOverride){
   var after = el('div','after');
 
-  var rel = chipsOverride || relatedFor(S.cat);
+  var rel = chipsOverride || []; /* 관련 칩은 카테고리 하위칩(한 눈에 보기 제외) 답변에만 */
   if(rel.length){
     var chips = el('div','qchips');
     rel.forEach(function(q){

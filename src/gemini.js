@@ -171,6 +171,41 @@ function moaScore(ch, qs){
   return score;
 }
 
+/* 한글 음차·붙여쓰기 보정 — data/db_glossary/ko_en.md
+   이 파일 항목은 질문 안에 붙여 써도(세컨더리버튼) 찾고, 영어 용어(primary…)로도 검색 */
+var MOA_KOEN_SRC = 'ko_en.md';
+function moaParseKoEn(md){
+  var out = [];
+  String(md).replace(/\r/g, '').split('\n').forEach(function(l){
+    var m = /^\s*-\s*`([^`]+)`\s*:\s*(.+)$/.exec(l);
+    if(!m || /영어 용어/.test(m[1])) return;
+    out.push({ term:m[1].trim(), category:'한글 표기', aliases:m[2].split(',').map(function(s){ return s.trim(); }).filter(Boolean), source:MOA_KOEN_SRC });
+  });
+  return out;
+}
+var moaTokenizeBase = moaTokenize;
+moaTokenize = function(q){
+  var out = moaTokenizeBase(q), s = String(q || '').toLowerCase().replace(/\s+/g, '');
+  (window.MOA_GLOSSARY_DB || []).forEach(function(it){
+    if(!it || it.source !== MOA_KOEN_SRC) return;
+    var hit = (it.aliases || []).filter(function(a){ a = String(a).toLowerCase().replace(/\s+/g, ''); return a && s.indexOf(a) > -1; });
+    if(!hit.length) return;
+    hit.concat(String(it.term).split('/')).forEach(function(t){ t = String(t).toLowerCase().trim(); if(t && out.indexOf(t) < 0) out.push(t); });
+  });
+  return out;
+};
+/* 최신 파일로 덮어쓰기 (웹: 같은 프로젝트 / 플러그인: GitHub main). 실패하면 빌드 내장본 사용 */
+(function(){
+  if(!window.fetch) return;
+  var url = (location.protocol.indexOf('http') === 0 ? (/\/(preview|src)\//.test(location.pathname) ? '../' : '') : 'https://raw.githubusercontent.com/hveju/systemguidemoa/main/') + 'data/db_glossary/' + MOA_KOEN_SRC;
+  fetch(url, { cache:'no-store' }).then(function(r){ return r.ok ? r.text() : null; }).then(function(t){
+    var list = t && moaParseKoEn(t);
+    if(!list || !list.length) return;
+    window.MOA_GLOSSARY_DB = (window.MOA_GLOSSARY_DB || []).filter(function(it){ return it.source !== MOA_KOEN_SRC; }).concat(list);
+    if(typeof moaBuildGlossary === 'function') moaBuildGlossary();
+  }).catch(function(){});
+})();
+
 /* 기존 호환용 단순 검색 */
 function moaSearch(query, limit){
   var qs = moaTokenize(query);
@@ -391,6 +426,8 @@ function moaAsk(question, apiKey, opts){
   .then(function(){ return begin(3); })
   .then(function(){
     var rank = function(list, n){
+      /* 지금 카테고리 안에서 먼저 찾고, 없을 때만 다른 카테고리 */
+      if(opts.topic && !opts.compareTopics){ var own = list.filter(function(r){ return r.ch.topic === opts.topic; }); if(own.length) list = own; }
       list.forEach(function(r){ if(topics.indexOf(r.ch.topic) > -1) r.score *= 2; });
       list.sort(function(a,b){ return b.score - a.score; });
       return list.slice(0, n).map(function(r){ return r.ch; });
@@ -403,6 +440,10 @@ function moaAsk(question, apiKey, opts){
     };
     var cmp = opts.compareTopics && opts.compareTopics.length > 1;
     var g = cmp ? rankEach(hits.guide, 3) : rank(hits.guide, 5), t = cmp ? rankEach(hits.token, usage ? 0 : 2) : rank(hits.token, usage ? 0 : 4);
+    /* 지금 카테고리 가이드에서 키워드가 하나도 안 걸리면, 그 카테고리의 핵심 섹션(정의·타입별 요약 등)을 근거로 넣음 */
+    if(!g.length && opts.topic && !cmp){
+      g = db.filter(function(c){ return c.topic === opts.topic && /정의|개요|타입별 ?요약|적용 ?상황|사용 ?기준|용도/.test(moaHead(c)); }).slice(0, 5);
+    }
     hits = g.concat(t);
     var lab = function(c){ return (c.topic ? c.topic + ' › ' : '') + moaHead(c); };
     var info = (g.length ? '가이드: ' + g.slice(0, 2).map(lab).join(' / ') : '') + (g.length && t.length ? '\n' : '') + (t.length ? '토큰: ' + t.slice(0, 3).map(function(c){ return moaHead(c).replace(/ 토큰$/, ''); }).join(', ') : '');
@@ -478,7 +519,15 @@ function moaAsk(question, apiKey, opts){
         if(i + 1 < MOA_MODELS.length) return next(i + 1);
         throw moaFail(model + ' · 답변이 비어 있어요 (' + why + ')' + (fails.length > 1 ? ' (앞선 시도: ' + fails.slice(0, -1).join(', ') + ')' : ''));
       }
-      return next(0);
+      /* 근거(hits)가 있는데 "가이드에 해당 내용이 없습니다"로 답하면 한 번 더 시도 — 같은 질문을 두 번 해야 답하던 문제 */
+      return next(0).then(function(r){
+        if(!/가이드에 해당 내용이 없/.test(String(r.text).slice(0, 80))) return r;
+        report(5, 'run', r.model + ' · 근거가 있어 다시 확인 중');
+        var lp = body.contents[body.contents.length - 1].parts[0];
+        lp.text += '\n\n(위 <context>에 질문과 관련된 가이드 내용이 있습니다. "가이드에 해당 내용이 없습니다"로 답하지 말고 context 내용만 근거로 답하세요. context에 관련 내용이 정말 하나도 없을 때만 그 문장을 쓰세요.)';
+        plain = false; fails = [];
+        return next(0).catch(function(){ return r; });
+      });
     }).then(function(r){
       var text = r.text;
       end(5, r.model + ' · 완료 · 프롬프트: ' + moaPromptSource());
