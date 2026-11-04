@@ -1,124 +1,261 @@
-# Iconography (아이콘)
+# 08_Iconography (아이콘)
 
 DB 등록: 2차
 담당자: semi
 분류: 01. Foundation
-작업: 2026년 9월 10일 오후 2:52
-작업상태: 진행 중
+작업: 2026년 10월 30일 오후 5:03
+작업상태: 1차 완료
+하위 항목: Bold (https://app.notion.com/p/Bold-40715929183280e6972ad06759855706?pvs=21), Regular (https://app.notion.com/p/Regular-40715929183280a8b5a3ffdc27ef5767?pvs=21), Light (https://app.notion.com/p/Light-40715929183280a694c5eb3d7f7a3f8d?pvs=21)
+
+# Iconography (아이콘)
 
 ## 0. 메타
 
-- **분류(Category)**: Foundation / Icon — Iconography Guideline (v1.6에서 정책 요약 추가)
-- **타입 종류(Types)**: `Creation`, `Usage(Stroke Type: Bold/Regular/Light)`, `Grid & Keyline`, `Anatomy`, `Stroke Terminal`, `Corners`, `Angle`, `Typeface Align`, `Logo`, `Spaces`
-- **Figma Node ID**: 미정(TBD)
+### 0.1. 분류
 
----
+- category: `Iconography`
+- group: `Foundation`
+
+### 0.2. 타입 목록
+
+- `Bold`
+- `Regular`
+- `Light`
+
+### 0.3. 검색 키워드
+
+- `Bold` : `Bold Type`, `굵은 아이콘`, `Exterior Stroke`, `Interior Stroke`, `12×12`, `16×16`, `24×24`
+- `Regular` : `Regular Type`, `기본 아이콘`, `Exterior Stroke`, `Interior Stroke`, `24×24`, `36×36`, `48×48`
+- `Light` : `Light Type`, `얇은 아이콘`, `Exterior Stroke`, `Interior Stroke`, `64×64`, `72×72`, `96×96`
 
 ## 1. 개요
 
 ### 1.1. 정의
 
-- Icon DB는 디자인 시스템에서 쓰는 아이콘의 **제작·명명·사용 규칙**을 정의한 가이드다.
-- 그리드/키라인 기준, 아이콘 구조(Anatomy) 용어, 스트로크(굵기/말단/코너), 각도(Angle), 텍스트 포함 아이콘의 정렬, 브랜드 로고 사용법, 여백(Clearance/터치 영역) 규칙을 포함한다.
+- Iconography: 디자인 시스템에서 사용하는 아이콘의 제작·명명·사용 규칙을 정의하여 시각적·기능적 일관성을 유지하기 위한 가이드입니다.
+- 구성 기준: 아이콘의 굵기와 크기(`Bold`, `Regular`, `Light`)를 중심으로 제작(`Creation`), 명명(`Naming`), 그리드·키라인, 아이콘 구조(`Anatomy`), 스트로크·모서리·각도, 텍스트 정렬, 브랜드 로고 및 여백 기준을 포함합니다.
 
 ### 1.2. 적용 상황
 
-- 새 아이콘을 제작할 때 그리드/키라인 기준이 궁금할 때 → `Grid & Keyline`
-- 어떤 굵기(Bold/Regular/Light)와 사이즈를 써야 할지 → `Usage(Stroke Type)`
-- 열린 도형의 끝 처리, 모서리 처리 기준이 궁금할 때 → `Stroke Terminal` / `Corners`
-- 대각선·화살표·시계 아이콘의 각도 기준 → `Angle`
-- 텍스트가 들어간 아이콘의 정렬 기준 → `Typeface Align`
-- 브랜드 로고 아이콘을 써야 할 때 → `Logo`
-- 아이콘 주변 여백·터치 영역이 궁금할 때 → `Spaces`
+- UI 요소의 크기와 역할에 따라 적절한 아이콘의 굵기와 스타일을 선택할 때 적용합니다.
+- 아이콘 제작 시 그리드·키라인을 기준으로 형태와 비율을 설정하고, 스트로크·모서리·각도 등의 세부 표현을 정의할 때 적용합니다.
+- 동일한 역할의 아이콘에 일관된 제작 및 사용 기준을 적용하여 화면의 시각적 통일성을 유지할 때 적용합니다.
 
----
+## 2. 사용 규칙
 
-## 2. 사용 규칙 (Usage Rules)
+### 2.1. 공통 규칙
 
-> `[MUST]`: 강제 · `[SHOULD]`: 권장 · `[ALLOW]`: 예외 허용 · `[AVOID]`: 금지
-> 
+- status: MUST
+    
+    content: 아이콘은 `96×96px` 아트보드를 기준으로 제작하여 정렬과 확장성을 유지합니다.
+    
+- status: MUST
+    
+    content: 아이콘 제작 시 정의된 `Stroke Weight`, `Stroke Terminal`, `Corners`, `Angle` 기준을 일관되게 적용합니다.
+    
+- status: MUST
+    
+    content: 아이콘은 아웃라인으로 변환하여 형태 왜곡을 방지하고, `96×96px` 프레임 내에서 `SVG` 형식으로 추출합니다.
+    
+- status: MUST
+    
+    content: 아이콘은 외부 사용 전 디자인 시스템 팀의 리뷰를 거쳐야 합니다.
+    
+- status: MUST
+    
+    content: 아이콘은 사용 환경에 맞는 `Bold`, `Regular`, `Light` 타입을 선택하고, 각 타입에 정의된 크기 규격을 준수합니다.
+    
+- status: AVOID
+    
+    content: 동일한 아이콘 그룹 내에서 서로 다른 `Stroke Type`을 혼용하지 않습니다.
+    
 
-### 2.1. 공통 규칙 (Creation)
+### 2.2. 타입 선택 기준
 
-- `[MUST]` 아이콘은 `96 × 96px` 아트보드에서 제작해 정렬과 확장성을 유지한다.
-- `[MUST]` 스트로크 굵기·말단(terminal)·코너·각도는 아래 아이콘 디자인 규칙(2.8~2.10)을 일관되게 적용한다.
-- `[MUST]` 아이콘은 아웃라인(선) 방식으로 제작해 왜곡을 방지하고, `96 × 96px` 프레임 안에 SVG로 export한다.
-- `[MUST]` 외부에서 사용하기 전에 디자인 시스템 팀 리뷰를 받는다.
+- Bold: `12×12px`, `16×16px`, `24×24px` 크기의 아이콘에 적용하며, 작은 크기에서도 명확한 형태 표현이 필요한 경우 선택합니다.
+- Regular: `24×24px`, `36×36px`, `48×48px` 크기의 아이콘에 적용하며, 일반적인 UI 요소에 균형 잡힌 굵기가 필요한 경우 선택합니다.
+- Light: `64×64px`, `72×72px`, `96×96px` 크기의 아이콘에 적용하며, 큰 크기에서 가벼운 형태 표현이 필요한 경우 선택합니다.
 
-### 2.2. Type 선택 규칙 (Stroke Type: Bold / Regular / Light)
+### 2.3. 타입별 사용 규칙
 
-- `[MUST]` 컨텍스트에 맞는 stroke type(`Bold`/`Regular`/`Light`)을 적용한다.
-- `[AVOID]` 하나의 아이콘 그룹 안에서 서로 다른 stroke type을 섞어 쓰지 않는다.
-- `[MUST]` 각 stroke type마다 정의된 사이즈 규칙(2.3~2.5)을 따른다.
+#### 2.3.1. Type: Bold
 
-### 2.3. Type=Bold 규칙
+- Exterior Stroke: `8px`
+- Interior Stroke: `7px` / `7.5px`
+- Size Variation: `12×12px`, `16×16px`, `24×24px`
 
-- Exterior stroke `8px`, Interior stroke `7 / 7.5px`
-- 사이즈 variation: `12×12` / `16×16` / `24×24`
+#### 2.3.2. Type: Regular
 
-### 2.4. Type=Regular 규칙
+- Exterior Stroke: `5px`
+- Interior Stroke: `4px` / `4.5px`
+- Size Variation: `24×24px`, `36×36px`, `48×48px`
 
-- Exterior stroke `5px`, Interior stroke `4 / 4.5px`
-- 사이즈 variation: `24×24` / `36×36` / `48×48`
+#### 2.3.3. Type: Light
 
-### 2.5. Type=Light 규칙
+- Exterior Stroke: `3px`
+- Interior Stroke: `3px`
+- Size Variation: `64×64px`, `72×72px`, `96×96px`
 
-- Exterior stroke `3px`, Interior stroke `3px`
-- 사이즈 variation: `64×64` / `72×72` / `96×96`
+### 2.4. 세부 적용 규칙
 
-### 2.6. Grid & Keyline 규칙
+#### 2.4.1. Naming
 
-- `[MUST]` `96 × 96` 그리드를 기준으로 제작한다 (100%/300% 확대 시에도 그리드·키라인 비율은 동일).
-- `[MUST]` Keyline 도형별 기준 크기를 따른다: `Square 82×82`, `Circle 86×86`, `Vertical rectangle 66(w)×86(h)`, `Horizontal rectangle 88(w)×60(h)` (3.2 참고).
-- `[MUST]` Keyline 테두리는 **중앙 정렬(Borders Align: Center)** 기준으로 맞춘다.
+- status: MUST
+    
+    content: 아이콘 이름은 공백 없이 `camelCase` 형식으로 작성합니다. (예: `ShippingHelp`)
+    
+- status: MUST
+    
+    content: 아이콘의 상태 또는 `Variant`를 구분해야 하는 경우, 언더스코어(`_`) 뒤에 상태명을 추가합니다. (예: `Shipping_Active`)
+    
 
-### 2.7. Anatomy (구조 용어 정의)
+#### 2.4.2. Icon Size and Grid
 
-> 규칙이 아니라, 아이콘의 각 부분을 지칭하는 공통 용어입니다. 챗봇이 "Exterior stroke가 뭐야?" 같은 질문에 답할 때 참고합니다.
-> 
-- `Exterior stroke` / `Interior stroke`: 외곽선 / 내부선
-- `Exterior stroke terminal` / `Interior stroke terminal`: 외곽선 끝단 / 내부선 끝단
-- `Corner`: 모서리
-- `Fill`: 채워진 면
-- `Counter`: 도형 안쪽의 빈 공간
-- `Gap`: 선과 선 사이의 틈
+- status: MUST
+    
+    content: 아이콘은 `96×96px` 그리드를 기준으로 제작하며, 확대 비율(`100%`, `300%`)과 관계없이 동일한 그리드·키라인 비율을 유지합니다.
+    
+- status: MUST
+    
+    content: 아이콘의 크기와 정렬은 정의된 `Grid` 및 `Keyline`을 기준으로 설정하여 형태의 일관성을 유지합니다.
+    
 
-### 2.8. Stroke Terminal 규칙
+#### 2.4.3. Keyline Shapes
 
-- `[MUST]` 열린 도형(open shape)의 끝 타입은 **Butt Cap**을 기본으로 한다.
-- `[ALLOW]` 얼굴 표정, 인체, 원형 등의 케이스는 **Round Cap**을 예외로 허용한다.
+- status: MUST
+    
+    content: 아이콘은 기본 형태에 따라 정의된 `Keyline Shapes`의 크기와 비율을 준수합니다.
+    
+- status: MUST
+    
+    content: 키라인의 테두리는 `Borders Align: Center`를 기준으로 중앙 정렬합니다.
+    
 
-### 2.9. Corners 규칙
+Keyline Shapes 기준
 
-- `[MUST]` 도형 내 각(angle)의 join 타입은 **Miter Join**, radius(round corner)는 `1px`을 기본으로 한다.
-- `[ALLOW]` Arrow, Time, Check, Door, 작은 사각형, Zigzag line 케이스는 radius `0px`(Miter Join은 유지)를 예외로 허용한다.
+- `Square` : `82×82px`
+- `Circle` : `86×86px`
+- `Vertical Rectangle` : `66×86px` (W×H)
+- `Horizontal Rectangle` : `88×60px` (W×H)
 
-### 2.10. Angle 규칙
+#### 2.4.4. Anatomy
 
-- `[MUST]` 대각선을 쓸 때 기본 `45°` 각도를 적용한다. 더 정밀한 표현이 필요하면 `5°` 단위로 조정할 수 있다.
-- `[MUST]` 부정적 상태(Off, Inactive, Rejected, Prohibited 등)를 표현할 때는 `135°(-45°)` 각도를 아이콘 메타포에 포함시킨다.
-- `[MUST]` 화살표 머리(Arrowhead)는 `45°` 단위로 각도를 준다.
-- `[MUST]` 시계 아이콘의 시침·분침은 **3시 방향(90°)**으로 고정한다.
-- `[ALLOW]` 보조 메타포와 시각적으로 겹치는 경우, **9시 방향(270°)**을 대안으로 사용할 수 있다.
+아이콘을 구성하는 요소의 명칭과 역할을 구분하기 위한 공통 용어입니다.
 
-### 2.11. Typeface Align 규칙 (텍스트 포함 아이콘)
+- `Exterior Stroke` : 아이콘의 외곽 형태를 구성하는 선
+- `Interior Stroke` : 아이콘 내부의 형태나 세부 요소를 표현하는 선
+- `Exterior Stroke Terminal` : 외곽선이 끝나는 지점
+- `Interior Stroke Terminal` : 내부선이 끝나는 지점
+- `Corner` : 선이나 도형이 만나는 모서리
+- `Fill` : 도형 내부를 채우는 면
+- `Counter` : 도형 내부에 형성된 빈 공간
+- `Gap` : 선과 선 또는 도형 사이의 간격
 
-- `[MUST]` 텍스트만 있는 아이콘은 **중앙 정렬**(Text only – Center align)한다.
-- `[MUST]` 아이콘 내부에 텍스트가 있으면 **중앙 정렬**(Inside – Center align)한다.
-- `[SHOULD]` 아이콘 하단에 텍스트가 있으면 컨텍스트에 따라 **중앙 정렬**(Bottom – Center align, 예: "FREE") 또는 **우측 정렬**(Bottom – Right align, 예: "OFF")을 선택한다.
+#### 2.4.5. Stroke Weight
 
-### 2.12. Logo 규칙
+- status: MUST
+    
+    content: 아이콘의 외곽선(`Exterior Stroke`)과 내부선(`Interior Stroke`)은 각 `Stroke Type`에 정의된 굵기 기준을 적용합니다.
+    
+- status: MUST
+    
+    content: 외곽선과 내부선의 굵기는 시각적 균형을 고려하여 구분하며, 정의된 규격을 임의로 변경하지 않습니다.
+    
 
-- `[MUST]` 브랜드 로고는 항상 해당 브랜드가 제공하는 **공식 로고 파일**을 사용한다. 임의로 새로 그리지 않는다.
+Stroke Weight 적용 예시
 
-### 2.13. Spaces(여백) 규칙
+- `Regular` : `Exterior Stroke 5px` / `Interior Stroke 4px`
 
-- `[MUST]` `24px` 아이콘 기준으로 **터치 타겟 영역 40px**을 확보한다.
-- `[MUST]` 아이콘 주변에 **Clearance area(여백)**를 확보해 다른 요소와 겹치지 않게 한다.
+#### 2.4.6. Stroke Terminal
 
----
+- status: MUST
+    
+    content: 열린 도형(`Open Shape`)의 스트로크 끝단은 `Butt Cap`을 기본으로 사용합니다.
+    
+- status: ALLOW
+    
+    content: 얼굴 표정·인체·원형 등 부드러운 형태 표현이 필요한 경우 `Round Cap`을 예외적으로 사용할 수 있습니다.
+    
 
-## 99. 관련 피그마 좌표 (Figma Coordinate)
+#### 2.4.7. Corners
 
-- **Section Link**: 미정(TBD)
-- **Component Set Link**: 미정(TBD)
+- status: MUST
+    
+    content: 아이콘의 모서리는 `Miter Join`을 기본으로 하며, `Corner Radius`는 `1px`을 적용합니다.
+    
+- status: ALLOW
+    
+    content: `Arrow`, `Time`, `Check`, `Door`, 작은 사각형 및 `Zigzag Line`은 `Miter Join`을 유지하면서 `Corner Radius 0px`을 적용할 수 있습니다.
+    
+
+#### 2.4.8. Angle
+
+- status: MUST
+    
+    content: 대각선은 `45°`를 기본으로 사용하며, 정밀한 각도 조정이 필요한 경우 `5°` 단위로 조정할 수 있습니다.
+    
+- status: MUST
+    
+    content: `Off`, `Inactive`, `Rejected`, `Prohibited` 등 부정적 상태는 `135°(-45°)` 방향의 메타포로 표현합니다.
+    
+- status: MUST
+    
+    content: 화살표 머리(`Arrowhead`)는 `45°` 단위로 각도를 설정합니다.
+    
+- status: MUST
+    
+    content: 시계 아이콘의 시침·분침은 `3시 방향(90°)`을 기본으로 표현합니다.
+    
+- status: ALLOW
+    
+    content: 보조 메타포와 시각적으로 겹치는 경우 `9시 방향(270°)`을 예외적으로 사용할 수 있습니다.
+    
+
+#### 2.4.9. Typeface Align
+
+- status: MUST
+    
+    content: 텍스트로만 구성된 아이콘은 `Text Only – Center Align`을 기준으로 중앙 정렬합니다.
+    
+- status: MUST
+    
+    content: 아이콘 내부에 텍스트가 포함된 경우 `Inside – Center Align`을 기준으로 중앙 정렬합니다.
+    
+- status: SHOULD
+    
+    content: 아이콘 하단에 텍스트가 배치되는 경우, 사용 목적에 따라 `Bottom – Center Align` 또는 `Bottom – Right Align`을 선택합니다.
+    
+
+정렬 방식 예시
+
+- `Text Only – Center Align` : 텍스트로만 구성된 경우
+- `Inside – Center Align` : 아이콘 내부에 텍스트가 포함된 경우
+- `Bottom – Center Align` : `FREE` 등 하단 중앙 정렬
+- `Bottom – Right Align` : `OFF` 등 하단 우측 정렬
+
+#### 2.4.10. Logo
+
+- status: MUST
+
+content: 브랜드 로고는 해당 브랜드에서 제공하는 공식 로고 파일을 사용하며, 임의로 재제작하거나 형태를 변경하지 않습니다.
+
+#### 2.4.11. Spaces
+
+- status: MUST
+    
+    content: `24px` 아이콘은 최소 `40px`의 터치 타겟 영역을 확보합니다.
+    
+- status: MUST
+    
+    content: 아이콘 주변에는 `Clearance Area`를 확보하여 다른 UI 요소와 시각적으로 겹치지 않도록 합니다.
+    
+- status: SHOULD
+    
+    content: 여러 아이콘을 나란히 배치하는 경우, 터치 타겟 영역과 주변 요소의 간격을 고려하여 일관된 배치를 유지합니다.
+    
+
+#### 2.4.12. Stroke Type 사용 시 유의사항
+
+- status: MUST
+
+content: `24×24px` 아이콘에 `Bold` 타입을 적용하는 경우, `GNB` 영역에서만 사용합니다.

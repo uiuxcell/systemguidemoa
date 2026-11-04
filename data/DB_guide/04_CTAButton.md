@@ -1,210 +1,149 @@
-# CTA Button (액션 버튼)
+# 04_CTA Button (액션 버튼)
 
 DB 등록: 1차
 담당자: Joy
 분류: 02. Element
-작업: 2026년 9월 14일 오후 2:56
-작업상태: 진행 중
+작업: 2026년 10월 28일 오후 7:10
+작업상태: 1차 완료
 하위 항목: Primary Action Button (https://app.notion.com/p/Primary-Action-Button-398159291832807b835af36f91ac6531?pvs=21), Secondary Action Button (https://app.notion.com/p/Secondary-Action-Button-3981592918328061ad30cd34bcb6ff79?pvs=21), Tertiary Action Button (https://app.notion.com/p/Tertiary-Action-Button-3981592918328044bd34e7eef49b65dd?pvs=21)
 
-### 0. 메타
+## **0. 메타**
 
-- **분류(Category)**: Component / CTA Button — Primary·Secondary·Tertiary Action Button을 한 페이지로 통합
-- **타입 종류(Types)**: `Primary Action Button`, `Secondary Action Button`, `Tertiary Action Button`
-- **페이지**: `Button (CTA)`
+### **0.1. 분류**
 
-### 1. 개요
+- category: CTA Button
+- group: Element
 
-#### 1.1. 정의
+### **0.2. 타입 종류**
 
-- CTA Button DB는 화면의 액션 우선순위에 따라 사용하는 버튼 3종을 정의한다.
-- `Primary Action Button` / `Secondary Action Button` / `Tertiary Action Button` 버튼 중요도에 따라 3개 타입으로 나뉜다.
-- **Primary**: 페이지 목적과 직접 연결되는 주요 액션에 쓰는 Filled 계열 버튼.
-- **Secondary**: 없어도 페이지가 운영되지만 있으면 도움이 되는 보조 액션 버튼.
-- **Tertiary**: Primary/Secondary보다 시각 강조를 더 낮춰야 하는 선택적 액션 버튼.
+- Filled / Primary: 우선순위가 높은 주요 액션에 사용하는 강조 버튼
+- Filled / Emphasis: 즉각적인 주목이 필요한 최우선 액션에 사용하는 최고 강조 버튼
+- Outlined: 중간 수준의 강조가 필요한 보조 액션에 사용하는 테두리 버튼
+- Underlined: 강조를 최소화한 3순위 액션에 사용하는 밑줄 버튼
+- Label: 시각적 강조 없이 부가적인 3순위 액션에 사용하는 텍스트 버튼
 
-#### 1.2. 타입별 요약
+### **0.3. 검색 키워드**
 
-| Type | 정의 | 기본 형태(variant) |  |
-| --- | --- | --- | --- |
-| `Primary Action Button` | 페이지 목적과 직접 연결되는 주요 CTA (Filled 계열) | `Filled / Primary`, `Filled / Emphasis` × `Standard`, `Icon_trailing` |  |
-| `Secondary Action Button` | 필수는 아니지만 있으면 도움이 되는 보조 액션 | `Outlined / Standard`, `Outlined / Coupon`, `Underlined / Standard` |  |
-| `Tertiary Action Button` | 더 낮은 시각 강조의 선택적 액션 (Black→Gray 예정 사양) | `Outlined / Standard` 형태값 참조 |  |
+- Filled / Primary: 프라이머리 버튼, 주요 버튼, 메인 CTA, 채움 버튼, 검정 버튼
+- Filled / Emphasis: 강조 버튼, 엠퍼시스 버튼, 최우선 CTA, 파란 버튼
+- Outlined: 아웃라인 버튼, 테두리 버튼, 세컨더리 버튼, 보조 버튼
+- Underlined: 밑줄 버튼, 언더라인 버튼, 터셔리 버튼, 텍스트 링크
+- Label: 라벨 버튼, 텍스트 버튼, 부가 액션, 아이콘 텍스트 버튼
 
-#### 1.3. 적용 상황 (액션 우선순위)
+---
 
-- 페이지의 핵심 목적과 직접 연결되는 필수 액션 → `Primary Action Button`
-- 없어도 페이지가 운영되지만 있으면 도움이 되는 보조 액션 → `Secondary Action Button`
-- Primary/Secondary보다 더 낮은 시각 강조가 필요한 선택적 액션 → `Tertiary Action Button`
+## **1. 개요**
 
-**공통 액션 우선순위 선택 규칙**
+### **1.1. 정의**
 
-| 판단 질문 | 기준에 맞는 경우 | 기준에 맞지 않는 경우 |
-| --- | --- | --- |
-| 이 액션이 페이지의 핵심 목적과 직접 연결되는가? | `Primary Action Button` 검토 | `Secondary` 또는 `Tertiary Action Button` 검토 |
-| 이 버튼이 없어도 페이지가 정상 운영되는가? | `Primary Action Button`보다 낮은 우선순위 버튼 검토 | `Primary Action Button` 검토 |
-| 보조 액션이지만 버튼 형태의 시각적 볼륨이 필요한가? | `Outlined`(Secondary) 검토 | `Underlined`(Secondary) 검토 |
-| Outlined와 같은 형태이되 더 낮은 시각 강조가 필요한가? | `Tertiary Action Button` 검토 | `Secondary Action Button` 검토 |
-| Figma에 등록된 확정 컴포넌트가 필요한가? | `Tertiary` 사용 불가, `Secondary` 검토 | `Tertiary`를 예정 사양으로 안내 가능 |
+- CTA Button(Call to Action)은 특정 액션을 실행하도록 돕고, 사용자를 다른 페이지로 안내하는 버튼 컴포넌트입니다.
+- 액션의 역할과 중요도에 따라 Primary, Secondary, Tertiary, Emphasis의 4단계 위계로 구분하고, 위계에 맞는 타입을 적용합니다.
+- 맥락에 맞는 라벨과 아이콘을 사용하여 버튼을 눌렀을 때의 결과를 예측할 수 있게 합니다.
 
-### 2. 사용 규칙 (Usage Rules)
+### **1.2. 적용 상황**
 
-> `[MUST]`: 강제 · `[SHOULD]`: 권장 · `[DON'T]`: 금지
-> 
+- 구매 페이지 이동, 장바구니 담기 등 사용자가 실행해야 할 액션을 제공할 때 적용합니다.
+- 추가 정보 확인, 전체 목록 보기 등 다른 페이지나 팝업으로 이동하도록 안내할 때 적용합니다.
+- 여러 액션을 함께 제공하면서 액션 간 우선순위를 시각적으로 구분해야 할 때 적용합니다.
+- 페이지 이동 없이 같은 페이지에서 콘텐츠를 더 펼쳐 보여줄 때 적용합니다.
 
-#### 2.0. 공통 규칙 (3종 전체)
+---
 
-- `[MUST]` 현재 확인된 스펙은 `theme=light_bg` 기준으로 사용한다.
-- `[MUST]` 버튼의 높이, 패딩, 반경, 아이콘 크기, 상태별 색상은 Figma에 정의된 값을 따른다.
-- `[MUST]` Figma에 없는 상태·목적·개수 제한·라벨 최대 길이를 임의로 만들어 안내하지 않는다.
-- `[MUST]` `pressed`, `focused`, `loading` 등 Figma variant에서 확인되지 않은 상태는 `해당 없음(N/A)` 또는 `미정(TBD)`로 안내한다.
-- `[MUST]` `dark_bg` 기준 스펙은 아직 정의되지 않았으므로 확정값처럼 안내하지 않는다(미정(TBD)).
-- `[MUST]` 고정 너비, 최소 너비, 최대 너비, Hug Contents 여부는 현재 문서에서 별도 확인되지 않았으므로 `미정(TBD)`로 안내한다.
-- `[SHOULD]` 사이즈는 화면 width보다 버튼이 놓이는 콘텐츠 영역 width를 우선 기준으로 판단한다.
-- `[SHOULD]` 값 판단 전에 `type`(Primary/Secondary/Tertiary), `variant`, `size`, `state`, `theme`가 불명확하면 되묻는다.
-- `[DON'T]` 값이 Figma에 없으면 추측하지 않고 `해당 없음(N/A)`, `미정(TBD)`, `정의되지 않음` 중 하나로 답한다.
+## **2. 사용 규칙**
 
-#### 2.1. Type = Primary Action Button
+### **2.1. 공통 규칙**
 
-**2.1.1. 공통 규칙**
+- status: MUST content: 액션의 역할과 중요도에 따라 Primary, Secondary, Tertiary, Emphasis 위계를 정하고, 위계에 맞는 타입을 사용합니다.
+- status: MUST content: 맥락에 맞는 라벨과 아이콘을 사용하여 버튼을 눌렀을 때의 결과를 예측할 수 있게 합니다.
+- status: MUST content: 같은 액션에는 화면 전체에서 같은 라벨을 사용합니다.
+- status: MUST content: 라벨은 동사로 시작하고 첫 단어를 대문자로 시작하며, 26자 이내로 작성합니다.
+- status: MUST content: 여러 CTA를 함께 배치할 때 PC는 가로로 배치하고 우선순위가 높은 CTA를 오른쪽에 두며, Mobile은 세로로 배치하고 우선순위가 높은 CTA를 위에 둡니다.
+- status: SHOULD content: 여러 CTA를 함께 사용할 때는 정의된 위계 조합(Secondary + Primary, Tertiary + Primary, Tertiary + Secondary)으로 우선순위를 시각적으로 드러냅니다.
+- status: SHOULD content: 배경색에 따라 Light BG 버전과 Dark BG 버전을 구분하여 사용합니다.
+- status: AVOID content: 동일한 액션에 화면마다 다른 라벨을 사용하지 않습니다.
+- status: AVOID content: 정의된 용도와 다른 목적으로 상위 위계의 버튼을 사용하지 않습니다.
 
-- `[MUST]` 꼭 필요한 페이지의 목적과 연결되는 CTA에만 사용한다.
-- `[MUST]` `theme=light_bg` 기준으로 사용한다.
-- `[MUST]` 높이·패딩·반경·아이콘 크기·상태별 색상은 Figma 정의값을 따른다.
-- `[SHOULD]` 사용 여부 판단 시 먼저 해당 액션이 페이지 목적과 직접 연결되는지 확인한다.
-- `[DON'T]` 없어도 페이지가 운영되는 하위 액션에 Primary Action Button을 사용하지 않는다.
-- `[DON'T]` `dark_bg` 기준 스펙을 확정값처럼 안내하지 않는다.
+### **2.2. Type 선택 규칙**
 
-**2.1.2. 타입(형태) 선택 규칙**
+- Filled / Primary:
+    - 페이지에서 우선순위가 가장 높은 주요 액션(Primary)에 사용합니다.
+    - Secondary 또는 Tertiary 버튼과 함께 쓸 때 가장 중요한 액션에 사용합니다.
+- Filled / Emphasis:
+    - 즉각적인 주목이 필요한 최우선 액션을 강하게 강조해야 할 때만 사용합니다.
+    - 일반적인 주요 액션에는 Emphasis가 아닌 Filled / Primary를 사용합니다.
+- Outlined:
+    - 중간 수준의 강조가 필요한 보조 액션(Secondary)에 사용합니다.
+    - Primary와 함께 의사결정이나 주요·보조 액션을 묶어 제공할 때 사용합니다.
+- Underlined:
+    - 강조를 최소화한 3순위 액션(Tertiary)에 사용합니다.
+    - Primary 또는 Secondary와 함께 낮은 우선순위의 선택지를 제공할 때 사용합니다.
+- Label:
+    - 시각적 강조 없이 부가적으로 제공하는 3순위 액션(Tertiary)에 사용합니다.
+    - 버튼 형태 없이 텍스트(또는 텍스트와 아이콘)만으로 액션을 제공할 때 사용합니다.
 
-- `[MUST]` 검정 Filled CTA가 필요하면 `Filled / Primary`를 사용한다.
-- `[MUST]` Skyblue Filled CTA가 필요하면 `Filled / Emphasis`를 사용한다.
-- `[SHOULD]` 라벨만으로 액션 의미가 충분하면 `Standard`를 사용한다.
-- `[SHOULD]` 라벨 뒤에 방향성/이동 의미를 보조하는 아이콘이 필요하면 `Icon_trailing`을 검토한다.
-- `[DON'T]` `Filled / Primary`와 `Filled / Emphasis`의 의미 차이를 임의로 정의하지 않는다(상세 사용 구분 미정의).
+### **2.3. 타입별 사용 규칙**
 
-**2.1.3. 사이즈 선택 기준**
+#### **2.3.1. Type: Filled / Primary**
 
-> 아래 수치는 Figma의 고정/가변 width 규칙이 아니라 화면 설계·챗봇 응답용 권장 운영 기준이다. 버튼 자체 스펙은 4번 Figma 값을 따른다.
-> 
+- status: MUST content: 페이지에서 우선순위가 가장 높은 주요 액션에 사용합니다.
+- status: MUST content: 여러 CTA와 함께 배치할 때는 PC에서 가장 오른쪽, Mobile에서 가장 위에 둡니다.
+- status: SHOULD content: Outlined(Secondary) 또는 Underlined(Tertiary) 버튼과 조합하여 액션 간 우선순위를 드러냅니다.
+- status: ALLOW content: 배치 영역에 따라 Default 또는 Small 크기를 사용할 수 있습니다.
+- status: ALLOW content: 필요한 경우 라벨 뒤에 아이콘을 붙인 Icon_trailing 형태를 사용할 수 있습니다.
+- status: AVOID content: 하나의 CTA 그룹 안에 Primary 버튼을 여러 개 두지 않습니다. [확인 필요: PDF에 명시된 규칙 없음]
 
-| Size | 권장 사용 상황 | 콘텐츠/영역 width 기준 | 비고 |
-| --- | --- | --- | --- |
-| `small` | 카드, 리스트, 모듈 내부처럼 좁은 영역 안에서 핵심 액션을 제공할 때 | 콘텐츠 영역 `359px 이하`이거나, 버튼 2개 이상 한 줄 배치 시 각 버튼 가용 폭 `160px 이하` | 높이 `32px` 기준 |
-| `default` | 일반 페이지, 폼, 상세 화면, 구매/신청 흐름의 기본 CTA | 모바일 `360-767px`, PC `480px 이상`에서 기본 사용 | 높이 `40px` 기준 |
-| `large` | 히어로, 프로모션, 넓은 결제/신청 영역처럼 단독 CTA 강조가 필요할 때 | PC 또는 넓은 콘텐츠 영역 `768px 이상`에서 CTA가 단독/최상위 액션으로 배치될 때 | 높이 `48px` 기준 |
-- `[SHOULD]` 같은 화면에서도 본문 하단 대표 CTA는 `default`, 카드 내부 CTA는 `small`을 사용할 수 있다.
-- `[DON'T]` 페이지 목적과 직접 연결되지 않는 보조 액션을 크게 보이려고 Primary의 `large`를 사용하지 않는다.
+#### **2.3.2. Type: Filled / Emphasis**
 
-**2.1.4. 라벨 작성 규칙**
+- status: MUST content: 즉각적인 주목이 필요한 최우선 액션을 강조할 때만 사용합니다.
+- status: SHOULD content: 최우선 액션을 강하게 강조해야 할 때는 화면의 오른쪽 상단에 배치합니다.
+- status: ALLOW content: 최우선 액션을 콘텐츠 섹션 안에 배치해야 하는 경우에는 섹션 안에 Emphasis 버튼을 둘 수 있습니다.
+- status: ALLOW content: 배치 영역에 따라 Default 또는 Small 크기를 사용하고, 필요한 경우 Icon_trailing 형태를 사용할 수 있습니다.
+- status: AVOID content: 한 페이지에 Emphasis 버튼을 여러 개 사용하지 않습니다. 단, 최우선 액션을 콘텐츠 섹션 안에 배치해야 하는 경우는 예외입니다.
+- status: AVOID content: 리뷰 페이지 이동처럼 최우선 액션이 아닌 용도에 Emphasis 버튼을 사용하지 않습니다.
 
-- `[SHOULD]` 사용자가 실행할 행동을 직접적으로 표현한다.
-- `[SHOULD]` 버튼 안에서 한 줄로 인지되도록 짧게 작성한다.
-- `[SHOULD]` 동일 화면에서 Primary와 Secondary/Tertiary의 라벨 의미가 겹치지 않게 한다.
-- `[DON'T]` 라벨 최대 글자 수·줄바꿈 허용 여부·고정 너비 규칙은 정의되지 않았으므로 임의 안내하지 않는다.
+#### **2.3.3. Type: Outlined**
 
-**2.1.5. 예외 규칙**
+- status: MUST content: 중간 수준의 강조가 필요한 보조 액션(Secondary)에 사용합니다.
+- status: SHOULD content: Primary와 함께 쓸 때는 Outlined + Filled / Primary 조합으로 의사결정이나 주요·보조 액션을 함께 제공합니다.
+- status: SHOULD content: 우선순위가 낮은 선택지를 제공하거나 액션 위계를 낮출 때는 Underlined 버튼과 조합합니다.
+- status: ALLOW content: 배치 영역에 따라 Default 또는 Small 크기를 사용할 수 있습니다.
+- status: ALLOW content: 맥락에 따라 라벨 앞뒤에 아이콘을 붙인 Icon_leading 또는 Icon_trailing 형태를 사용할 수 있습니다.
 
-- `[MUST]` `pressed`, `focused`, `loading`은 Figma variant에서 확인되지 않으므로 `해당 없음(N/A)` 또는 `미정(TBD)`로 안내한다.
-- `[MUST]` `dark_bg` 기준의 Primary Action Button은 `미정(TBD)`으로 안내한다.
-- `[MUST]` 고정/최소/최대 너비, Hug Contents 여부는 `미정(TBD)`으로 안내한다.
+#### **2.3.4. Type: Underlined**
 
-#### 2.2. Type = Secondary Action Button
+- status: MUST content: 강조를 최소화한 3순위 액션(Tertiary)에 사용합니다.
+- status: SHOULD content: Primary와 함께 쓸 때는 콘텐츠에 따라 두 가지 선택지를 제공하는 용도로 사용합니다.
+- status: SHOULD content: Outlined와 함께 쓸 때는 우선순위가 낮은 선택지를 제공하거나 액션 위계를 낮추는 용도로 사용합니다.
+- status: ALLOW content: 배치 영역에 따라 Default 또는 Large 크기를 사용할 수 있으며, Mobile에서는 Small 크기를 사용할 수 있습니다.
+- status: ALLOW content: MKT PD에서는 같은 페이지 안의 다른 섹션으로 이동하는 용도로 사용할 수 있습니다.
 
-**2.2.1. 공통 규칙**
+#### **2.3.5. Type: Label**
 
-- `[SHOULD]` CTA 버튼이 없어도 페이지가 운영되거나, 있으면 도움이 되는 하위 버튼에 사용한다.
-- `[MUST]` `theme=light_bg` 기준으로 사용한다.
-- `[MUST]` 높이·패딩·반경·상태별 색상은 Figma 정의값을 따른다.
-- `[MUST]` Figma에 없는 개수 제한, 라벨 최대 길이, focus/loading 상태는 임의로 안내하지 않는다.
-- `[DON'T]` 페이지 목적과 직접 연결되는 필수 CTA에 Secondary Action Button을 사용하지 않는다.
-- `[DON'T]` Icon 계열 variant는 이 문서에서 답변하지 않고 `Icon Action Button` 문서로 안내한다.
-- `[DON'T]` `dark_bg` 기준 스펙을 확정값처럼 안내하지 않는다.
+- status: MUST content: 시각적 강조 없이 부가적으로 제공하는 3순위 액션(Tertiary)에 사용합니다.
+- status: ALLOW content: 맥락에 따라 라벨 앞뒤에 아이콘을 붙인 Icon_leading 또는 Icon_trailing 형태를 사용할 수 있습니다.
+- status: AVOID content: 페이지의 주요 액션이나 강조가 필요한 액션에 Label 버튼을 사용하지 않습니다.
 
-**2.2.2. 타입(형태) 선택 규칙**
+### **2.4. 세부 적용 규칙**
 
-- `[SHOULD]` 보조 액션이지만 버튼 형태의 시각적 볼륨이 필요하면 `Outlined`를 사용한다.
-- `[SHOULD]` 텍스트 링크처럼 더 가벼운 보조 액션에는 `Underlined`를 검토한다.
-- `[MUST]` 쿠폰 전용 버튼은 `Outlined / Coupon` 기준으로 안내한다.
-- `[DON'T]` 아이콘이 포함된 Outlined/Underlined variant를 Secondary 문서의 일반 버튼처럼 안내하지 않는다.
+#### **2.4.1. CTA 조합 규칙**
 
-**2.2.3. 사이즈 선택 기준**
+- Secondary + Primary (Outlined + Filled / Primary): 의사결정이나 주요·보조 액션을 함께 제공할 때 사용합니다. 주로 PF에서 MKT PD나 Buying PD로 이동할 때 사용합니다.
+- Tertiary + Primary (Underlined + Filled / Primary): 콘텐츠에 따라 두 가지 선택지를 제공할 때 사용합니다. 주로 Shop에서 Buying PD나 Cart / Checkout으로 이동할 때 사용합니다.
+- Tertiary + Secondary (Underlined + Outlined): 우선순위가 낮은 선택지를 제공하거나 액션 위계를 낮출 때 사용합니다. 주로 Home에서 MKT PD나 Buying PD로 이동할 때, MKT PD에서 Buying PD로 이동할 때 사용합니다.
+- 위 조합은 대표적인 예시이며, 전체 페이지와 사용자 흐름별 상세 배치는 Operation Toolkit을 참고합니다.
 
-> 아래 수치는 Figma의 고정/가변 width 규칙이 아니라 화면 설계·챗봇 응답용 권장 운영 기준이다. 버튼 자체 스펙은 4번 Figma 값을 따른다.
-> 
+#### **2.4.2. 라벨 작성 규칙**
 
-| Size | 권장 사용 상황 | 콘텐츠/영역 width 기준 | 비고 |
-| --- | --- | --- | --- |
-| `small` | 카드, 리스트, 쿠폰 모듈, 좁은 툴바 안의 보조 액션 | 콘텐츠 영역 `359px 이하`이거나, 버튼 2개 이상 한 줄 배치 시 각 버튼 가용 폭 `160px 이하` | Outlined/Coupon 높이 `32px`, Underlined 높이 `18px` 기준 |
-| `default` | 일반 페이지나 상세 화면에서 기본 보조 액션을 제공할 때 | 모바일 `360-767px`, PC `480px 이상`에서 기본 사용 | Outlined/Coupon 높이 `40px`, Underlined 높이 `22px` 기준 |
-| `large` | 넓은 화면에서 보조 액션도 명확한 클릭 대상으로 보여야 할 때 | PC 또는 넓은 콘텐츠 영역 `768px 이상`에서 보조 액션이 독립 배치될 때 | `Outlined / Standard`, `Underlined / Standard`에서 확인됨 |
-- `[SHOULD]` Primary와 함께 배치되는 보조 버튼은 같은 시각 체계 안에서 읽히도록 `default`를 우선 검토한다.
-- `[SHOULD]` Underlined는 텍스트 흐름 안에 들어가면 주변 텍스트 크기·밀도에 맞춰 `small` 또는 `default`를 선택한다.
-- `[DON'T]` 보조 액션을 Primary보다 강한 시각 위계로 보이려고 `large`를 사용하지 않는다.
+- Buy: 제품 구매 페이지로 이동할 때 사용합니다.
+- Buy now: 구매 페이지 안에서 구매 흐름의 다음 단계로 이동할 때 사용합니다.
+- Learn more: 새 페이지나 팝업에서 제품 또는 콘텐츠의 추가 정보를 확인할 때 사용합니다.
+- Add to cart: 선택한 제품을 장바구니에 담을 때 사용합니다.
+- View more: 페이지 이동 없이 같은 페이지에서 콘텐츠를 더 펼쳐 보여줄 때 사용합니다.
+- View all: 전체 제품 목록이나 필터가 적용된 목록 페이지로 이동할 때 사용합니다.
 
-**2.2.4. 라벨 작성 규칙**
+#### **2.4.3. 아이콘 사용 규칙**
 
-- `[SHOULD]` Secondary 라벨은 Primary 라벨보다 낮은 우선순위 행동으로 읽히게 작성한다.
-- `[SHOULD]` Outlined와 Underlined가 같은 화면에 함께 있을 때는 중요도가 더 높은 보조 액션에 Outlined를 사용한다.
-- `[SHOULD]` Underlined 라벨은 이동/자세히 보기/보조 확인처럼 가벼운 행동에 적합한지 검토한다.
-- `[DON'T]` 라벨 최대 글자 수·줄바꿈 허용 여부·고정 너비 규칙은 정의되지 않았으므로 임의 안내하지 않는다.
-
-**2.2.5. 예외 규칙**
-
-- `[MUST]` `pressed` 상태는 `Underlined / Standard`의 `size=small`에서만 확인되므로, 다른 경우에는 `해당 없음(N/A)` 또는 `미정(TBD)`로 안내한다.
-- `[MUST]` `focused`, `loading`은 Figma variant에서 확인되지 않으므로 `미정(TBD)`로 안내한다.
-- `[MUST]` `dark_bg` 기준의 Secondary Action Button은 `미정(TBD)`으로 안내한다.
-- `[MUST]` 고정/최소/최대 너비, Hug Contents 여부는 `미정(TBD)`으로 안내한다.
-- 주의: `Outlined / Icon_leading`, `Outlined / Icon_trailing`, `Underlined / Icon_trailing`, `Label`, `Icon` 값은 `Icon Action Button` 문서에서 관리한다.
-
-#### 2.3. Type = Tertiary Action Button (Figma 미등록 · 예정 사양)
-
-**2.3.1. 공통 규칙**
-
-- `[MUST]` 버튼 스타일 및 크기는 `Outlined / Standard`와 동일한 형태값을 참조한다.
-- `[MUST]` `Outlined / Standard`의 Black 컬러를 Gray 컬러로 바꾸는 방향으로 정의한다.
-- `[MUST]` 정확한 Gray 토큰은 아직 정의되지 않았으므로 `미정(TBD)`로 안내한다.
-- `[MUST]` Figma 추가 전까지 실제 구현/응답에서는 예정 사양임을 함께 고지한다.
-- `[MUST]` Figma 확인 완료 컴포넌트처럼 안내하지 않는다.
-- `[DON'T]` 임의의 Gray token을 지정하지 않는다.
-- `[DON'T]` hover, disabled의 세부 색상 값을 확정값처럼 말하지 않는다.
-
-**2.3.2. 타입 선택 규칙**
-
-- `[SHOULD]` Outlined와 같은 형태이되 더 낮은 시각 강조가 필요하면 Tertiary Action Button을 검토한다.
-- `[SHOULD]` Figma 등록된 컴포넌트가 필요한 상황에서는 Secondary Action Button을 우선 검토한다.
-- `[DON'T]` Tertiary Action Button을 Primary/Secondary와 같은 확정 컴포넌트처럼 사용하지 않는다.
-- 이전 명칭/검색어: `Ghost Button`, `Gray Outlined Button`
-
-**2.3.3. 사이즈 선택 기준**
-
-> 아래 수치는 Tertiary 자체 Figma 값이 아니라 `Outlined / Standard` 형태값을 참조한 권장 운영 기준이다. Figma 등록 후 확정값으로 갱신해야 한다.
-> 
-
-| Size | 권장 사용 상황 | 콘텐츠/영역 width 기준 | 비고 |
-| --- | --- | --- | --- |
-| `small` | 카드, 리스트, 보조 정보 영역처럼 낮은 강조의 선택 액션을 좁은 곳에 둘 때 | 콘텐츠 영역 `359px 이하`이거나, 버튼 2개 이상 한 줄 배치 시 각 버튼 가용 폭 `160px 이하` | `Outlined / Standard small` 참조 |
-| `default` | 일반 페이지나 상세 화면에서 낮은 강조 액션을 기본 크기로 제공할 때 | 모바일 `360-767px`, PC `480px 이상`에서 기본 사용 | `Outlined / Standard default` 참조 |
-| `large` | 넓은 화면에서 낮은 강조 액션도 독립 클릭 대상으로 보여야 할 때 | PC 또는 넓은 콘텐츠 영역 `768px 이상`에서 액션이 독립 배치될 때 | `Outlined / Standard large` 참조, 사용 빈도는 낮게 유지 |
-- `[SHOULD]` Tertiary는 낮은 시각 강조가 목적이므로, `large`는 레이아웃상 클릭 대상 크기가 필요한 경우에만 제한적으로 검토한다.
-- `[DON'T]` Primary/Secondary보다 눈에 띄게 만들기 위해 Tertiary의 크기를 키우지 않는다.
-
-**2.3.4. 라벨 작성 규칙**
-
-- `[SHOULD]` Tertiary 라벨은 선택적이고 낮은 우선순위 행동으로 읽히게 작성한다.
-- `[SHOULD]` Primary/Secondary 라벨과 같은 행동을 다른 표현으로 반복하지 않는다.
-- `[SHOULD]` 버튼 안에서 한 줄로 인지되도록 짧게 작성한다.
-- `[DON'T]` 라벨 최대 글자 수·줄바꿈 허용 여부·고정 너비 규칙은 정의되지 않았으므로 임의 안내하지 않는다.
-
-**2.3.5. Figma 등록 시 확인해야 할 항목**
-
-| 확인 항목 | 현재 상태 |
-| --- | --- |
-| Component Set Node ID | `미정(TBD)` |
-| Gray Label Token | `미정(TBD)` |
-| Gray Border Token | `미정(TBD)` |
-| Hover Container Token | `미정(TBD)` |
-| Hover Label Token | `미정(TBD)` |
-| Disabled Opacity | `Outlined / Standard` 참조 예정, 확정 필요 |
-| Variant Axis | `미정(TBD)` |
-| dark_bg 스펙 | `미정(TBD)` |
+- 새 창으로 열리는 액션에는 라벨 뒤에 바깥 방향 화살표(↗) 아이콘을 붙여 새 창이 열린다는 것을 알려줍니다.
+- 같은 페이지에서 콘텐츠를 더 펼치는 View more에는 아래 방향 화살표 아이콘을 붙입니다.
+- Filled 타입은 Icon_trailing 형태만 제공하고, Outlined와 Label 타입은 Icon_leading과 Icon_trailing 형태를 모두 제공합니다.
+- 아이콘만으로 구성된 버튼은 CTA Button Icon (아이콘 버튼) 카테고리를 따릅니다.

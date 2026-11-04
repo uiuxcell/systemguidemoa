@@ -1,71 +1,96 @@
-# Selection Control
+# 12_Selection Control
 
 DB 등록: 2차
 담당자: Joy
 분류: 02. Element
-작업: 2026년 9월 14일 오후 2:58
-작업상태: 진행 중
+작업: 2026년 10월 28일 오후 7:11
+작업상태: 1차 완료
 하위 항목: Check Box (체크박스) (https://app.notion.com/p/Check-Box-38a1592918328076be31e9d9b537c65d?pvs=21), Radio (라디오) (https://app.notion.com/p/Radio-38a15929183280df89b8ce24291de03e?pvs=21), Switch (스위치) (https://app.notion.com/p/Switch-38a15929183280a89020deb58dcb07e4?pvs=21)
 
-## 0. 메타
+## **0. 메타**
 
-- **분류(Category)**: Component / Selection Control — 사용자가 옵션, 상태, 설정값을 선택·해제하는 입력 컨트롤
-- **타입 종류(Types)**: `CheckBox`, `Radio`, `Switch`
-- **Figma 파일**: `Chatbot_Design-System_v1.6_SEC`
-- **Figma File Key**: `yJ2Na1iQvtZwUnyCbBJXCy`
-- **Figma Section Node**: `18458:49222`
-- **Figma Link**: `https://www.figma.com/design/yJ2Na1iQvtZwUnyCbBJXCy/Chatbot_Design-System_v1.6_SEC?node-id=18458-49222`
+### **0.1. 분류**
 
-## 1. 개요
+- category: Selection Control
+- group: Element
 
-### 1.1. 정의
+### **0.2. 타입 종류**
 
-- Selection Control은 사용자가 옵션을 선택하거나, 설정을 켜고 끄거나, 복수 항목을 선택하는 데 사용하는 입력 요소다.
-- `CheckBox`는 복수 선택, `Radio`는 단일 선택, `Switch`는 즉시 반영되는 On/Off 설정에 사용한다.
-- 모든 컴포넌트는 `condition`, `state`, `theme` 축을 기반으로 제공된다.
+- Check Box: 하나 이상의 옵션을 선택할 때 사용하는 선택 컨트롤
+- Radio: 여러 옵션 중 하나만 선택할 때 사용하는 선택 컨트롤
+- Switch: 설정을 켜고 끌 때 사용하는 선택 컨트롤
 
-### 1.2. 타입별 요약
+### **0.3. 검색 키워드**
 
-| Type | 정의 | 선택 방식 | Variant Axis |
-| --- | --- | --- | --- |
-| `CheckBox` | 독립적이거나 복수인 옵션을 선택/해제 | 복수 선택 가능 | `condition`, `state`, `theme` |
-| `Radio` | 상호 배타적인 옵션 중 하나를 선택 | 그룹 내 1개 선택 | `condition`, `state`, `theme` |
-| `Switch` | 기능·설정의 켜짐/꺼짐을 즉시 전환 | On/Off 전환 | `condition`, `state`, `theme` |
+- Check Box: 체크박스, 체크 박스, 복수 선택, 다중 선택, 전체 선택, 하위 선택
+- Radio: 라디오 버튼, 단일 선택, 하나만 선택, 옵션 선택
+- Switch: 스위치, 토글 스위치, On/Off, 켜기 끄기, 설정 변경
 
-## 2. 사용 규칙 (Usage Rules)
+---
 
-> `[MUST]`: 강제 · `[SHOULD]`: 권장 · `[DON'T]`: 금지
-> 
+## **1. 개요**
 
-### 2.1. 공통 규칙
+### **1.1. 정의**
 
-- `[MUST]` 밝은 배경에는 `theme=light_bg`, 어두운 배경에는 `theme=dark_bg`를 사용한다.
-- `[MUST]` `disabled` 상태에서는 값 변경 인터랙션을 제공하지 않는다.
-- `[MUST]` 컨트롤의 선택 상태는 연결된 데이터의 실제 값과 동기화한다.
-- `[MUST]` 선택 컨트롤만으로 의미가 불분명할 경우, 인접한 레이블로 선택 대상과 결과를 설명한다.
-- `[SHOULD]` 선택 가능한 전체 영역을 클릭 또는 탭할 수 있도록 컨트롤과 레이블을 하나의 입력 단위로 구성한다.
-- `[SHOULD]` `focused`, `pressed`, `error`, `read-only`는 Figma에 정의가 없으므로 접근성·검증 정책 확정 전까지 별도 상태를 만들지 않는다.
-- `[DON'T]` `disabled`를 단순히 “선택되지 않음”의 표현으로 사용하지 않는다.
-- `[DON'T]` `Radio`를 복수 선택에 사용하거나, `CheckBox`를 상호 배타적 단일 선택에 사용하지 않는다.
+- Selection Control은 사용자가 하나 이상의 옵션을 선택하거나 설정을 변경할 수 있게 하는 컴포넌트입니다.
+- 선택 방식과 맥락에 따라 Check Box, Radio, Switch로 구분합니다.
+- 선택 결과를 사용자가 이해할 수 있도록 시각적 피드백과 동작 피드백을 함께 제공합니다.
 
-### 2.2. Type = CheckBox
+### **1.2. 적용 상황**
 
-- `[MUST]` 사용자가 여러 옵션을 독립적으로 선택·해제할 수 있을 때 사용한다.
-- `[SHOULD]` 약관 동의, 필터 다중 선택, 항목 일괄 선택에 사용한다.
-- `[SHOULD]` “전체 선택”을 제공하는 경우, 하위 항목의 실제 선택 상태와 연동한다.
-- `[DON'T]` 2개 이상의 선택지 중 반드시 하나만 골라야 하는 경우에는 사용하지 않고 `Radio`를 사용한다.
+- 필터 조건처럼 여러 옵션을 동시에 선택해야 할 때 적용합니다.
+- 여러 옵션 중 반드시 하나만 선택해야 할 때 적용합니다.
+- 단독으로 쓰이거나 켜짐과 꺼짐 두 가지 상태만 있는 설정을 전환할 때 적용합니다.
 
-### 2.3. Type = Radio
+---
 
-- `[MUST]` 동일 그룹에서 하나의 옵션만 선택 가능할 때 사용한다.
-- `[SHOULD]` 배송 방식, 결제 수단, 정렬 기준처럼 상호 배타적인 옵션에 사용한다.
-- `[SHOULD]` 그룹 안에는 기본 선택값 또는 선택 필요 여부를 명확히 정의한다.
-- `[DON'T]` 개별 항목을 독립적으로 여러 개 선택해야 하는 경우에는 사용하지 않는다.
+## **2. 사용 규칙**
 
-### 2.4. Type = Switch
+### **2.1. 공통 규칙**
 
-- `[MUST]` On/Off 전환이 즉시 적용되는 설정에 사용한다.
-- `[SHOULD]` 알림 허용, 기능 활성화, 환경설정처럼 이진 상태를 표현할 때 사용한다.
-- `[SHOULD]` 전환 결과가 즉시 적용되지 않는다면 `Switch`보다 확인 버튼이 있는 `CheckBox` 또는 별도 선택 UI를 검토한다.
-- `[DON'T]` 여러 값 중 하나를 고르는 선택지에 사용하지 않는다.
-- `[DON'T]` 현재 상태가 불분명한 설정에 기본값을 임의 적용하지 않는다.
+- status: MUST content: 선택 방식과 맥락에 맞는 타입을 사용합니다. 복수 선택은 Check Box, 단일 선택은 Radio, 두 가지 상태의 전환은 Switch를 사용합니다.
+- status: MUST content: 모든 타입은 사용자가 예상한 결과와 일치하는 피드백을 제공합니다.
+- status: MUST content: 라벨이나 이미지는 컨트롤 가까이 배치하여 연결 관계를 명확히 합니다.
+- status: MUST content: 같은 화면에서 같은 타입이 반복될 때는 정렬 방식을 통일합니다.
+- status: SHOULD content: 선택할 수 없는 옵션은 Disabled 상태로 표시합니다.
+- status: SHOULD content: 배경색에 따라 Light BG 버전과 Dark BG 버전을 구분하여 사용합니다.
+- status: AVOID content: 정의되지 않은 기능에 Selection Control을 사용하지 않습니다.
+- status: AVOID content: 같은 화면 안에서 같은 타입의 정렬 방식을 다르게 적용하지 않습니다.
+
+### **2.2. Type 선택 규칙**
+
+- Check Box:
+    - 여러 옵션을 동시에 선택할 수 있을 때 사용합니다.
+    - 상위 항목과 하위 항목이 있는 계층형 선택 구조에 사용합니다.
+- Radio:
+    - 여러 옵션 중 하나만 선택해야 할 때 사용합니다.
+    - 선택지가 두 개 이상 있을 때 사용합니다.
+- Switch:
+    - 단독으로 쓰이거나 켜짐과 꺼짐 두 가지 상태만 있는 옵션에 사용합니다.
+    - 누르는 즉시 결과가 반영되어야 하는 설정에 사용합니다.
+
+### **2.3. 타입별 사용 규칙**
+
+#### **2.3.1. Type: Check Box**
+
+- status: MUST content: 여러 옵션을 동시에 선택할 수 있을 때 사용합니다.
+- status: MUST content: 클릭할 때마다 선택과 해제 상태가 전환되도록 합니다.
+- status: MUST content: 계층형 구조에서는 상위 항목을 선택하면 하위 항목이 모두 선택되고, 하위 항목을 하나라도 해제하면 상위 항목도 해제되도록 합니다.
+- status: SHOULD content: 라벨이나 이미지는 박스 바로 옆에 두어 연결 관계가 보이게 합니다.
+- status: AVOID content: 하나만 선택해야 하는 옵션에는 Check Box를 사용하지 않고 Radio를 사용합니다.
+
+#### **2.3.2. Type: Radio**
+
+- status: MUST content: 여러 옵션 중 하나만 선택할 수 있을 때 사용합니다.
+- status: MUST content: 새 옵션을 선택하면 이전 선택은 자동으로 해제되도록 합니다.
+- status: SHOULD content: 라벨은 버튼 바로 옆에 두고, 같은 화면의 Radio 그룹은 정렬 방식을 맞춥니다.
+- status: AVOID content: Radio에서 여러 옵션을 동시에 선택하게 하지 않습니다.
+- status: AVOID content: 옵션을 하나만 제공하는 경우에는 Radio를 사용하지 않습니다.
+
+#### **2.3.3. Type: Switch**
+
+- status: MUST content: 단독으로 쓰이거나 켜짐과 꺼짐 두 가지 상태만 있는 옵션에 사용합니다.
+- status: MUST content: 누르는 즉시 상태가 바뀌고 결과가 바로 반영되도록 합니다.
+- status: SHOULD content: 별도의 저장이나 확인 버튼을 거치지 않고 상태가 반영되도록 합니다.
+- status: SHOULD content: 라벨은 Switch 바로 옆에 배치합니다.
+- status: AVOID content: Switch를 켰을 때 팝업이 뜨는 방식처럼 정의되지 않은 동작에 Switch를 사용하지 않습니다.

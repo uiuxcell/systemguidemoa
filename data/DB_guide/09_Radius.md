@@ -1,104 +1,133 @@
-# Radius
+# 09_Radius (라운드)
 
 DB 등록: 2차
 담당자: Daisy
 분류: 01. Foundation
-작업: 2026년 8월 12일 오후 1:36
-작업상태: 진행 중
-하위 항목: Pill (https://app.notion.com/p/Pill-3ba15929183280c390cbec83a305bf22?pvs=21), Control (https://app.notion.com/p/Control-3ba1592918328097b57df0bac6575a38?pvs=21), Surface (https://app.notion.com/p/Surface-3ba15929183280c59f7ff6b2a6e8cf37?pvs=21), Overlay (https://app.notion.com/p/Overlay-3ba1592918328043a4e4f981b4bddafc?pvs=21)
+작업: 2026년 10월 26일 오후 5:42
+작업상태: 1차 완료
+하위 항목: 4px (https://app.notion.com/p/4px-3ba1592918328097b57df0bac6575a38?pvs=21), 6px (https://app.notion.com/p/6px-3ba15929183280c59f7ff6b2a6e8cf37?pvs=21), 8px (https://app.notion.com/p/8px-3ba1592918328043a4e4f981b4bddafc?pvs=21), 20px (https://app.notion.com/p/20px-3ff1592918328080bceed6fc882c09e3?pvs=21), 24px (https://app.notion.com/p/24px-3ff15929183280178c94dcb8f0745947?pvs=21), Max (https://app.notion.com/p/Max-3ba15929183280c390cbec83a305bf22?pvs=21), None (https://app.notion.com/p/None-3ff1592918328019867eee43152b0526?pvs=21)
 
 # Radius (라운드)
 
 ## 0. 메타
 
-### 0.1. 분류 (Category)
+### 0.1. 분류
 
-1. Foundation / Radius
+- category: Radius
+- group: Foundation
 
-### 0.2. 타입 종류 (Types)
+### 0.2. 타입 목록
 
-Pill, Control, Surface, Overlay
+- 4px: 배지, 체크박스 등 작은 UI 요소의 모서리 곡률
+- 6px: 버튼, 툴팁 등 중간 크기 컨트롤의 모서리 곡률
+- 8px: 드롭다운 등 비교적 큰 컴포넌트의 모서리 곡률
+- 20px: 카드, 배너, 이미지 등 콘텐츠 컨테이너의 모서리 곡률
+- 24px: 팝업 등 여러 UI 요소로 구성된 복합 컴포넌트의 모서리 곡률
+- Max: 높이에 따라 양 끝이 둥근 형태를 유지하는 최대 곡률
+- None: 모서리 곡률을 적용하지 않는 직각 형태
 
-### 0.3. 타입 별 요소 (keyword)
+### 0.3. 검색 키워드
 
-- **Pill** : 완전라운드 알약버튼 칩 뱃지 태그
-- **Control** : 버튼 입력필드 체크박스 토글 소형컨트롤
-- **Surface** : 카드 레이아웃컨테이너 섹션 패널
-- **Overlay** : 모달 팝업 바텀시트 툴팁 대화상자
-
-### 0.4. Figma Node ID
-
-미정(TBD)
+- 4px: `작은 UI`, `배지`, `체크박스`, `소형 컨트롤`
+- 6px: `툴팁`, `텍스트 필드`, `스낵바`
+- 8px: `드롭다운`, `옵션 셀렉터`, `그룹화 버튼`
+- 20px: `카드 라운드`, `배너 모서리`, `이미지 라운드`
+- 24px: `팝업 라운드`, `PC 팝업`, `복합 컨테이너`
+- Max: `완전 라운드`, `알약 형태`, `CTA 버튼`
+- None: `라운드 없음`, `직각 모서리`, `전체 화면 팝업`
 
 ## 1. 개요
 
 ### 1.1. 정의
 
-UI 요소의 모서리 곡률(Corner Radius)을 제어하여 컴포넌트의 목적, 크기, 그리고 시각적 위계(대화형 컨트롤, 면적 컨테이너, 플로팅 레이어)를 직관적으로 구분하기 위한 곡률 디자인 토큰 시스템.
+- Radius는 UI 요소의 모서리 곡률을 제어하여 컴포넌트의 목적, 크기 및 시각적 위계를 구분하는 디자인 토큰 시스템입니다.
+- 작은 컨트롤부터 콘텐츠 컨테이너, 팝업 등 다양한 UI 요소에 일관된 곡률을 적용하여 화면의 시각적 통일성을 유지합니다.
+- 정의된 Radius Token을 기준으로 모서리 곡률을 설정하며, 완전한 라운드 형태와 곡률이 없는 형태도 포함합니다.
 
 ### 1.2. 적용 상황
 
-- 알약 형태의 완전한 둥근 컴포넌트를 구성할 때 → **Pill** 사용
-- 버튼, 입력 필드 등 사용자가 직접 조작하는 대화형 요소일 때 → **Control** 사용
-- 카드, 패널 등 화면 내부의 인라인 면적을 구획할 때 → **Surface** 사용
-- 모달, 바텀시트 등 화면 위에 뜨는 최상위 플로팅 레이어일 때 → **Overlay** 사용
+- 요소와 컴포넌트의 크기 및 역할에 따라 적절한 모서리 곡률을 설정할 때 적용합니다.
+- 컨트롤, 콘텐츠 컨테이너, 오버레이 등 UI 요소의 성격과 시각적 위계를 구분할 때 적용합니다.
+- 동일한 역할의 컴포넌트에 일관된 곡률을 적용하여 화면의 통일성을 유지할 때 적용합니다.
 
-## 2. 사용 규칙 (Usage Rules)
+## 2. 사용 규칙
 
 ### 2.1. 공통 규칙
 
-- **[공통][MUST]** 모서리 곡률에 임의의 px 수치를 직접 입력하지 않고, 반드시 정의된 Radius 토큰을 적용한다.
-- **[공통][MUST]** 요소의 화면 위계 및 면적 크기(Control < Surface < Overlay)에 비례하여 더 큰 Radius 토큰을 사용한다.
-- **[공통][SHOULD]** 부모 컨테이너 안에 자식 요소가 중첩될 때, 자식 요소의 Radius는 부모 요소의 Radius보다 작거나 같게 설정하여 시각적 불균형을 방지한다.
-- **[공통][AVOID]** 한 화면 내 동위 계층의 컴포넌트에 서로 다른 Radius 타입을 혼용하는 것을 금지한다.
+- status: MUST
+content: 모서리 곡률에 임의의 수치를 직접 입력하지 않고, 정의된 Radius Token을 적용합니다.
+- status: SHOULD
+content: 컴포넌트의 크기와 시각적 위계를 고려하여 적절한 Radius 타입을 선택합니다. 일반적으로 작은 컨트롤보다 큰 콘텐츠 컨테이너나 팝업에 더 큰 곡률을 적용합니다.
+- status: SHOULD
+content: 부모 컨테이너 안에 자식 요소가 중첩되는 경우, 자식 요소의 Radius를 부모 요소보다 작거나 같게 설정하여 시각적 균형을 유지합니다.
+- status: AVOID
+content: 동일한 역할과 위계를 가진 컴포넌트에 서로 다른 Radius 타입을 혼용하지 않습니다.
 
-### 2.2. Type 선택 규칙
+### 2.2. 타입 선택 기준
 
-- **[공통][MUST]** 양 끝이 반원 형태를 유지해야 하는 요소에는 `type=Pill`을 적용한다.
-- **[공통][MUST]** 사용자 인터랙션이 발생하는 UI 컨트롤 요소에는 `type=Control`을 적용한다.
-- **[공통][MUST]** 화면 상의 정적 콘텐츠를 담는 컨테이너 요소에는 `type=Surface`를 적용한다.
-- **[공통][MUST]** 화면 상단에 레이어로 떠오르는 오버레이 요소에는 `type=Overlay`를 적용한다.
+- 4px:
+    - 배지, 체크박스, 옵션 칩 등 크기가 작은 UI 요소에 사용합니다.
+    - 적용 컴포넌트: `Badge(Filled)`, `Option Chip(Label)`, `Option Selector(Label)`, `Selection Control(CheckBox)`, `Spec(Highlight/Mobile)`
+- 6px:
+    - 버튼, 툴팁, 텍스트 필드 등 중간 크기의 컨트롤과 피드백 요소에 사용합니다.
+    - 적용 컴포넌트: `Snackbar`, `Text Field(MultiLine)`, `Tooltip(Marked)`, `Tooltip(Multiple Language)`, `Option Selector(Image/Standard)`, `Option Selector(Image/Bezel)`
+- 8px:
+    - 드롭다운 메뉴, 옵션 셀렉터 등 비교적 큰 컴포넌트나 그룹화된 컨트롤에 사용합니다.
+    - 적용 컴포넌트: `Menu(Dropdown)`, `Option Selector`
+- 20px:
+    - 카드, 배너, 이미지 등 콘텐츠를 포함하는 중간 크기의 컨테이너에 사용합니다.
+    - 적용 컴포넌트: `Card`, `Banner`, `Image`
+- 24px:
+    - 여러 UI 요소로 구성된 PC 팝업 등 복합 컴포넌트에 사용합니다.
+    - 적용 컴포넌트: `Popup(PC)`
+- Max:
+    - CTA 버튼, 인디케이터 등 높이를 기준으로 양 끝이 완전히 둥근 형태를 유지해야 하는 요소에 사용합니다.
+    - 적용 컴포넌트: `Button(CTA)`, `Indicator`, `Number Counter`, `Scroll`, `Search Field`
+- None:
+    - 리스트, 전체 화면 팝업 등 모서리 곡률 없이 화면 너비를 가득 채우는 컨테이너에 사용합니다.
+    - 적용 컴포넌트: `List`, `Popup(Full Screen)`
 
-### 2.3. Type별 규칙
+### 2.3. 타입별 사용 규칙
 
-- **[type=Pill][MUST]** 높이 값에 수동 대응하도록 높이의 1/2 값 또는 9999px을 적용하여 완전한 알약 형태를 유지한다.
-- **[type=Control][MUST]** 컴포넌트의 크기 및 높이에 맞춰 4px ~ 12px 범위 내에서 선택 적용한다.
-- **[type=Surface][MUST]** 컨테이너의 면적 크기에 맞춰 12px ~ 20px 범위 내에서 선택 적용한다.
-- **[type=Overlay][MUST]** 반응형 디바이스 환경에 따라 PC 환경은 24px, Mobile 환경은 12px을 구분 적용한다.
+#### 2.3.1. Type: 4px
 
-## 3. 스펙 및 토큰 (Design Tokens)
+- status: SHOULD
+content: Badge - Filled, Option Chip - Label, Option Selector - Label, Selection Control - Check Box 등 작은 UI 요소에 적용합니다.
 
-### 3.1. 공통
+#### 2.3.2. Type: 6px
 
-- **너비(Width)**: 해당 없음(N/A) — 대상 컴포넌트 스펙에 따름
-- **정렬(Align)**: 해당 없음(N/A)
-- **레이블 폰트(Label Font)**: 해당 없음(N/A)
-- **레이블 굵기(Font Weight)**: 해당 없음(N/A)
-- **라운드 규칙(Radius Rule)**: 위계 및 공간 스케일 준수 (Pill: Height 1/2 · Control: 4~12px · Surface: 12~20px · Overlay: PC 24px / Mo 12px)
-- **라벨이 한글일 경우**: 해당 없음(N/A)
+- status: SHOULD
+content: Snackbar, Text Field, Tooltip 등 중간 크기의 컨트롤과 피드백 요소에 적용합니다.
+- status: SHOULD
+content: 이미지형 Option Selector 및 여러 언어를 지원하는 Tooltip 등에도 컴포넌트 규격에 따라 적용합니다.
 
-### 3.2. type = Pill
+#### 2.3.3. Type: 8px
 
-- **라운드(Radius)**: 높이의 1/2 (또는 9999px)
-- **적용 컴포넌트 예시**: Pill Button, Chip, Badge, Tag
+- status: SHOULD
+content: Menu - Dropdown, Option Selector 등 비교적 큰 컨트롤이나 그룹화된 요소에 적용합니다.
 
-### 3.3. type = Control
+#### 2.3.4. Type: 20px
 
-- **라운드(Radius)**: 4px ~ 12px
-- **적용 컴포넌트 예시**: Button, Input Field, Checkbox, Toggle, Dropdown Menu
+- status: SHOULD
+content: Card, Banner, Image 등 콘텐츠를 담는 컨테이너의 외곽 모서리에 적용합니다.
 
-### 3.4. type = Surface
+#### 2.3.5. Type: 24px
 
-- **라운드(Radius)**: 12px ~ 20px
-- **적용 컴포넌트 예시**: Card, Container, Panel, Section Box
+- status: SHOULD
+content: PC 환경에서 여러 UI 요소로 구성된 Popup 등 복합 컴포넌트의 외곽 모서리에 적용합니다.
 
-### 3.5. type = Overlay
+#### 2.3.6. Type: Max
 
-- **라운드(Radius)**: PC = 24px / Mobile = 12px
-- **적용 컴포넌트 예시**: Modal, Dialog, Bottom Sheet, Toast, Tooltip, Popover
+- status: MUST
+content: 요소의 양 끝이 완전히 둥근 알약 형태를 유지하도록 Max Radius Token을 적용합니다.
+- status: ALLOW
+content: 컴포넌트 규격에 따라 높이의 50%에 해당하는 곡률 값을 적용할 수 있습니다.
+- status: SHOULD
+content: Button - CTA, Indicator, Number Counter, Scroll, Search Field 등 완전한 라운드 형태가 필요한 요소에 적용합니다.
 
-## 4. 상태별 가이드 (States)
+#### 2.3.7. Type: None
 
-Radius 토큰은 파운데이션(Foundation) 스타일 속성이므로 hover, disabled, pressed, focused 등 컴포넌트 상태 변화와 관계없이 동일한 라운드 값을 유지한다.
-
-###
+- status: MUST
+content: 모서리 곡률을 적용하지 않고 0px로 설정합니다.
+- status: SHOULD
+content: List, Popup - Full Screen 등 화면 너비를 가득 채우는 컨테이너에 적용합니다.

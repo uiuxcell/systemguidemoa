@@ -1,54 +1,93 @@
-# Dimmed&Shadow
+# 07_Dimmed & Shadow
 
 DB 등록: 2차
 담당자: semi
 분류: 01. Foundation
-작업: 2026년 9월 10일 오후 2:51
-작업상태: 진행 중
+작업: 2026년 10월 30일 오후 4:04
+작업상태: 1차 완료
+하위 항목: Dimmed (https://app.notion.com/p/Dimmed-400159291832800f921cc731764e2bf1?pvs=21), Shadow (https://app.notion.com/p/Shadow-4001592918328020abf7d81e32f9257e?pvs=21)
+
+# Dimmed & Shadow (딤드 & 그림자)
 
 ## 0. 메타
 
-- **분류(Category)**: Foundation / Effects — Dimmed·Shadow 통합
-- **타입 종류(Types)**: `Dimmed`(01/02), `Shadow`(01/02)
-- **Figma Node ID**: 미정(TBD)
+### 0.1. 분류
 
----
+- category: `Dimmed & Shadow`
+- group: `Foundation`
+
+### 0.2. 타입 목록
+
+- `Dimmed`
+- `Shadow`
+
+### 0.3. 검색 키워드
+
+- `Dimmed` : `Dimmed 01`, `Dimmed 02`, `반투명`, `딤`, `딤드`, `오버레이`, `팝업 배경`
+- `Shadow` : `Shadow 01`, `Shadow 02`, `그림자`, `입체감`, `깊이감`, `시각적 위계`, `Elevation`
 
 ## 1. 개요
 
 ### 1.1. 정의
 
-- **Dimmed**: 팝업/모달 등장 시 그 뒤 배경을 어둡게 덮는 오버레이. Black 기반 + 투명도 2단계(01/02)로 정의.
-- **Shadow**: 컴포넌트에 입체감·위계(elevation)를 주는 그림자 효과. Black 기반 + 투명도 20% 고정, offset/blur/spread로 2단계(01/02) 정의.
+- Dimmed: 팝업·모달 노출 시 배경을 어둡게 처리하는 오버레이 효과입니다. `Black(#000000)`을 기반으로 투명도에 따라 2단계(01/02)로 구분합니다.
+- Shadow: UI 요소에 입체감과 시각적 위계를 부여하는 그림자 효과입니다. `Black(#000000)`을 기반으로 투명도 20%를 유지하며, `Offset`·`Blur`·`Spread` 값에 따라 2단계(01/02)로 구분합니다.
 
 ### 1.2. 적용 상황
 
-- 대부분의 팝업 뒤 배경을 어둡게 할 때(기본값) → `Dimmed 01`
-- 팝업이 영상 재생 화면일 때 → `Dimmed 02` (영상의 경우, 닫기 X 버튼은 팝업 바깥의 Dimmed 영역에 위치)
-- 카드·버튼 등에 입체감을 줄 때 → `Shadow 01` / `Shadow 02` (단, 실제로는 정의된 2단계보다 다양하게 쓰이는 경우가 있어 — 3번 참고)
+- 팝업·모달 노출 시 배경을 어둡게 처리하여 주요 콘텐츠에 집중하도록 유도할 때 적용합니다.
+- 카드·버튼 등 UI 요소에 입체감과 깊이감을 부여하고, 요소 간 시각적 위계를 구분할 때 적용합니다.
+- 화면의 목적과 구성에 따라 적절한 효과를 선택하고, 일관된 시각적 표현을 유지할 때 적용합니다.
 
----
-
-## 2. 사용 규칙 (Usage Rules)
-
-> `[MUST]`: 강제 · `[SHOULD]`: 권장 · `[ALLOW]`: 예외 허용 · `[AVOID]`: 금지
-> 
+## 2. 사용 규칙
 
 ### 2.1. 공통 규칙
 
-- `[MUST]` Dimmed·Shadow 모두 정의된 hex+투명도(+offset/blur/spread) 조합만 사용하며, 임의로 새 수치를 만들지 않는다.
-- `[MUST]` Dimmed·Shadow는 항상 `Black(#000000)` 기반만 사용한다. 다른 색 기반 오버레이/그림자는 쓰지 않는다.
+- status: MUST
+    
+    content: `Dimmed`와 `Shadow`는 모두 `Black(#000000)`을 기반으로 정의하며, 다른 색상을 사용하지 않습니다.
+    
+- status: SHOULD
+    
+    content: 일관된 시각적 표현을 위해 정의된 `Dimmed`와 `Shadow` 스타일 및 수치를 우선 사용합니다.
+    
+- status: AVOID
+    
+    content: 명확한 사용 목적 없이 기존 스타일과 유사한 효과 값을 신규 생성하지 않습니다.
+    
 
-### 2.2. Type=Dimmed 규칙
+### 2.2. 타입 선택 기준
 
-- `[MUST]` `Dimmed 01`(60%)을 기본값으로 사용한다 — 대부분의 팝업이 여기 해당한다.
-- `[MUST]` 팝업이 **영상 재생** 화면인 경우에는 `Dimmed 02`(90%)를 사용한다.
-- `[MUST]` 영상 재생 화면인 경우, 닫기(X) 버튼은 팝업 내부가 아니라 Dimmed 영역(팝업 바깥)에 위치시킨다.
-- `[SHOULD]` 위 두 경우(화면 대부분 차지 / 영상 재생) 중 어디에도 명확히 안 걸리면, 기본값인 `Dimmed 01`을 우선 적용한다.
+- Dimmed: 팝업·모달 등의 배경을 어둡게 처리하여 주요 콘텐츠에 집중시켜야 하는 경우 사용합니다.
+- Shadow: UI 요소에 입체감과 깊이감을 부여하거나, 요소 간 시각적 위계를 구분해야 하는 경우 사용합니다.
 
-### 2.3. Type=Shadow 규칙
+### 2.3. 타입별 사용 규칙
 
-- `[MUST]` `Shadow`는 `Shadow 01`, `Shadow 02` 두 단계만 공식으로 정의한다. 이 두 값 외에는 임의로 새 수치를 만들지 않는다.
-- `[SHOULD]` 실제로는 이 두 단계와 다른 수치가 여기저기 쓰이고 있지만, 사용이 워낙 제각각이라 그 전부를 규칙화하지는 않는다. 규격 외 비슷한 수치일 때, `Shadow 01`/`Shadow 02` 중 더 가까운 쪽으로 맞추는 것을 우선 검토한다.
+#### 2.3.1. Type: Dimmed
 
----
+- status: MUST
+    
+    content: 일반적인 팝업·모달에는 투명도 60%의 `Dimmed 01`을 기본값으로 사용합니다.
+    
+- status: MUST
+    
+    content: 영상 재생 팝업에는 투명도 90%의 `Dimmed 02`를 사용합니다.
+    
+- status: MUST
+    
+    content: 영상 재생 팝업의 닫기(X) 버튼은 팝업 내부가 아닌 바깥쪽 `Dimmed` 영역에 배치합니다.
+    
+- status: SHOULD
+    
+    content: 적용 기준이 명확하지 않은 경우, 기본값인 `Dimmed 01`을 우선 사용합니다.
+    
+
+#### 2.3.2. Type: Shadow
+
+- status: MUST
+    
+    content: `Shadow`는 `Shadow 01`, `Shadow 02` 두 단계만 공식 스타일로 정의하며, 임의로 새로운 공식 스타일을 추가하지 않습니다.
+    
+- status: SHOULD
+    
+    content: 실제 UI에서는 다양한 `Shadow` 수치가 사용되고 있으나, 모든 값을 별도 규칙으로 정의하지는 않습니다. 기존 스타일과 유사한 경우 `Shadow 01` 또는 `Shadow 02` 중 가까운 값으로 통일하는 것을 우선 검토합니다.

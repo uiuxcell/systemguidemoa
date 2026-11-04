@@ -1,31 +1,30 @@
-# Divider (구분선)
+# 14_Divider (구분선)
 
 DB 등록: 2차
 담당자: Lani
 분류: 02. Element
-작업: 2026년 9월 14일 오후 1:58
-작업상태: 진행 중
+작업: 2026년 10월 29일 오후 5:20
+작업상태: 1차 완료
+하위 항목: Horizontal (https://app.notion.com/p/Horizontal-40015929183280419f68ee5a31373de8?pvs=21), Vertical (https://app.notion.com/p/Vertical-40015929183280ceaef5d156ede1da70?pvs=21)
 
 # Divider (구분선)
 
 ## 0. 메타
 
-### 0.1. 분류(Category)
+### 0.1. 분류
 
-- Element / Divider
+- category: Divider
+- group: Element
 
-### 0.2. 타입 종류 (Types)
+### 0.2. 타입 목록
 
-- `Horizontal`, `Vertical`
+- Horizontal: 가로선 형태의 구분선
+- Vertical: 세로선 형태의 구분선
 
-### 0.3. 타입 별 요소 (keyword)
+### 0.3. 검색 키워드
 
-- Horizontal : `가로 구분선` `Height` `상하 콘텐츠 구분`
-- Vertical : `세로 구분선` `Width` `좌우 요소 구분`
-
-### 0.4. Figma Node ID
-
-- 비고 : Figma 원본 에셋은 Dark BG/Light BG 페이지로 나뉘어 캡처돼 있음(테마별 프레임 단위 캡처) — 문서는 실제 쓰임 기준인 Type(Horizontal/Vertical) 우선 구조로 정리함.
+- Horizontal: `가로 구분선`, `상하 구분`, `섹션 구분`, `목록 항목 구분`, `콘텐츠 경계`
+- Vertical: `세로 구분선`, `좌우 구분`, `메뉴 구분`, `텍스트 구분`, `가로 항목 구분`
 
 ---
 
@@ -33,42 +32,93 @@ DB 등록: 2차
 
 ### 1.1. 정의
 
-- Divider는 콘텐츠·영역을 구분하는 1px 두께의 선이다.
-- `Type`(Horizontal/Vertical)이 1차 분류다 — Height를 차지하는지 Width를 차지하는지가 달라, 상하 구분용인지 좌우 구분용인지 쓰임 자체가 바뀐다.
-- `Theme`(Light BG/Dark BG)는 같은 모양의 선에 색만 바뀌는 컨텍스트 축이다.
+- Divider는 콘텐츠를 시각적으로 구분해 정보의 구조를 명확하게 하고, 관련된 요소를 하나의 그룹으로 인식하도록 돕는 UI 요소입니다.
 
 ### 1.2. 적용 상황
 
-- 상하로 쌓인 콘텐츠·섹션을 구분할 때 → `Horizontal`
-- 좌우로 나열된 요소(메뉴, 버튼 그룹, 텍스트 등)를 구분할 때 → `Vertical`
-- 기본 대비가 필요할 때 → `Default`(`#DDDDDD`)
-- 더 옅은 구분이 필요할 때 → `Light Gray`(`#EEEEEE`, Light BG 전용)
-- 어두운 배경 위에서 구분이 필요할 때 → `Default`(`#555555`, Dark BG는 이 1종만 존재)
+- 콘텐츠의 구조나 그룹 간 경계를 시각적으로 구분해야 할 때 사용합니다.
+- 세로로 나열된 콘텐츠를 상하 영역으로 구분할 때 사용합니다.
+- 가로로 나열된 콘텐츠를 좌우 영역으로 구분할 때 사용합니다.
 
 ---
 
 ## 2. 사용 규칙 (Usage Rules)
 
-> `[MUST]` : 강제 · `[SHOULD]` : 권장 · `[ALLOW]` : 예외 허용 · `[AVOID]` : 금지
-> 
-
 ### 2.1. 공통 규칙
 
-- `[MUST]` 두께는 항상 `1px`.
-- `[MUST]` Dark BG는 `Default`(`#555555`) 1종만 존재 — `Light Gray`는 없다.
-- `[MUST]` Divider와 주변 콘텐츠 사이 간격은 이 문서가 아니라 `Spacing`(Gap/Inset/Section 등)에 따른다.
+- status: MUST
+    
+    content: 콘텐츠의 구조나 그룹을 구분할 필요가 있을 때만 사용합니다.
+    
+- status: MUST
+    
+    content: Divider는 실선(Solid)으로 적용합니다.
+    
+- status: MUST
+    
+    content: 정의된 색상과 두께를 사용해 UI 전반의 시각적 일관성을 유지합니다.
+    
+- status: MUST
+    
+    content: 배경 테마에 따라 Light BG 또는 Dark BG Variant를 사용합니다.
+    
+- status: AVOID
+    
+    content: 색상·두께·불투명도를 임의로 변경해 정의된 스타일을 대체하지 않습니다.
+    
 
-### 2.2. Type 선택 규칙
+### 2.2. 타입 선택 기준
 
-- `[MUST]` 수평 콘텐츠 구분엔 `Horizontal`.
-- `[MUST]` 같은 줄에 나열된 요소 구분엔 `Vertical`.
+- Horizontal: 세로로 정렬된 콘텐츠를 구분할 때 사용합니다.
+- Vertical: 가로로 정렬된 콘텐츠를 구분할 때 사용됩니다.
 
-### 2.3. Type=Horizontal 규칙
+### 2.3. 타입별 사용 규칙
 
-- `[SHOULD]` Light BG 기본은 `Default`, 더 옅은 구분이 필요할 때만 `Light Gray` 사용.
-- `[MUST]` Dark BG는 `Default`(`#555555`) 고정.
+#### 2.3.1. Type: Horizontal
 
-### 2.4. Type=Vertical 규칙
+- status: MUST
+    
+    content: 세로로 나열된 콘텐츠 사이에 가로선을 배치합니다.
+    
+- status: MUST
+    
+    content: 선의 높이(Height)는 1px로 적용합니다.
+    
+- status: MUST
+    
+    content: Light BG의 Default 색상은 #DDDDDD를 사용합니다.
+    
+- status: MUST
+    
+    content: Dark BG의 색상은 #555555를 사용합니다.
+    
+- status: ALLOW
+    
+    content: Light BG에서는 Light Gray 색상인 #EEEEEE를 사용할 수 있습니다.
+    
 
-- `[MUST]` Light BG는 `Default` 1종만 확인됨 — `Light Gray`는 Horizontal 전용.
-- `[MUST]` Dark BG는 `Default` 고정.
+#### 2.3.2. Type: Vertical
+
+- status: MUST
+    
+    content: 가로로 나열된 콘텐츠 사이에 세로선을 배치합니다.
+    
+- status: MUST
+    
+    content: 선의 너비(Width)는 1px로 적용합니다.
+    
+- status: MUST
+    
+    content: Light BG의 Default 색상은 #DDDDDD를 사용합니다.
+    
+- status: MUST
+    
+    content: Dark BG의 색상은 #555555를 사용합니다.
+    
+- Vertical에는 Light Gray Variant가 제공되지 않습니다.
+
+### 2.4. 세부 적용 규칙
+
+#### 2.4.1. Variant 제공 범위
+
+- Light Gray Variant는 Horizontal의 Light BG에서만 제공하며, Vertical에는 제공하지 않습니다.
