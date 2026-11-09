@@ -135,7 +135,7 @@ DB 등록: 1차, 상시
 ##유저가 컴포넌트를 한글/약어로 부를 때 DB 카테고리로 연결하는 용어입니다.
 
 - `ctaButton`: CTA 버튼, 버튼, 씨티에이, 액션 버튼, button
-- `utilityButton`: 유틸리티 버튼, 유틸리티, 보조 버튼
+- `ctaButtonIcon`: CTA 버튼 아이콘, CTA 아이콘 버튼, 아이콘 버튼, 버튼 아이콘, icon button
 - `popup`: 팝업, 모달, 다이얼로그, 팝업창
 - `dimmedShadow`: 딤, 딤드, 그림자, 섀도우, 쉐도우, shadow, dimmed
 - `iconography`: 아이코노그래피, 아이콘 가이드, 아이콘 스타일

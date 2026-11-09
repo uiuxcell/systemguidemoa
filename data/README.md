@@ -12,10 +12,12 @@ data/
 ## 넣는 방법
 
 1. `data/DB_guide/`에 markdown / CSV 파일을 넣습니다. **파일명이 챗봇의 주제(홈 카테고리 칩) 이름이 됩니다.**
-2. `src/build.md`의 빌드를 다시 실행합니다 → 내용이 `index.html` 안으로 인라인됩니다.
-3. Figma에서 플러그인을 껐다 켭니다.
+2. **GitHub `main`에 push**하면 플러그인이 다음 질문부터 최신 파일을 읽습니다 (재빌드 불필요, 새 파일 추가·삭제 포함).
+   브라우저 미리보기(`preview/ui.preview.html`)는 저장만 하면 로컬 `data/`를 바로 읽습니다.
+3. 오프라인용 내장본까지 갱신하려면 `node build.js`를 실행합니다.
 
-플러그인은 로컬 폴더를 직접 읽을 수 없으므로, 파일을 넣기만 하고 빌드를 건너뛰면 반영되지 않습니다.
+`data/DB_tokens/tokens.json`, `data/db_glossary/*.md`, `data/prompts/*.md`, `data/landingmenu/*/text/landing.md`(+ 이미지)도 같은 방식으로 실행 중에 다시 읽습니다.
+단, `data/DB_tokens/*.tokens.json` 원본은 `tokens.json`으로 변환해야 반영됩니다.
 파일명은 `01_Color.md`처럼 번호 접두어(`NN_`)를 붙여 순서를 정합니다. 접두어는 칩 라벨에서 자동 제거되고, `CTAButton` → `CTA Button`처럼 대문자 경계에서 공백이 들어갑니다.
 파일명에 `&` 등 특수문자는 피하고, 표기를 바꾸려면 빌드 스크립트의 `LABEL` 맵에 추가하세요 (`DimmedShadow.md` → `Dimmed & Shadow`).
 
@@ -55,22 +57,31 @@ Skyblue,#2189FF,핵심 액션
 |---|---|---|
 | `01_Color.md` | Color | 12 |
 | `02_Typeface.md` | Typeface | 13 |
-| `03_Spacing.md` | Spacing | 9 |
-| `04_CTAButton.md` | CTA Button | 8 |
+| `03_Spacing.md` | Spacing | 7 |
+| `04_CTAButton.md` | CTA Button | 12 |
 | `05_CTAButtonIcon.md` | CTA Button Icon | 7 |
-| `06_Popup.md` | Popup | 10 |
+| `06_Popup.md` | Popup | 8 |
 | `07_DimmedShadow.md` | Dimmed & Shadow | 6 |
-| `08_Iconography.md` | Iconography | 16 |
+| `08_Iconography.md` | Iconography | 19 |
 | `09_Radius.md` | Radius | 11 |
-| `10_Badge.md` | Badge | 8 |
-| `11_Chip.md` | Chip | 10 |
+| `10_Badge.md` | Badge | 9 |
+| `11_Chip.md` | Chip | 6 |
 | `12_SelectionControl.md` | Selection Control | 7 |
-| `13_Indicator.md` | Indicator | 5 |
+| `13_Indicator.md` | Indicator | 9 |
 | `14_Divider.md` | Divider | 7 |
-| `15_OptionChip.md` | Option Chip | 4 |
+| `15_OptionChip.md` | Option Chip | 7 |
 | `16_OptionSelector.md` | Option Selector | 9 |
+| `17_Tooltip.md` | Tooltip | 8 |
+| `18_Tab.md` | Tab | 12 |
+| `19_List.md` | List | 8 |
+| `20_Menu.md` | Menu | 6 |
+| `21_Filter.md` | Filter | 11 |
 
-총 142개 chunk. 홈 카테고리 칩은 파일명 순서대로 나열되고, 넘치면 스크롤됩니다.
+총 194개 chunk (빌드 기준). 홈 카테고리 칩은 파일명 순서대로 나열되고, 넘치면 스크롤됩니다.
+
+## Easter egg (data/easteregg.md)
+
+정해진 질문 → 정해진 답변. 작성법은 파일 맨 위 주석에 있어요. 실행 중에 다시 읽으니 저장(미리보기)·push(플러그인)만 하면 반영돼요.
 
 ## 챗봇 프롬프트 (data/prompts/)
 
