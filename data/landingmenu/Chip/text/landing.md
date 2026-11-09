@@ -1,4 +1,4 @@
-<!-- Chip 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Chip 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Chip의 구성이에요.
@@ -9,12 +9,12 @@ Chip의 구성이에요.
 ### Action Chip
 항목 선택 시 관련 동작을 실행하거나 해당 항목과 연관된 콘텐츠를 표시할 때 사용
 
-![](img_chip_all_01)
+![](img_Chip_all_01)
 
 ### Select Chip
 여러 항목을 선택하거나 선택 해제하고, 선택 결과에 따라 콘텐츠나 조건을 변경할 때 사용
 
-![](img_chip_all_02)
+![](img_Chip_all_02)
 
 ## Action Chip
 
@@ -25,9 +25,9 @@ Chip의 구성이에요.
 
 ※ 칩 레이블은 가독성을 위해 최대 22자로 제한하고, 한 줄로 표시합니다.
 
-![](img_chip_actionchip_01)
+![](img_Chip_all_01)
 
-추가 질문: 스펙 및 토큰
+추가 질문: 스펙 및 토큰, Filter, Tab
 
 ## Select Chip
 
@@ -38,6 +38,6 @@ Select Chip은 선택 항목을 삭제할 수 있도록 오른쪽에 삭제 아�
 
 ※ 칩 레이블은 가독성을 위해 최대 22자로 제한하고, 한 줄로 표시합니다.
 
-![](img_chip_selectchip_01)
+![](img_Chip_all_02)
 
-추가 질문: 스펙 및 토큰, Option Chip, Selection Control
+추가 질문: 스펙 및 토큰, Selection Control

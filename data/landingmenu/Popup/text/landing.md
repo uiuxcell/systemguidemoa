@@ -1,4 +1,4 @@
-<!-- Popup 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Popup 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Popup의 구성이에요.
@@ -9,24 +9,24 @@ Popup의 구성이에요.
 ### Confirmation
 명확하고 직접적인 사용자 응답을 요청할 때 사용
 
-![](img_Popup_Confirmation_01)
+![](img_Popup_all_01)
 
 ### Input Data
 복잡한 입력을 받거나 선택 가능한 값을 제공할 때
 사용
 
-![](img_Popup_all_01)
+![](img_Popup_all_02)
 
 ### Notification
 사용자 행동에 대한 피드백을 간결한 메시지로
 제공할 때 사용
 
-![](img_Popup_all_02)
+![](img_Popup_all_03)
 
 ### Contents
 입력이나 선택 없이 콘텐츠를 전달할 때 사용
 
-![](img_Popup_all_03)
+![](img_Popup_all_04)
 
 ## Confirmation
 
@@ -37,7 +37,7 @@ Popup의 구성이에요.
 
 ※ 본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.
 
-![](img_Popup_Confirmation_01)
+![](img_Popup_all_01)
 
 추가 질문: 스펙 및 토큰, CTA Button
 
@@ -50,7 +50,7 @@ Popup의 구성이에요.
 
 ※ 본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.
 
-![](img_Popup_all_01)
+![](img_Popup_all_02)
 
 추가 질문: 스펙 및 토큰, CTA Button, Text Field, Selection Control
 
@@ -63,7 +63,7 @@ Default는 제목 없이 본문만 사용할 수 있습니다. Alert는 Supporti
 
 ※ 본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.
 
-![](img_Popup_all_02)
+![](img_Popup_all_03)
 
 추가 질문: 스펙 및 토큰, CTA Button
 
@@ -76,7 +76,6 @@ Default는 제목 없이 본문만 사용할 수 있습니다. Alert는 Supporti
 
 ※ 본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.
 
-![](img_Popup_all_03)
+![](img_Popup_all_04)
 
 추가 질문: 스펙 및 토큰, CTA Button
-

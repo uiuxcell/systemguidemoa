@@ -1,4 +1,4 @@
-<!-- Selection Control 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Selection Control 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Selection Control의
@@ -34,7 +34,7 @@ Selection Control의
 
 ※ 정의되지 않은 기능에 사용하지 않아요.
 
-![](img_Selection Control_Check Box_01)
+![](img_Selection Control_all_01)
 
 추가 질문: 스펙 및 토큰, Option Chip
 
@@ -49,7 +49,7 @@ Selection Control의
 
 ※ 여러 개를 동시에 선택하게 하거나, 옵션을 하나만 제공하면 안 돼요.
 
-![](img_Selection Control_Radio_01)
+![](img_Selection Control_all_02)
 
 추가 질문: 스펙 및 토큰, Option Chip
 
@@ -64,7 +64,6 @@ Selection Control의
 
 ※ 정의되지 않은 기능에 쓰면 안 돼요.
 
-![](img_Selection Control_Switch_01)
+![](img_Selection Control_all_03)
 
 추가 질문: 스펙 및 토큰, Option Chip
-

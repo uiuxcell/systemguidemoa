@@ -1,4 +1,4 @@
-<!-- Color 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Color 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Color의 구성이에요.
@@ -57,9 +57,9 @@ Color의 구성이에요.
 ## Primary Color
 
 ### Primary Color는 브랜드의 핵심\n아이덴티티를 표현하거나 주요 액션을\n강조해요.
-
 - Black & White: 디자인 시스템의 기본 컬러입니다.
 - Skyblue 계열: 활성화 상태를 나타내며, 확인·성공 등 긍정적인 상태와 메시지를 전달하는 데 사용합니다.
+
 | Black | #000000 |
 | White | #FFFFFF |
 | Skyblue | #2189FF |
@@ -71,10 +71,10 @@ Color의 구성이에요.
 ## Secondary Color
 
 ### Secondary Color는 보조 강조나 정보성\n요소를 표현해야 하는 경우에 사용해요.
-
 - Coral 계열: 경고·오류 등 부정적인 상태를 표현하는 용도로 사용합니다.
 - Orange 계열: Skyblue와 조합하여 브랜드 아이덴티티를 표현할 때 보조적으로 사용합니다.
 - Teal 계열: 할인율(%)이나 추천 등 정보성 태그의 텍스트 컬러로 사용할 수 있습니다.
+
 | Coral | #EF3434 |
 | Coral Dark | #D62E2E |
 | Coral Light | #F36E6E |
@@ -128,4 +128,3 @@ KR은 전체 다크모드 대신 어두운 특정 영역을 기준으로 적용�
 ![](img_color_theme_01)
 
 추가 질문: 투명도 적용 규칙, 컬러 확장 규칙
-

@@ -1,4 +1,4 @@
-<!-- Iconography 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Iconography 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Iconography의 구성이에요.
@@ -69,4 +69,3 @@ Iconography의 구성이에요.
 ![](img_iconography_all_02)
 
 추가 질문: Stroke, Keyline Shapes, Corners, Angle
-

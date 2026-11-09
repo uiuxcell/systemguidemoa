@@ -1,4 +1,4 @@
-<!-- Radius 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Radius 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Radius의 구성이에요.
@@ -22,7 +22,7 @@ Radius의 구성이에요.
 큰 컴포넌트 또는 그룹화된 버튼에 사용
 적용: Menu - Dropdown, Option Selector
 
-![](img_radius_all_03)
+![](Menu/img_menu_all_01)
 
 ### 20 px
 카드, 배너, 이미지 등 중간 크기 컨테이너에 사용
@@ -73,7 +73,7 @@ Radius의 구성이에요.
 ### 8px은 큰 컴포넌트 또는 그룹화된 버튼에 사용해요.
 드롭다운 메뉴, 옵센 셀렉터 등의 코너에 적용해요.
 
-![](img_radius_all_03)
+![](Menu/img_menu_all_01)
 
 추가 질문: 스펙 및 토큰, Menu, Option Selector
 
@@ -90,6 +90,8 @@ Radius의 구성이에요.
 
 ### 24px은 여러 UI 요소로 구성된 팝업 등 복합 컴포넌트에 사용해요.
 팝업, 또는 대형 컨테이너의 코너에 적용해요.
+
+![](img_radius_all_05)
 
 추가 질문: 스펙 및 토큰, Popup
 
@@ -112,4 +114,3 @@ Radius의 구성이에요.
 ![](img_radius_all_07)
 
 추가 질문: List, Popup
-

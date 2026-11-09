@@ -1,4 +1,4 @@
-<!-- Divider 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Divider 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Divider의 구성이에요.
@@ -47,4 +47,3 @@ Divider의 구성이에요.
 ![](img_Divider_all_02)
 
 추가 질문: 스펙 및 토큰, List, Menu, Spacing
-

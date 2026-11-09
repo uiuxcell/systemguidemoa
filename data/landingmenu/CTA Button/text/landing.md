@@ -1,4 +1,4 @@
-<!-- CTA Button 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- CTA Button 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 CTA Button의 구성이에요.
@@ -10,16 +10,18 @@ CTA Button의 구성이에요.
 주요 액션에 사용
 
 ![](img_CTA Button_all_01)
+![](img_CTA Button_all_02)
 
 ### Secondary Action Button
 보조 액션에 사용
 
-![](img_CTA Button_all_02)
+![](img_CTA Button_all_03)
 
 ### Tertiary Action Button
 강조 없이 가볍게 제공할 때 사용
 
-![](img_CTA Button_all_03)
+![](img_CTA Button_all_04)
+![](img_CTA Button_all_05)
 
 ## Primary Action Button
 
@@ -33,7 +35,7 @@ CTA Button의 구성이에요.
 | Default | 40px |
 | Small | 32px |
 
-![](img_CTA Button_Primary_01)
+![](img_CTA Button_all_01)
 
 ### Filled (Emphasis)는 즉각적인 주목이\n필요한 최우선 액션에 사용해요.
 즉각적인 주목이 필요한 최우선 액션에만 사용하며,
@@ -44,7 +46,7 @@ CTA Button의 구성이에요.
 
 ※ 리뷰 보기처럼 보조 액션에는 쓰지 않아요.
 
-![](img_CTA Button_Primary_02)
+![](img_CTA Button_all_02)
 
 추가 질문: 스펙 및 토큰, CTA Button Icon
 
@@ -61,7 +63,7 @@ Primary 버튼 오른쪽에 함께 배치하며, 추가 정보,
 | Default | 40px |
 | Small | 32px |
 
-![](img_CTA Button_Secondary_01)
+![](img_CTA Button_all_03)
 
 추가 질문: 스펙 및 토큰, CTA Button Icon
 
@@ -78,7 +80,7 @@ Primary, Secondary보다 가볍게 제공하는 선택적
 | Default | 14px |
 | Small (MO only) | 12px |
 
-![](img_CTA Button_Tertiary_01)
+![](img_CTA Button_all_04)
 
 ### Label (Standard)는 시각적 강조 없이\n3순위 액션에 사용하는 텍스트에 적용해요.
 강조 없이 덧붙이는 보조 액션이며,
@@ -86,7 +88,6 @@ Primary, Secondary보다 가볍게 제공하는 선택적
 
 | Default | 14px |
 
-![](img_CTA Button_Tertiary_02)
+![](img_CTA Button_all_05)
 
 추가 질문: 스펙 및 토큰, CTA Button Icon
-

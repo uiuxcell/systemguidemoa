@@ -1,4 +1,4 @@
-<!-- Indicator 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Indicator 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Indicator의
@@ -9,28 +9,28 @@ Indicator의
 ### Dot 인디게이터
 카드형 콘텐츠의 범위와 현재 위치를 보여줄 때
 
-![](img_Indicator_Dot_01)
+![](img_Indicator_all_01)
 
 ### Arrow 인디게이터
 이전·다음 콘텐츠로 이동할 때
 
-![](img_Indicator_Arrow_01)
+![](img_Indicator_all_02)
 
 ### Number 인디게이터
 현재 위치와 전체 개수를 숫자로 보여줄 때
 
-![](img_Indicator_Number_01)
+![](img_Indicator_all_03)
 
 ### Scroll 인디게이터
 보이는 영역 밖 콘텐츠를 가로로 탐색할 때
 
-![](img_Indicator_Scroll_01)
+![](img_Indicator_all_04)
 
 ### Bar 인디게이터
 영상 등 재생 시간이 있는 콘텐츠의 위치·진행을 보여줄 때
 
-![](img_Indicator_Bar_01)
-![](img_Indicator_Bar_02)
+![](img_Indicator_all_05)
+![](img_Indicator_all_06)
 
 ## Dot
 
@@ -43,10 +43,9 @@ Indicator의
 
 자동 재생 콘텐츠에는 Play/Pause 아이콘이 붙은 with icon 타입을 써요.
 
-※ Medium·Small 크기의 점은 More than 7
-타입에서만 써요.
+※ Medium·Small 크기의 점은 More than 7 타입에서만 써요.
 
-![](img_Indicator_Dot_01)
+![](img_Indicator_all_01)
 
 추가 질문: 스펙 및 토큰
 
@@ -59,7 +58,7 @@ Indicator의
 
 ※ 접근성용 화살표 영역은 이미지 안에 투명하게 두고, 화면에 보이게 노출하면 안 돼요.
 
-![](img_Indicator_Arrow_01)
+![](img_Indicator_all_02)
 
 추가 질문: 스펙 및 토큰
 
@@ -72,7 +71,7 @@ Indicator의
 
 ※ 최대 99개까지만 표시해요.
 
-![](img_Indicator_Number_01)
+![](img_Indicator_all_03)
 
 추가 질문: 스펙 및 토큰
 
@@ -88,7 +87,7 @@ Indicator의
 
 ※ 카드 단위로 나뉠 콘텐츠에는 Scroll이 아니라 Dot을 써요.
 
-![](img_Indicator_Scroll_01)
+![](img_Indicator_all_04)
 
 추가 질문: 스펙 및 토큰
 
@@ -101,8 +100,7 @@ PC에서만 사용해요.
 
 ※ 접근성용 화살표 영역은 이미지 안에 투명하게 두고, 화면에 보이게 노출하면 안 돼요.
 
-![](img_Indicator_Bar_01)
-![](img_Indicator_Bar_02)
+![](img_Indicator_all_05)
+![](img_Indicator_all_06)
 
 추가 질문: 스펙 및 토큰
-

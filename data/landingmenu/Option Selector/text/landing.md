@@ -1,4 +1,4 @@
-<!-- Option Selector 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Option Selector 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Option Selector의 구성이에요.
@@ -48,7 +48,10 @@ Option Selector의 구성이에요.
 
 ## Meta
 
-###
+### Meta는 메인 텍스트와 보조 정보를 확인하며 옵션을 선택할 때 사용해요.
+옵션명과 가격 등 선택에 필요한 정보를 함께 제공합니다. 구성에 따라 아이콘이나 추가 라벨을 포함할 수 있습니다.
+
+보조 정보는 옵션명의 오른쪽이나 아래에 배치합니다. 아래에 배치할 경우, 구성에 따라 중앙 또는 왼쪽으로 정렬합니다.
 
 ![](img_Option Selector_all_03)
 
@@ -62,4 +65,3 @@ Option Selector의 구성이에요.
 ![](img_Option Selector_all_04)
 
 추가 질문: 스펙 및 토큰, Option Chip, Popup
-

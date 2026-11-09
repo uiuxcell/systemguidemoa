@@ -1,4 +1,4 @@
-<!-- Dimmed & Shadow 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Dimmed & Shadow 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Dimmed & Shadow의
@@ -40,4 +40,3 @@ UI 요소에 입체감과 깊이감을 부여
 기존 스타일과 유사한 경우 Shadow 01 또는 Shadow 02 중 가까운 값으로 통일합니다.
 
 ![](img_dimmedshadow_shadow_01)
-

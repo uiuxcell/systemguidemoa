@@ -1,4 +1,4 @@
-<!-- Badge 랜딩메뉴 — 작성법은 data/landingmenu/README.md -->
+<!-- Badge 랜딩메뉴 — 작성법은 data/landingmenu/README.md (Figma updated.fig 기준) -->
 
 # 타이틀
 Badge의 구성이에요.
@@ -9,37 +9,36 @@ Badge의 구성이에요.
 ### Filled
 핵심 정보를 강조할 때 사용
 
-![](img_badge_filled_01)
+![](img_badge_all_01)
 
 ### Label
 배경 없이 텍스트만 노출하여 강조할 때 사용
 
-![](img_badge_label_01)
+![](img_badge_all_02)
 
 ### Dot
 최소형 뱃지로 신규 정보 존재 여부를 알릴 때 사용
 
-![](img_badge_all_01)
+![](img_badge_all_03)
 
 ### Number
 알림, 장바구니 등 수량을 표시할 때 사용
 
-![](img_badge_all_02)
+![](img_badge_all_04)
 
 ### Icon
 오늘보장, 빠른배송 등 정형화된 에셋형으로 사용
 
-![](img_badge_all_03)
+![](img_badge_all_05)
 
 ## Filled
 
 ### Filled 뱃지는 배경과 텍스트로 핵심 세일즈 정보를 강조할 때 사용해요.
 혜택, 프로모션, 기획전 등 시각적으로 강조해야 하는 정보를 표현할 때 사용합니다.
 
-※ 프로덕트 카드 내부에서는 사용하지 않습니다.
-(카드 내부는 Label 타입만 사용)
+※ 프로덕트 카드 내부에서는 사용하지 않습니다. (카드 내부는 Label 타입만 사용)
 
-![](img_badge_filled_01)
+![](img_badge_all_01)
 
 추가 질문: 스펙 및 토큰, Typeface, Spacing, Radius
 
@@ -50,7 +49,7 @@ Badge의 구성이에요.
 
 ※ 임의의 container나 border를 추가하지 않습니다.
 
-![](img_badge_label_01)
+![](img_badge_all_02)
 
 추가 질문: 스펙 및 토큰, Typeface
 
@@ -61,7 +60,7 @@ Badge의 구성이에요.
 
 ※ width =4px, height=4px 고정 크기를 사용합니다.
 
-![](img_badge_all_01)
+![](img_badge_all_03)
 
 추가 질문: 스펙 및 토큰
 
@@ -72,7 +71,7 @@ Badge의 구성이에요.
 
 ※ 수량이 99 이상일 경우 99+로 표기하며, 숫자 외 특수 기호 등을 단독으로 사용하지 않습니다.
 
-![](img_badge_all_02)
+![](img_badge_all_04)
 
 추가 질문: 스펙 및 토큰, Typeface, Spacing
 
@@ -83,7 +82,6 @@ Badge의 구성이에요.
 
 ※ 텍스트 가독성 또는 레이아웃 조정을 위해 에셋을 임의 축소하거나 크기를 변경하지 않습니다.
 
-![](img_badge_all_03)
+![](img_badge_all_05)
 
 추가 질문: 스펙 및 토큰
-
