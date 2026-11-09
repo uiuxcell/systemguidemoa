@@ -25,7 +25,7 @@ var MOA_NO_ANSWER = '가이드에 해당 내용이 없습니다. 디자인 시�
       - Figma 플러그인: GitHub main 브랜치의 data/prompts/ (push하면 바로 반영)
    읽기에 실패하면 1)을 그대로 씁니다. */
 var MOA_PROMPT_FILES = ['01_role.md', '02_exception.md', '03_output.md'];
-var MOA_PROMPT_REPO = 'https://raw.githubusercontent.com/hveju/systemguidemoa/main/data/prompts/';
+var MOA_PROMPT_REPO = 'https://raw.githubusercontent.com/uiuxcell/systemguidemoa/main/data/prompts/';
 var MOA_PROMPT_TTL = 30000;
 var moaLive = null, moaLiveAt = 0, moaLiveFrom = '';
 
@@ -86,8 +86,8 @@ function moaPromptSource(){ return moaLive ? moaLiveFrom + ' (최신)' : (window
       - Figma 플러그인: GitHub main 브랜치의 data/ (push하면 재빌드 없이 반영)
    파일 목록은 GitHub API로 읽고(새 파일 추가·삭제 반영), 실패하면 빌드 내장본의 목록을 씁니다.
    파싱 규칙은 build.js와 같습니다 — 한쪽을 바꾸면 다른 쪽도 맞춰 주세요. */
-var MOA_REPO_RAW = 'https://raw.githubusercontent.com/hveju/systemguidemoa/main/';
-var MOA_REPO_API = 'https://api.github.com/repos/hveju/systemguidemoa/contents/data/DB_guide?ref=main';
+var MOA_REPO_RAW = 'https://raw.githubusercontent.com/uiuxcell/systemguidemoa/main/';
+var MOA_REPO_API = 'https://api.github.com/repos/uiuxcell/systemguidemoa/contents/data/DB_guide?ref=main';
 var MOA_DB_TTL = 30000, MOA_LIST_TTL = 300000;
 var moaDbAt = 0, moaDbJob = null, moaDbFrom = '빌드 내장', moaList = null, moaListAt = 0;
 var MOA_DB_BUILT = (window.MOA_DB || []).slice();

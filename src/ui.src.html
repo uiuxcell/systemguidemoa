@@ -422,7 +422,7 @@ body.web{background:#1E1E1E}
           <div class="hero-mark">
             <span class="guide">Guide</span>
             <span class="search">Search</span>
-            <button class="mascot" id="moaMotion" aria-label="모아"><img id="moaImg" src="__IMG_HOME__" data-still="__IMG_HOME__" data-motion="https://cdn.jsdelivr.net/gh/hveju/systemguidemoa@1e03f8e8875cbf231bea8e7ab075519cef18723d/moa_hi-natural.gif" alt="Moa"></button>
+            <button class="mascot" id="moaMotion" aria-label="모아"><img id="moaImg" src="__IMG_HOME__" data-still="__IMG_HOME__" data-motion="https://cdn.jsdelivr.net/gh/uiuxcell/systemguidemoa@main/moa_hi-natural.gif" alt="Moa"></button>
           </div>
           <div class="hero-sub">카테고리를 선택하거나
 질문을 검색해 보세요.</div>
@@ -790,7 +790,7 @@ function runProgress(ing){
 }
 /* ── 랜딩 메뉴: data/landingmenu/<카테고리>/text/landing.json · images/img_*.png ── */
 var LANDING = window.MOA_LANDING || {};
-var LANDING_ROOT = /^(data|about|blob):/.test(location.protocol) ? 'https://raw.githubusercontent.com/hveju/systemguidemoa/main/' : (/\/(preview|src)\//.test(location.pathname) ? '../' : '');
+var LANDING_ROOT = /^(data|about|blob):/.test(location.protocol) ? 'https://raw.githubusercontent.com/uiuxcell/systemguidemoa/main/' : (/\/(preview|src)\//.test(location.pathname) ? '../' : '');
 /* 폴더명: '&'는 파일명에 못 쓰여서 ' - '로 (Dimmed & Shadow → Dimmed - Shadow) */
 function landingPath(cat){ return LANDING_ROOT + 'data/landingmenu/' + encodeURIComponent(cat.replace(/\s*&\s*/g, ' - ')) + '/'; }
 function landingImg(cat, name){ var i = name.indexOf('/'); if(i > 0){ cat = name.slice(0, i); name = name.slice(i + 1); } return landingPath(cat) + 'images/' + encodeURIComponent(name) + '.png'; }
@@ -828,13 +828,13 @@ function landingFor(cat, q){
 }
 /* landing.md 최신본으로 덮어쓰기 (미리보기: 로컬 data/ · 플러그인: GitHub main, push하면 반영)
    폴더 목록은 GitHub API로 읽어 새 카테고리 폴더도 반영. 30초 캐시 */
-var LANDING_TEXT_ROOT = LANDING_ROOT.indexOf('http') === 0 ? 'https://raw.githubusercontent.com/hveju/systemguidemoa/main/' : LANDING_ROOT;
+var LANDING_TEXT_ROOT = LANDING_ROOT.indexOf('http') === 0 ? 'https://raw.githubusercontent.com/uiuxcell/systemguidemoa/main/' : LANDING_ROOT;
 var landingAt = 0, landingCats = null;
 function loadLanding(force){
   if(!window.fetch || (!force && landingAt && Date.now() - landingAt < 30000)) return;
   landingAt = Date.now();
   var get = typeof moaFetchText === 'function' ? function(u){ return moaFetchText(u, 4000); } : function(u){ return fetch(u, {cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); }); };
-  var list = landingCats ? Promise.resolve(landingCats) : get('https://api.github.com/repos/hveju/systemguidemoa/contents/data/landingmenu?ref=main').then(function(t){
+  var list = landingCats ? Promise.resolve(landingCats) : get('https://api.github.com/repos/uiuxcell/systemguidemoa/contents/data/landingmenu?ref=main').then(function(t){
     landingCats = JSON.parse(t).filter(function(f){ return f.type === 'dir'; }).map(function(f){ return f.name.replace(/\s+-\s+/g, ' & '); });
     setTimeout(function(){ landingCats = null; }, 300000);
     return landingCats;
@@ -1687,7 +1687,7 @@ show('intro');
   bg.innerHTML='<div class="fr" style="border-image-source:url('+A+'web-bg.png)"></div>'+WEB_TEXT.map(function(i){var x=i.s==='R'?'calc(100% - 245.5px + '+i.x+'px)':i.x+'px';return '<span class="tx" data-k="'+i.k+'" style="left:'+x+';top:'+i.y+'px;height:'+i.fs+'px;font-size:'+i.fs+'px;font-weight:'+i.fw+';color:'+i.c+'">'+i.t+'</span>';}).join('')+'<img class="tool" src="'+A+'web-bg-toolbar.png" alt="">';
   document.body.insertBefore(bg,document.body.firstChild);
   /* 배경 이미지를 못 찾으면(경로·배포 문제) GitHub CDN에서 불러오기 */
-  var CDN='https://cdn.jsdelivr.net/gh/hveju/systemguidemoa@main/assets/', probe=new Image();
+  var CDN='https://cdn.jsdelivr.net/gh/uiuxcell/systemguidemoa@main/assets/', probe=new Image();
   probe.onerror=function(){ if(A===CDN) return; var old=A; A=CDN; bg.innerHTML=bg.innerHTML.split(old).join(CDN); };
   probe.src=A+'web-bg.png';
   var win=document.createElement('div'); win.id='win';

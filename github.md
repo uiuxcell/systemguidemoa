@@ -1,4 +1,4 @@
-repo: hveju/systemguidemoa
+repo: uiuxcell/systemguidemoa
 branch: main
 
 ## Last sync
