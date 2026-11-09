@@ -53,8 +53,12 @@ function moaSystem(){
 function moaFetchText(url, ms){
   var ctl = typeof AbortController === 'function' ? new AbortController() : null;
   var t = setTimeout(function(){ if(ctl) ctl.abort(); }, ms);
-  return fetch(url + '?t=' + Date.now(), { cache: 'no-store', signal: ctl ? ctl.signal : undefined })
-    .then(function(r){ clearTimeout(t); if(!r.ok) throw new Error(r.status); return r.text(); });
+  var opt = { cache: 'no-store', signal: ctl ? ctl.signal : undefined };
+  var get = function(u){ return fetch(u, opt).then(function(r){ if(!r.ok) throw new Error(r.status); return r.text(); }); };
+  /* 캐시 무효화 쿼리(?t=)를 막는 서버가 있어 실패하면 쿼리 없이 재시도 (cache:'no-store'로 충분) */
+  return get(url + (url.indexOf('?') > -1 ? '&' : '?') + 't=' + Date.now())
+    .catch(function(){ return get(url); })
+    .then(function(x){ clearTimeout(t); return x; }, function(e){ clearTimeout(t); throw e; });
 }
 function moaLoadPrompts(force){
   if(!force && moaLiveAt && Date.now() - moaLiveAt < MOA_PROMPT_TTL) return Promise.resolve(moaPrompts());
@@ -74,6 +78,145 @@ function moaLoadPrompts(force){
   return tryBase(0).catch(function(){ moaLiveFrom = ''; return moaPrompts(); });
 }
 function moaPromptSource(){ return moaLive ? moaLiveFrom + ' (최신)' : (window.MOA_PROMPTS && window.MOA_PROMPTS.length ? '빌드 내장' : '기본값'); }
+
+/* ── 가이드 DB: data/DB_guide/*.md|csv + data/DB_tokens/tokens.json ──────
+   1) 빌드 때 인라인된 window.MOA_DB / MOA_TOKENS 로 먼저 동작 (오프라인)
+   2) 시작할 때와 질문·카테고리 진입 때 최신 파일을 다시 읽어 덮어씀 (30초 캐시)
+      - 브라우저 미리보기(http): 같은 프로젝트의 data/
+      - Figma 플러그인: GitHub main 브랜치의 data/ (push하면 재빌드 없이 반영)
+   파일 목록은 GitHub API로 읽고(새 파일 추가·삭제 반영), 실패하면 빌드 내장본의 목록을 씁니다.
+   파싱 규칙은 build.js와 같습니다 — 한쪽을 바꾸면 다른 쪽도 맞춰 주세요. */
+var MOA_REPO_RAW = 'https://raw.githubusercontent.com/hveju/systemguidemoa/main/';
+var MOA_REPO_API = 'https://api.github.com/repos/hveju/systemguidemoa/contents/data/DB_guide?ref=main';
+var MOA_DB_TTL = 30000, MOA_LIST_TTL = 300000;
+var moaDbAt = 0, moaDbJob = null, moaDbFrom = '빌드 내장', moaList = null, moaListAt = 0;
+var MOA_DB_BUILT = (window.MOA_DB || []).slice();
+var MOA_LABEL = { DimmedShadow: 'Dimmed & Shadow', CTAButtonIcon: 'CTA Button Icon' };
+function moaLabel(key){
+  var b = key.replace(/^\d+[_\-.]\s*/, '');
+  if(MOA_LABEL[b]) return MOA_LABEL[b];
+  return b.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');
+}
+function moaClean(s){
+  var t = s.replace(/^#+\s*/, '').replace(/[`*]/g, '').trim();
+  t = t.replace(/^\d+(\.\d+)*\.?\s*/, '').trim();
+  if(/^\[.*\]$/.test(t)) t = t.slice(1, -1).trim();
+  return t;
+}
+function moaSplitCsv(line){
+  var out = [], cur = '', q = false;
+  for(var i = 0; i < line.length; i++){
+    var c = line[i];
+    if(c === '"'){ if(q && line[i + 1] === '"'){ cur += '"'; i++; } else q = !q; }
+    else if(c === ',' && !q){ out.push(cur); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+function moaParseGuide(name, raw){
+  var base = moaLabel(name.replace(/\.(md|csv)$/i, '')), out = [];
+  raw = String(raw).replace(/^\uFEFF/, '');
+  if(/\.csv$/i.test(name)){
+    var rows = raw.trim().split(/\r?\n/).map(moaSplitCsv);
+    var head = (rows.shift() || []).map(function(h){ return h.trim(); });
+    rows.forEach(function(row){
+      if(!row.length || row.every(function(c){ return !c.trim(); })) return;
+      var rec = {};
+      head.forEach(function(h, i){ rec[h] = (row[i] || '').trim(); });
+      out.push({ source: name, topic: base, group: base, section: base, text: head.map(function(h){ return h + ': ' + rec[h]; }).join(', '), kind: 'csv', row: rec });
+    });
+    return out;
+  }
+  var group = '', section = '', buf = [];
+  var flush = function(){
+    var text = buf.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+    buf = [];
+    if(!text || !section) return;
+    if(/^(메타|관련 피그마 좌표)/.test(group) || /^(메타|관련 피그마 좌표)/.test(section)) return;
+    if(/^DB 등록:/m.test(text) || text.length < 12) return;
+    out.push({ source: name, topic: base, group: group, section: section, text: text, kind: 'md' });
+  };
+  raw.split(/\r?\n/).forEach(function(line){
+    var h = /^(#{1,4})\s+(.*)$/.exec(line);
+    if(h){
+      var l = moaClean(h[2]);
+      if(!l) return;
+      flush();
+      if(h[1].length <= 2){ group = l; section = l; } else section = l;
+    } else buf.push(line);
+  });
+  flush();
+  return out;
+}
+function moaDataBase(){
+  return /^https?:/.test(location.protocol) ? (/\/(preview|src)\//.test(location.pathname) ? '../' : '') : MOA_REPO_RAW;
+}
+function moaSwap(target, list){ target.length = 0; Array.prototype.push.apply(target, list); }
+function moaGuideList(){
+  var built = [];
+  MOA_DB_BUILT.forEach(function(c){ if(built.indexOf(c.source) < 0) built.push(c.source); });
+  if(moaList && Date.now() - moaListAt < MOA_LIST_TTL) return Promise.resolve(moaList);
+  return moaFetchText(MOA_REPO_API, 3000).then(function(t){
+    var names = JSON.parse(t).filter(function(f){ return f.type === 'file' && f.name !== 'README.md' && /\.(md|csv)$/i.test(f.name); }).map(function(f){ return f.name; });
+    /* 미리보기는 아직 push 안 한 로컬 파일도 있을 수 있어 내장 목록과 합침 */
+    if(moaDataBase() !== MOA_REPO_RAW) built.forEach(function(n){ if(names.indexOf(n) < 0) names.push(n); });
+    moaList = names.sort(); moaListAt = Date.now();
+    return moaList;
+  }).catch(function(){ return moaList || built.sort(); });
+}
+function moaLoadDb(force){
+  if(moaDbJob) return moaDbJob;
+  if(!window.fetch || (!force && moaDbAt && Date.now() - moaDbAt < MOA_DB_TTL)) return Promise.resolve(window.MOA_DB);
+  moaDbAt = Date.now();
+  var base = moaDataBase();
+  var guide = moaGuideList().then(function(names){
+    return Promise.all(names.map(function(n){
+      return moaFetchText(base + 'data/DB_guide/' + encodeURIComponent(n), 4000)
+        .then(function(t){ return { ok: true, chunks: moaParseGuide(n, t) }; })
+        .catch(function(e){
+          /* 404 = 파일 삭제됨, 그 외(네트워크) = 내장본 유지 */
+          if(String(e && e.message) === '404') return { ok: true, chunks: [] };
+          return { ok: false, chunks: MOA_DB_BUILT.filter(function(c){ return c.source === n; }) };
+        });
+    }));
+  }).then(function(res){
+    var all = [].concat.apply([], res.map(function(r){ return r.chunks; }));
+    var fresh = res.filter(function(r){ return r.ok; }).length;
+    if(!all.length || !fresh) return false;
+    if(!Array.isArray(window.MOA_DB)) window.MOA_DB = [];
+    moaSwap(window.MOA_DB, all);
+    return true;
+  });
+  var tokens = moaFetchText(base + 'data/DB_tokens/tokens.json', 4000).then(function(t){
+    var list = JSON.parse(t);
+    if(!Array.isArray(list) || !list.length) return false;
+    if(!Array.isArray(window.MOA_TOKENS)) window.MOA_TOKENS = [];
+    moaSwap(window.MOA_TOKENS, list);
+    return true;
+  }).catch(function(){ return false; });
+  /* 용어집: glossary.md + ko_en.md (하나만 읽혀도 그 파일분만 교체) */
+  var gloss = Promise.all([
+    moaFetchText(base + 'data/db_glossary/glossary.md', 4000).then(moaParseGlossary).catch(function(){ return null; }),
+    moaFetchText(base + 'data/db_glossary/' + MOA_KOEN_SRC, 4000).then(moaParseKoEn).catch(function(){ return null; })
+  ]).then(function(g){
+    var keep = (window.MOA_GLOSSARY_DB || []).filter(function(it){ return (it.source === 'glossary.md' && !(g[0] && g[0].length)) || (it.source === MOA_KOEN_SRC && !(g[1] && g[1].length)); });
+    if(!(g[0] && g[0].length) && !(g[1] && g[1].length)) return false;
+    window.MOA_GLOSSARY_DB = (g[0] && g[0].length ? g[0] : []).concat(g[1] && g[1].length ? g[1] : [], keep).sort(function(a, b){ return (a.source === MOA_KOEN_SRC) - (b.source === MOA_KOEN_SRC); });
+    return true;
+  });
+  moaDbJob = Promise.all([guide.catch(function(){ return false; }), tokens, gloss]).then(function(r){
+    moaDbJob = null;
+    if(r[0] || r[1] || r[2]){
+      moaDbFrom = (base === MOA_REPO_RAW ? 'GitHub' : '로컬') + ' data (최신)';
+      if(typeof moaBuildGlossary === 'function') moaBuildGlossary();
+      if(typeof window.moaOnDb === 'function') window.moaOnDb();
+    }
+    return window.MOA_DB;
+  });
+  return moaDbJob;
+}
+function moaDbSource(){ return moaDbFrom; }
 
 /* data/db_glossary/glossary.md → 사용자 표현 ↔ 공식 용어 (빌드 시 window.MOA_GLOSSARY_DB로 들어옴) */
 var MOA_GLOSSARY_CAT = { 'typography':'Typeface' };
@@ -194,17 +337,24 @@ moaTokenize = function(q){
   });
   return out;
 };
-/* 최신 파일로 덮어쓰기 (웹: 같은 프로젝트 / 플러그인: GitHub main). 실패하면 빌드 내장본 사용 */
-(function(){
-  if(!window.fetch) return;
-  var url = (location.protocol.indexOf('http') === 0 ? (/\/(preview|src)\//.test(location.pathname) ? '../' : '') : 'https://raw.githubusercontent.com/hveju/systemguidemoa/main/') + 'data/db_glossary/' + MOA_KOEN_SRC;
-  fetch(url, { cache:'no-store' }).then(function(r){ return r.ok ? r.text() : null; }).then(function(t){
-    var list = t && moaParseKoEn(t);
-    if(!list || !list.length) return;
-    window.MOA_GLOSSARY_DB = (window.MOA_GLOSSARY_DB || []).filter(function(it){ return it.source !== MOA_KOEN_SRC; }).concat(list);
-    if(typeof moaBuildGlossary === 'function') moaBuildGlossary();
-  }).catch(function(){});
-})();
+/* glossary.md → [{term, category, aliases}] — 카테고리 = 가장 가까운 ##/### 제목(괄호 안 영문 우선). build.js와 같은 규칙.
+   최신 파일 덮어쓰기는 moaLoadDb()가 함께 처리합니다. */
+function moaParseGlossary(md){
+  var out = [], cat = '';
+  String(md).replace(/\r/g, '').split('\n').forEach(function(l){
+    var h = /^(#{2,3})\s+(.*)$/.exec(l);
+    if(h){
+      if(/^#/.test(h[2])) return;
+      var t = moaClean(h[2]), p = /\(([^)]*[A-Za-z][^)]*)\)\s*$/.exec(t);
+      t = p && !/[가-힣]/.test(p[1]) ? p[1].trim() : t.replace(/\s*\([^)]*\)\s*$/, '').trim();
+      if(t) cat = t;
+      return;
+    }
+    var m = /^\s*-\s*`([^`]+)`\s*:\s*(.+)$/.exec(l);
+    if(m) out.push({ term: m[1].trim(), category: cat, aliases: m[2].split(',').map(function(s){ return s.trim(); }).filter(Boolean), source: 'glossary.md' });
+  });
+  return out;
+}
 
 /* 기존 호환용 단순 검색 */
 function moaSearch(query, limit){
@@ -392,7 +542,8 @@ function moaAskOnce(question, apiKey, opts){
   var hist = (opts.history || []).slice(-6);
   var last = hist[hist.length - 1];
 
-  return Promise.resolve()
+  return moaLoadDb()
+  .then(function(){ db = window.MOA_DB || []; })
   /* 1 */
   .then(function(){ return begin(0); })
   .then(function(){
@@ -451,7 +602,7 @@ function moaAskOnce(question, apiKey, opts){
     return Promise.all([search(db, false), search(tokens, true)]).then(function(res){
       hits = { guide: res[0], token: res[1] };
       var n = res[0].length + res[1].length;
-      end(2, '가이드 ' + res[0].length + '건 · 토큰 ' + res[1].length + '건 검색됨', n ? 'done' : 'warn');
+      end(2, '가이드 ' + res[0].length + '건 · 토큰 ' + res[1].length + '건 검색됨\nDB: ' + moaDbFrom, n ? 'done' : 'warn');
     });
   })
   /* 4 */
@@ -586,4 +737,8 @@ window.moaAsk = moaAsk;
 window.moaUsage = moaUsage;
 window.moaSearch = moaSearch;
 window.moaLoadPrompts = moaLoadPrompts;
+window.moaLoadDb = moaLoadDb;
+window.moaParseGuide = moaParseGuide;
+window.moaDbSource = moaDbSource;
+moaLoadDb(true);
 window.moaSystem = moaSystem;
