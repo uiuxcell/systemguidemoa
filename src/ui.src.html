@@ -1525,7 +1525,8 @@ function addActions(body, copyText, cta, chipsOverride){
     con.style.paddingBottom = '';
     var lack = top + con.clientHeight - con.scrollHeight;
     if(lack > 0) con.style.paddingBottom = (parseFloat(getComputedStyle(con).paddingBottom) + lack) + 'px';
-    if(!S.userScroll) con.scrollTo({ top: top, behavior: 'smooth' });
+    S.userScroll = false; /* 이전으로는 사용자가 직접 누른 이동이라 항상 스크롤 */
+    con.scrollTo({ top: top, behavior: 'smooth' });
   };
   after.appendChild(bl);
 
