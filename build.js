@@ -112,7 +112,7 @@ const easteregg = fs.existsSync(path.join(__dirname, 'data/easteregg.md')) ? R('
 
 const map = {
   __IMG_HOME__: 'home', __IMG_KEY__: 'key', __IMG_KEYBG__: 'keybg', __IMG_SAD__: 'sad',
-  __IMG_MASCOT__: 'mascot', __IMG_PROFILE__: 'profile', __IMG_SMALL__: 'small', __IMG_INTROBG__: 'introbg'
+  __IMG_MASCOT__: 'mascot', __IMG_PROFILE__: 'profile', __IMG_SMALL__: 'small', __IMG_INTROBG__: 'introbg', __IMG_MOAHI__: 'moahi'
 };
 const esc = (s) => s.replace(/<\//g, '<\\/');
 const build = (get) => {
@@ -132,7 +132,7 @@ const build = (get) => {
 fs.writeFileSync(path.join(__dirname, 'index.html'), build(n => imgs[n]));
 fs.mkdirSync(path.join(__dirname, 'preview'), { recursive: true });
 fs.writeFileSync(path.join(__dirname, 'preview/ui.preview.html'),
-  build(n => `../assets/img-${n}.${/^data:image\/jpe?g/.test(imgs[n]) ? 'jpg' : 'png'}`));
+  build(n => n === 'moahi' ? '../assets/moa_hi_sequence.webp' : `../assets/img-${n}.${/^data:image\/jpe?g/.test(imgs[n]) ? 'jpg' : 'png'}`));
 
 const by = {};
 chunks.forEach(c => by[c.source] = (by[c.source] || 0) + 1);

@@ -115,9 +115,6 @@ body.web{background:#1E1E1E}
 .hero-mark .mascot{position:absolute;left:73px;top:1px;width:90px;height:90px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .hero-mark .mascot img{will-change:transform}
 .hero-mark .mascot:active img{transform:scale(.95)}
-.hero-mark .mascot.play img{animation:moaMotion 1.2s cubic-bezier(.34,1.56,.64,1)}
-@keyframes moaMotion{0%{transform:translateY(0) scale(1) rotate(0)}18%{transform:translateY(2px) scale(1.08,.92)}38%{transform:translateY(-14px) scale(.94,1.08) rotate(-7deg)}56%{transform:translateY(-4px) scale(1.04,.96) rotate(6deg)}74%{transform:translateY(-8px) scale(.98,1.02) rotate(-3deg)}100%{transform:translateY(0) scale(1) rotate(0)}}
-.hero-mark .mascot img{transition:transform .12s ease}
 .hero-mark .mascot img{position:absolute;left:-21px;top:-18px;width:120px;height:120px;object-fit:cover}
 .hero-sub{align-self:stretch;font-size:16px;font-weight:600;line-height:24px;text-align:center;white-space:pre-line;color:#4185FF}
 .home-chips{height:226px;display:flex;flex-direction:column;gap:32px;align-items:center;align-self:stretch}
@@ -422,7 +419,7 @@ body.web{background:#1E1E1E}
           <div class="hero-mark">
             <span class="guide">Guide</span>
             <span class="search">Search</span>
-            <button class="mascot" id="moaMotion" aria-label="모아"><img id="moaImg" src="__IMG_HOME__" data-still="__IMG_HOME__" data-motion="https://cdn.jsdelivr.net/gh/uiuxcell/systemguidemoa@main/moa_hi-natural.gif" alt="Moa"></button>
+            <button class="mascot" id="moaMotion" aria-label="모아"><img id="moaImg" src="__IMG_HOME__" data-still="__IMG_HOME__" data-motion="__IMG_MOAHI__" alt="Moa"></button>
           </div>
           <div class="hero-sub">카테고리를 선택하거나
 질문을 검색해 보세요.</div>
@@ -640,7 +637,7 @@ if(USE_DB){
   MENU = [
     {en:'Foundation', ko:'공통 스타일', rows:[['Color','Typeface','Spacing'],['Dimmed & Shadow','Iconography','Radius']]},
     {en:'Element', ko:'기본 요소', rows:[['CTA Button','CTA Button Icon','Badge'],['Chip','Selection Control','Indicator'],['Divider','Option Chip','Option Selector']]},
-    {en:'Component', ko:'조합 UI', rows:[['Tooltip','Tab','List','menu','Filter'],['Text Field']]}
+    {en:'Component', ko:'조합 UI', rows:[['Tooltip','Tab','List','Menu','Filter'],['Text Field']]}
   ];
 }
 
@@ -732,22 +729,32 @@ function back(){
 }
 
 /* ── home chips ──────────────────────────────────────────────── */
-var moa = $('moaMotion'), moaImg = $('moaImg'), moaOk = true;
-function moaBounce(){ moa.classList.remove('play'); void moa.offsetWidth; moa.classList.add('play'); }
-moa.addEventListener('animationend', function(){ moa.classList.remove('play'); });
-moaImg.onerror = function(){ if(moaOk){ moaOk = false; moaImg.src = moaImg.dataset.still; } };
-new Image().src = moaImg.dataset.motion;
-moa.addEventListener('mouseenter', function(){
-  if(!moaOk){ moaBounce(); return; }
-  moaImg.src = moaImg.dataset.motion + '?t=' + Date.now();
-});
-moa.addEventListener('mouseleave', function(){
-  if(moaOk) moaImg.src = moaImg.dataset.still;
-});
-moa.onclick = function(){
-  if(!moaOk){ moaBounce(); return; }
-  moaImg.src = moaImg.dataset.motion + '?t=' + Date.now();
-};
+var moa = $('moaMotion'), moaImg = $('moaImg'), moaBlob = null, moaUrl = null, moaTok = 0;
+var moaFx = document.createElement('img');
+moaFx.alt = ''; moaFx.setAttribute('aria-hidden','true');
+moaFx.style.cssText = 'position:absolute;left:-21px;top:-18px;width:120px;height:120px;object-fit:cover;pointer-events:none;visibility:hidden;transform-origin:0 0;transform:translate(5.9px,9px) scale(.877)';
+moa.appendChild(moaFx);
+fetch(moaImg.dataset.motion).then(function(r){ return r.blob(); }).then(function(b){ moaBlob = b; });
+function moaPlay(){
+  var tok = ++moaTok, old = moaUrl;
+  moaUrl = moaBlob ? URL.createObjectURL(moaBlob) : moaImg.dataset.motion + '?t=' + Date.now();
+  var next = new Image(); next.src = moaUrl;
+  (next.decode ? next.decode() : Promise.resolve()).catch(function(){}).then(function(){
+    if(tok !== moaTok) return;
+    moaFx.src = moaUrl;
+    moaFx.style.visibility = 'visible';
+    moaImg.style.visibility = 'hidden';
+    if(old && old.indexOf('blob:') === 0) setTimeout(function(){ URL.revokeObjectURL(old); }, 500);
+  });
+}
+function moaStop(){
+  moaTok++;
+  moaImg.style.visibility = '';
+  moaFx.style.visibility = 'hidden';
+}
+moa.addEventListener('mouseenter', moaPlay);
+moa.addEventListener('mouseleave', moaStop);
+moa.onclick = moaPlay;
 
 HOME_CHIPS.forEach(function(row){
   var r = el('div','home-row');
@@ -1077,7 +1084,16 @@ function mdPlain(text){
     .trim();
 }
 
-function scrollDown(){ if(S.hold) return; var c=$('chatCon'); c.style.paddingBottom = ''; c.scrollTop = c.scrollHeight; }
+function scrollDown(){ if(S.hold || S.userScroll) return; var c=$('chatCon'); c.style.paddingBottom = ''; c.scrollTop = c.scrollHeight; }
+/* 답변 중 사용자가 직접 스크롤하면 자동 스크롤 멈춤 (새 질문을 보내면 다시 켬) */
+(function(){
+  var c = $('chatCon'); if(!c) return;
+  var mark = function(){ S.userScroll = true; };
+  c.addEventListener('wheel', mark, {passive:true});
+  c.addEventListener('touchmove', mark, {passive:true});
+  c.addEventListener('pointerdown', function(e){ if(e.offsetX > c.clientWidth) mark(); });
+  c.addEventListener('keydown', function(e){ if(/^(ArrowUp|ArrowDown|PageUp|PageDown|Home|End| )$/.test(e.key)) mark(); });
+})();
 
 /* 한 채팅창 안의 대화 기록 — 카테고리를 새로 열면 초기화 */
 function remember(q, text, topics){
@@ -1169,7 +1185,7 @@ function confirmMove(body, text, mv, onGo, onStay){
   body.appendChild(note); scrollDown();
 }
 function ask(q, typed){
-  S.hold = false; /* 새 질문이면 자동 스크롤 다시 켬 */
+  S.hold = false; S.userScroll = false; /* 새 질문이면 자동 스크롤 다시 켬 */
   var cmp = compareTopics(q);
   if(typed && !cmp){
     var mv = redirectTopic(q);
@@ -1509,7 +1525,7 @@ function addActions(body, copyText, cta, chipsOverride){
     con.style.paddingBottom = '';
     var lack = top + con.clientHeight - con.scrollHeight;
     if(lack > 0) con.style.paddingBottom = (parseFloat(getComputedStyle(con).paddingBottom) + lack) + 'px';
-    con.scrollTo({ top: top, behavior: 'smooth' });
+    if(!S.userScroll) con.scrollTo({ top: top, behavior: 'smooth' });
   };
   after.appendChild(bl);
 
