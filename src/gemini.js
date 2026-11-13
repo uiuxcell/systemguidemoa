@@ -205,9 +205,15 @@ function moaLoadDb(force){
     window.MOA_GLOSSARY_DB = (g[0] && g[0].length ? g[0] : []).concat(g[1] && g[1].length ? g[1] : [], keep).sort(function(a, b){ return (a.source === MOA_KOEN_SRC) - (b.source === MOA_KOEN_SRC); });
     return true;
   });
-  moaDbJob = Promise.all([guide.catch(function(){ return false; }), tokens, gloss]).then(function(r){
+  var faq = moaFetchText(base + 'data/faq/' + MOA_FAQ_FILE, 4000).then(function(t){
+    var list = moaParseFaq(t);
+    if(!list.length) return false;
+    window.MOA_FAQ = list;
+    return true;
+  }).catch(function(){ return false; });
+  moaDbJob = Promise.all([guide.catch(function(){ return false; }), tokens, gloss, faq]).then(function(r){
     moaDbJob = null;
-    if(r[0] || r[1] || r[2]){
+    if(r[0] || r[1] || r[2] || r[3]){
       moaDbFrom = (base === MOA_REPO_RAW ? 'GitHub' : '로컬') + ' data (최신)';
       if(typeof moaBuildGlossary === 'function') moaBuildGlossary();
       if(typeof window.moaOnDb === 'function') window.moaOnDb();
@@ -217,6 +223,75 @@ function moaLoadDb(force){
   return moaDbJob;
 }
 function moaDbSource(){ return moaDbFrom; }
+
+/* ── FAQ: data/faq/DB_FAQ.csv ─────────────────────────────────
+   카테고리별 [예상 질문 → 봇 응답 예시]. 답변의 "형식·어투"만 이 파일을 우선 따르고,
+   {변수} 자리의 실제 명칭·값·토큰은 DB_guide / DB_tokens(<context>)에서 채웁니다.
+   노션에서 내려받은 CSV를 같은 이름으로 덮어쓰면 됩니다 (실행 중 다시 읽음, 빌드 시 내장). */
+var MOA_FAQ_FILE = 'DB_FAQ.csv';
+function moaCsvRows(raw){
+  var rows = [], row = [], cur = '', q = false, s = String(raw).replace(/^\uFEFF/, '');
+  for(var i = 0; i < s.length; i++){
+    var c = s[i];
+    if(q){ if(c === '"'){ if(s[i + 1] === '"'){ cur += '"'; i++; } else q = false; } else cur += c; }
+    else if(c === '"') q = true;
+    else if(c === ','){ row.push(cur); cur = ''; }
+    else if(c === '\n' || c === '\r'){ if(c === '\r' && s[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }
+    else cur += c;
+  }
+  if(cur || row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(function(r){ return r.some(function(x){ return x.trim(); }); });
+}
+/* "01_Color (색상) (https://…)" → "Color" */
+function moaFaqTopic(cat){
+  return String(cat || '').replace(/\s*\(https?:[^)]*\)\s*$/, '').replace(/^\d+[_\-.]\s*/, '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+}
+function moaParseFaq(raw){
+  var rows = moaCsvRows(raw), head = (rows.shift() || []).map(function(h){ return h.trim(); });
+  var col = function(k){ for(var i = 0; i < head.length; i++) if(head[i].indexOf(k) > -1) return i; return -1; };
+  var ci = col('카테고리'), qi = col('예상 질문'), ai = col('봇 응답'), vi = col('변수');
+  if(qi < 0 || ai < 0) return [];
+  return rows.map(function(r){
+    return { topic: moaFaqTopic(ci > -1 ? r[ci] : ''), q: (r[qi] || '').trim(), a: (r[ai] || '').trim(), vars: vi > -1 ? (r[vi] || '').trim() : '' };
+  }).filter(function(x){ return x.q && x.a; });
+}
+var MOA_FAQ_HINT = [
+  ['breakpoint', /pc|mo|모바일|데스크톱|데스크탑|태블릿|해상도|breakpoint/i],
+  ['state', /상태|hover|호버|비활성|disabled|선택|pressed|눌림|focus|포커스/i],
+  ['theme', /다크|라이트|dark|light|테마/i],
+  ['size', /small|large|default|medium|사이즈|크기|\d+px/i],
+  ['token', /토큰|token/i]
+];
+function moaFaqKey(t){ return String(t || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+/* 질문과 비슷한 FAQ 예시를 topics(우선순위 순) 안에서 최대 n개 */
+function moaFaqMatch(question, topics, n){
+  var list = window.MOA_FAQ || [];
+  if(!n || !list.length) return [];
+  var keys = (topics || []).map(moaFaqKey).filter(Boolean);
+  var qs = moaTokenize(question).filter(function(t){ return t.length > 1; });
+  var raw = String(question || '');
+  return list.map(function(f){
+    var rank = keys.indexOf(moaFaqKey(f.topic));
+    if(keys.length && rank < 0) return null;
+    var words = moaTokenizeBase(f.q.replace(/\{[^}]*\}/g, ' ')).filter(function(w){ return w.length > 1; });
+    var s = 0;
+    words.forEach(function(w){ if(qs.some(function(t){ return t.indexOf(w) === 0 || w.indexOf(t) === 0; })) s += 1; });
+    MOA_FAQ_HINT.forEach(function(h){ if(f.q.indexOf('{' + h[0]) > -1 && h[1].test(raw)) s += 0.5; });
+    if(s < 1) return null;
+    return { f: f, s: s - rank * 0.01 };
+  }).filter(Boolean).sort(function(a, b){ return b.s - a.s; }).slice(0, n).map(function(r){ return r.f; });
+}
+function moaFaqContext(list){
+  if(!list || !list.length) return '';
+  return '<faq_style>\n' +
+    '아래는 이 카테고리의 공식 답변 예시입니다. 질문과 가장 비슷한 예시 하나를 골라 그 문장 구조·어투·목록 형식(•, -, **굵게**)을 우선 따라 답하세요.\n' +
+    '- {중괄호} 자리는 반드시 <context>(DB_guide·DB_tokens)에서 확인한 실제 명칭·값·토큰으로 채우세요. context에 없는 값은 지어내지 말고 그 부분을 생략하세요.\n' +
+    '- 예시에 적힌 고정 문장·수치라도 context와 다르면 context를 따르세요.\n' +
+    '- 이 예시 형식이 출력 프롬프트의 기본 구성(설명구/핵심 스펙/정의/사용 규칙)보다 우선합니다. 단, 첫 줄 제목 규칙과 JSON 출력 형식은 그대로 지키세요.\n' +
+    '- 비슷한 예시가 없으면 기본 출력 규칙을 따르세요.\n\n' +
+    list.map(function(f, i){ return '[예시 ' + (i + 1) + ' · ' + f.topic + ']\n질문: ' + f.q + '\n응답: ' + f.a; }).join('\n\n') +
+    '\n</faq_style>\n\n';
+}
 
 /* data/db_glossary/glossary.md → 사용자 표현 ↔ 공식 용어 (빌드 시 window.MOA_GLOSSARY_DB로 들어옴) */
 var MOA_GLOSSARY_CAT = { 'typography':'Typeface' };
@@ -538,7 +613,7 @@ function moaAskOnce(question, apiKey, opts){
   function end(i, detail, status){ report(i, status || 'done', detail || ''); }
   function skipRest(from, detail){ for(var k = from; k < MOA_STEPS.length; k++) report(k, 'skip', k === from ? detail : ''); }
 
-  var qs, sq, usage = false, topics = [], hits = [], db = window.MOA_DB || [];
+  var qs, sq, usage = false, topics = [], hits = [], faqs = [], db = window.MOA_DB || [];
   var hist = (opts.history || []).slice(-6);
   var last = hist[hist.length - 1];
 
@@ -629,8 +704,13 @@ function moaAskOnce(question, apiKey, opts){
       g = db.filter(function(c){ return c.topic === opts.topic && /정의|개요|타입별 ?요약|적용 ?상황|사용 ?기준|용도/.test(moaHead(c)); }).slice(0, 5);
     }
     hits = g.concat(t);
+    /* FAQ 형식: 지금 카테고리 → 질문에서 찾은 주제 → 근거 상위 주제 순 */
+    var ft = [], addT = function(x){ if(x && x !== opts.excludeTopic && ft.indexOf(x) < 0) ft.push(x); };
+    addT(opts.topic); topics.forEach(addT); g.slice(0, 2).forEach(function(c){ addT(c.topic); });
+    faqs = cmp ? [] : moaFaqMatch(question, ft, 3);
     var lab = function(c){ return (c.topic ? c.topic + ' › ' : '') + moaHead(c); };
     var info = (g.length ? '가이드: ' + g.slice(0, 2).map(lab).join(' / ') : '') + (g.length && t.length ? '\n' : '') + (t.length ? '토큰: ' + t.slice(0, 3).map(function(c){ return moaHead(c).replace(/ 토큰$/, ''); }).join(', ') : '');
+    if(faqs.length) info += '\nFAQ 형식: ' + faqs.map(function(f){ return f.q; }).slice(0, 2).join(' / ');
     end(3, hits.length ? info : '매칭된 결과 없음', hits.length ? 'done' : 'warn');
   })
   /* 5 */
@@ -657,7 +737,7 @@ function moaAskOnce(question, apiKey, opts){
         systemInstruction: { parts: [{ text: moaSystem() + MOA_JSON_RULE }] },
         contents: [].concat.apply([], hist.map(function(h){
           return [{ role: 'user', parts: [{ text: h.q }] }, { role: 'model', parts: [{ text: String(h.a || '').slice(0, 1200) }] }];
-        })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') + moaLeadHint() }] }]),
+        })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n' + moaFaqContext(faqs) + '질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') + moaLeadHint() }] }]),
       };
       var tried = [], fails = [], plain = false;
       function next(i){

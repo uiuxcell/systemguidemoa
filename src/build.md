@@ -9,6 +9,7 @@
 | `__TOKENS_JSON__` | `data/DB_tokens/tokens.json` (토큰 chunk 배열) |
 | `__GEMINI_JS__` | `src/gemini.js` 내용 |
 | `__GLOSSARY_JSON__` | `data/db_glossary/glossary.md`, `ko_en.md` 용어 배열 |
+| `__FAQ_JSON__` | `data/faq/DB_FAQ.csv` FAQ 배열 `[{topic, q, a, vars}]` (답변 형식 예시) |
 | `__EASTEREGG_JSON__` | `data/easteregg.md` 원문 (Easter egg 내장본) |
 | `__PROMPTS_JSON__` | `data/prompts/*.md` 본문 배열 `[{file, text}]` (Gemini system instruction) |
 | `__IMG_HOME__` | 홈 마스코트 |

@@ -171,7 +171,7 @@ body.web{background:#1E1E1E}
 .chip.sel{box-shadow:inset 0 0 0 1px #2063FF;font-weight:600;color:#2063FF}
 .chip.sm{height:32px;font-size:12px;line-height:15.96px}
 .row-user{padding:0 24px;display:flex;justify-content:flex-end;align-self:stretch}
-.bub-user{border-radius:20px 2px 20px 20px;background:#4185FF;padding:10px 14px;font-size:14px;font-weight:600;line-height:19px;color:#fff;text-align:right;max-width:312px}
+.bub-user{border-radius:20px 2px 20px 20px;background:#4185FF;padding:10px 14px;font-size:14px;font-weight:600;line-height:19px;color:#fff;text-align:left;max-width:276px;box-sizing:border-box;overflow-wrap:anywhere}
 .row-bot{padding:0 24px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;align-self:stretch}
 .avatar{position:relative;width:28px;height:28px;border-radius:50%;background:#E7F3FF;overflow:hidden;flex-shrink:0}
 .avatar img{position:absolute;left:0;top:0;width:28px;height:28px;object-fit:cover;object-position:center}
@@ -440,7 +440,7 @@ body.web{background:#1E1E1E}
           <div class="hero-mark">
             <span class="guide">Guide</span>
             <span class="search">Search</span>
-            <button class="mascot" id="moaMotion" aria-label="모아"><img id="moaImg" src="../assets/img-home.png" data-still="../assets/img-home.png" data-motion="../assets/moa_hi_sequence.webp" alt="Moa"></button>
+            <button class="mascot" id="moaMotion" aria-label="모아"><img id="moaImg" src="../assets/img-home.png" data-still="../assets/img-home.png" data-motion="../assets/moa_hi_sequence.webp" data-turn="../assets/moa_360turn_sequence.webp" data-teacher="../assets/moa_teacher_sequence.webp" alt="Moa"></button>
           </div>
           <div class="hero-sub">카테고리를 선택하거나
 질문을 검색해 보세요.</div>
@@ -1481,6 +1481,7 @@ Gemini API 키가 필요해요</h1>
 ];</script>
 <script>window.MOA_PROMPTS = [{"file":"01_role.md","text":"**01. 챗봇의 역할 및 목적**\n\n- 너는 디자인 시스템 가이드 챗봇 \"모아(MOA)\"이다.\n- 사용자의 질문에 맞는 컴포넌트 규칙, 사용 조건, 스펙 및 관련 정보를 정확하게 제공한다.\n\n**02. 기본 행동 원칙**\n\n- [data]에 제공된 디자인 시스템 DB만 정보 출처로 사용한다.\n- [data/prompts/03_output.md] 출력 프롬프트 과정을 거쳐 답변한다.\n\n**03. 답변 가능 범위**\n\n- [한눈에 보기] : 버튼 선택 시 해당 항목에 지정된 고정 데이터만 출력하며, 다른 정보를 추가하지 않는다.\n- [일반 질문] : DB_FAQ / DB_guide / DB_tokens에서 근거를 확인할 수 있는 질문에 답변한다.\n\n**04. 질문 분석 기준**\n\n- Intent: 사용자가 어떤 유형의 질문을 하는지( 값 / 사용방법 / 가능여부 / 비교 / 이유 )\n- Target: 어떤 대상을 묻는지 ( Component / Property / Token 등 )\n- Condition: 어떤 조건에서의 값을 묻는지 ( Platform / Variant / State / Size / Theme 등 )\n- Requested Info: 구체적으로 어떤 정보를 요구하는지\n- [data/glossary.md]: glossary DB를 거쳐 표현 단어와 데이터 용어간 의미를 매핑한다.\n\n**05. DB별 역할**\n\n- [DB_Glossary]: 사용자 표현 → 공식 용어 맵핑\n- [DB_FAQ]: 유사 질문 / 답변\n- [DB_guide]: 사용 / 선택조건\n- [DB_tokens]: State / Token / Property / Spec\n- 구체적인 값은 [DB_guide] / [DB_tokens]을 기준으로 하며, [DB_FAQ]는 답변 및 설명을 위한 보조 근거로 활용한다.\n\n**06. DB 확인 순서**\n\n1. 질문 분석\n2. DB_Glossary 용어 맵핑\n3. DB_FAQ / DB_guide / DB_tokens 검색\n4. 질문 조건과 검색 결과 매칭\n5. 답변 가능 여부 및 근거 검증\n6. 최종 답변 데이터 확정\n- 정상 답변을 확정할 수 없는 경우 응답 예외 프롬프트[prompts/02_exception.md]를 적용한다.\n\n**07. 데이터 간 우선순위**\n\n- 중복/충돌 시 우선순위에 맞게 겨과를 정리한다.\n- 조건 일치 기준: Component / Property / Platform / Variant / State / Size / Theme\n- 우선순위\n    1. 사용 방법 질문일 때: DB_guide → DB_tokens\n    2. 값을 찾는 질문일 때: DB_tokens → DB_guide\n    3. DB_FAQ: 일치하는 질문이 있는 경우 답변의 보조 근거로 활용한다.\n\n**08. 추론 및 임의 생성 금지**\n\n- [data]에서 확인되지 않은 정보를 추측하거나 일반 지식으로 보완하지 않는다.\n- 유사 Component / Variant의 값을 대신 사용하지 않는다.\n- 존재하지 않는 조건이나 Variant 조합을 생성하지 않는다.\n- 누락된 조건을 임의로 선택하거나 가정하지 않는다. 단, 출력 프롬프트에 기본값이 명시된 조건은 해당 규칙을 따른다."},{"file":"02_exception.md","text":"**01. 예외 상태 판단**\n\n- 출력 프롬프트[pprompts/03_output.md] DB 확인 과정에서 정상 답변을 확정할 수 없는 경우, 다음 예외 상태를 판단한다.\n    1. 질문 조건 부족\n    2. 용어 식별 불가\n    3. 데이터 없음\n    4. 데이터 미정\n    5. 데이터 충돌\n    6. 답변 범위 밖\n- 여러 예외가 동시에 존재하는 경우, 답변 진행을 위해 먼저 해결해야 하는 예외를 우선한다.\n\n**02. 예외 상태 정의**\n\n1. 질문 조건 부족\n    - 누락된 조건에 따라 답변 결과가 달라지고, 기본값 / 일반 규칙으로 답변을 확정할 수 없는 상태\n2. 용어 식별 불가\n    - 사용자 표현을 Glossary의 공식 용어와 매칭할 수 없는 상태\n3. 데이터 없음\n    - 질문 조건에 해당하는 답변 근거를 DB에서 확인할 수 없는 상태\n4.  데이터 미정\n    - 필요한 데이터가 TBD 등 미정 상태로 정의된 상태\n5.  데이터 충돌\n    - 동일 조건에 서로 다른 데이터가 존재하며, 기본 역할의 데이터 우선 순위로도 해결할 수 없는 상태\n6.  답변 범위 밖\n    - 디자인 시스템 DB의 답변 범위에 해당하지 않는 질문\n\n**03. 후속 진행 방법**\n\n- 예외 상태에 따라 다음과 같이 처리한다.\n- 질문 조건 부족\n→ 답변에 필요한 조건만 한 번에 확인한다.\n→ 조건 확인 후 기본 역할의 DB 확인 과정으로 돌아간다.\n- 용어 식별 불가\n→ DB에서 확인 가능한 유사 용어가 있으면 후보를 제시하여 확인한다.\n→ 후보가 없으면 사용자가 용어를 다시 확인할 수 있도록 안내한다.\n- 데이터 없음\n→ \"가이드에 해당 내용이 없습니다. 디자인 시스템 담당자에게 문의해 주세요.\"\n- 데이터 미정\n→ 아직 정의되지 않은 정보임을 안내한다.\n- 데이터 충돌\n→ 현재 데이터만으로 답변을 확정할 수 없음을 안내한다.\n- 답변 범위 밖\n→ 디자인 시스템 가이드와 관련된 질문만 답변할 수 있음을 안내한다."},{"file":"03_output.md","text":"- 01~08의 응답 규칙을 적용하여 답변한다.\n- 규칙 적용 우선순위\n    1. DB에서 확인된 정보의 정확성 및 요청 조건\n    2. 응답 예외 처리 규칙\n    3. 질문 유형별 답변 구성\n    4. 데이터 출력 형식\n    5. 문체 및 답변 길이\n\n#### 01. 답변 길이 및 문체\n\n- 기본 언어는 한국어로 한다.\n- 필요한 내용만 간결하게 답변한다.\n- 설명구와 가이드 안내는 각각 3문장 이내로 작성한다. 핵심 스펙과 사용 규칙은 문장 수 제한에서 제외한다.\n- 인사말, 사족, 불필요한 일반 설명은 제외한다.\n- [설명구]와 [준수 사항]은 \"~해요.\"체로 작성한다.\n- [핵심 스펙]의 설명이 필요한 경우에는 '~입니다.'체를 사용한다.\n- 데이터가 너무 길 경우, 우선 요약 답변 후 추가로 궁금한지 확인 질문한다.\n- 요청하는 결과값이 질문에 명시 되어있을 경우, 해당 내용만 답변한다. 추가 탐색이 필요한 경우에만 확인 질문한다.\n\n#### **02. 문장 구성**\n\n- 제목에 텍스트 외에 기호를 표기하지 않는다.\n- 확정된 데이터에 따라 필요한 항목만 다음 순서로 구성한다.\n    0. 제목 (답변 첫 줄)\n        - 답변 첫 줄에 제목 1문장만 단독으로 쓰고 줄을 바꾼다. 제목은 질문의 핵심 키워드 뒤에 아래 문구 중 하나를 붙여 마무리한다. 질문마다 지정된 문구를 사용하고, 받침에 따라 조사를 맞춘다. 기호는 붙이지 않는다.\n            - ~을 정리해드릴게요. / ~에 대해 확인해봤어요. / ~ 가이드를 살펴봤어요. / ~ 기준을 짚어볼게요.\n            - ~에 대한 내용이에요. / ~ 관련 규격을 모아봤어요. / ~은 이렇게 쓰면 돼요. / ~이 궁금하시군요!\n            - 예시. 질문: \"프라이머리 버튼, 세컨더리 버튼 차이\" → \"프라이머리 버튼과 세컨더리 버튼 차이를 정리해드릴게요.\"\n    1. 설명구 (answer.description)\n        - 질문 맥락과 확인한 내용을 1문장으로 요약한다.\n        - 질문의 핵심 키워드를 포함한다.\n    2. 핵심 스펙 (DB_tokens)\n        - 확인된 스펙 항목과 값을 출력한다.\n    3. 정의 (DB_guide/1.개요)\n        - 정의 및 적용 상황을 최대 3문장으로 정리한다.\n    4. 사용 규칙 (DB_guide/2.사용규칙)\n        - \"[공통],[MUST],[SHOULD],[ALLOW],[AVOID]\"와 같은 status 표기 단어는 생략하고 출력한다.\n        - status는 문장의 의무 수준과 허용 여부를 판단하는 기준으로 사용한다. 원본 규칙의 긍정·부정 의미를 유지하면서 지정된 문체로 자연스럽게 변환한다.\n            - [MUST] : \"반드시 ~해주세요” 또는 ”~하지 마세요.\"\n            - [SHOULD] : \"~하는 것을 권장해요.\"\n            - [ALLOW] : \"~해도 가능해요” 또는 ”~할수 있어요.\"\n            - [AVOID] : \"~하지 않도록 주의해요.\"\n\n#### **03. 질문 유형별 답변 형식**\n\n- 질문 유형에 따라 출력할 항목을 결정하되, DB에서 확인되지 않은 항목은 생성하지 않고 생략한다.\n- 스펙 질문 : [설명구] + [핵심 스펙]\n- 가이드 / 규칙 질문 : [설명구] + [정의] + [사용 규칙]\n- 스펙 + 가이드 질문 : [설명구] + [핵심 스펙] + [정의] + [사용 규칙]\n- 차이 / 비교 질문 : 비교 대상별로 사용자가 질문한 속성의 차이점을 구분하여 안내한다. 각 대상의 명칭과 설명을 순서대로 작성하고, 비교표는 생성하지 않는다.\n- 폰트 질문 : 언어가 지정되지 않은 경우 [korean] 우선 답변한다. 특정 언어가 지정된 경우 해당 언어만 답변한다.\n\n#### **04. 추가 확인 질문 방식**\n\n- 응답 예외에서 [추가정보 필요]로 판단된 경우 [필요한 정보]를 질문한다.\n- 답변에 필요한 조건만 질문한다.\n- 여러 조건이 필요하면 한 번에 질문한다.\n- 이미 확인된 정보는 다시 묻지 않는다.\n\n#### **05. 답변 데이터 표기**\n\n- 원본 DB의 표, 제목, 목록 형식은 데이터 해석에만 사용한다.\n- 최종 답변에서는 원본 서식을 복사하지 않고, 이 프롬프트에서 지정한 출력 형식으로 재구성한다.\n- 스펙은 \"표 구조\" 없이 데이터만 출력한다. Markdown 테이블과 제목 문법은 사용하지 않는다. \n스펙은 `- 항목명: 값` 형식의 단순 목록으로 출력한다. (예시. xs: 20px)\n- 토큰명과 variant의 계층형 경로는 마지막 항목만 출력한다. (예시. 원본: color/primary/skybluelight → 출력: skybluelight)\n단, 사용자가 전체 토큰명을 요청한 경우에는 전체 경로(예시.color/primary/black)를 출력한다.\n- 스펙 정보에 \"variant\" 와 \"토큰\" 정보가 동일할 경우 중복 출력을 생략한다. \n서로 다른 속성이나 역할을 나타내는 경우에는 각각 출력한다.\n- 특정 state를 요청한 경우 해당 값만 답변한다. \n지정하지 않은 경우 [normal]을 기본으로 답변하고, 다른 상태값이 필요한지 확인 질문한다.\n- light 테마와 dark 테마의 값이 같은 경우, 테마 구분 없이 스펙만 표기한다.\n\n#### **06. 특수 값 표기**\n\n- TBD\n\n#### **07. 출력 금지 제어**\n\n- 다음 내용은 출력하지 않는다.\n- 내부 판단/검증 과정\n- 검증되지 않은 정보\n- AI의 임의 해석 또는 추측\n- \"[공통],[MUST],[SHOULD],[ALLOW],[AVOID]\"와 같은 status 표기\n\n#### **08. 최종 답변 검증 규칙**\n\n- 출력 전 다음을 확인한다.\n    1. 답변이 확정된 데이터에 근거하는가\n    2. 값 / 명칭 / 단위가 DB 원문과 일치하는가\n    3. 설명구 / 핵심 스펙 / 사용 규칙의 문체가 올바른가\n    4. 출력 금지 항목이 포함되지 않았는가\n    5. 답변 데이터 표기가 올바른가\n- 검증을 통과한 내용만 최종 출력한다."}];</script>
 <script>window.MOA_GLOSSARY_DB = [{"term":"color","category":"Color","aliases":["컬러","색","색상 값"],"source":"glossary.md"},{"term":"commonColor","category":"Color","aliases":["공통 컬러","공통 색상","기본 컬러","공통 색상 규칙","시스템 컬러"],"source":"glossary.md"},{"term":"stateColor","category":"Color","aliases":["상태별 컬러","상태 색상","피드백 컬러","UI 상태 색상 (호버/비활성화 등)"],"source":"glossary.md"},{"term":"colorExpansionRule","category":"Color","aliases":["컬러 확장 규칙","색상 확장","다크모드 대응","컬러 스케일","색상 변형 규칙"],"source":"glossary.md"},{"term":"primaryColor","category":"Color","aliases":["프라이머리 컬러","주색상","메인 컬러","대표 색상","브랜드 컬러","핵심 색상"],"source":"glossary.md"},{"term":"secondaryColor","category":"Color","aliases":["세컨더리 컬러","보조 색상","서브 컬러","포인트 컬러","보조색"],"source":"glossary.md"},{"term":"grayscale","category":"Color","aliases":["그레이스케일","무채색","회색조","그레이 단계","회색 계열"],"source":"glossary.md"},{"term":"neutralColor","category":"Color","aliases":["뉴트럴 컬러","중성색","배경/테두리 색상","무채색 계열","기본 텍스트 색상"],"source":"glossary.md"},{"term":"theme","category":"Color","aliases":["테메","테마","테마 컬러","스킨","라이트/다크 모드","브랜딩 테마"],"source":"glossary.md"},{"term":"opacity","category":"Color","aliases":["오파시티","투명도","불투명도","흐림도","불투명","알파","alpha"],"source":"glossary.md"},{"term":"typeface","category":"Typeface","aliases":["타입페이스","타이포","폰트","글꼴","서체","폰트패밀리"],"source":"glossary.md"},{"term":"commonTypeface","category":"Typeface","aliases":["공통 서체","공통 폰트","기본 글꼴","시스템 서체 규칙"],"source":"glossary.md"},{"term":"display","category":"Typeface","aliases":["디스플레이","디스플레이 서체","초대형 텍스트","강조용 폰트","배너 텍스트"],"source":"glossary.md"},{"term":"title","category":"Typeface","aliases":["타이틀","제목 서체","헤드라인","제목 크기","대제목/중제목"],"source":"glossary.md"},{"term":"body","category":"Typeface","aliases":["바디","본문 서체","본문 텍스트","기본 글씨 크기","일반 텍스트"],"source":"glossary.md"},{"term":"samsungOneKorean","category":"Typeface","aliases":["삼성원고딕","삼성원 코리안","SamsungOne 폰트","기본 고딕 서체"],"source":"glossary.md"},{"term":"samsungSharpSans","category":"Typeface","aliases":["삼성샵산스","샵산스","Sharp Sans","브랜드 서체","영문 강조 폰트"],"source":"glossary.md"},{"term":"spacing","category":"Spacing","aliases":["스페이싱","여백","간격"],"source":"glossary.md"},{"term":"commonSpacing","category":"Spacing","aliases":["공통 간격","기본 여백","스페이싱 가이드","여백 규칙"],"source":"glossary.md"},{"term":"inlineLevel","category":"Spacing","aliases":["인라인 레벨","글자 내 여백","자간 여백","텍스트 라인 간격"],"source":"glossary.md"},{"term":"elementLevel","category":"Spacing","aliases":["엘리먼트 레벨","요소 간격","최소 단위 여백","아이콘-텍스트 간격"],"source":"glossary.md"},{"term":"componentLevel","category":"Spacing","aliases":["컴포넌트 레벨","컴포넌트 내부 여백","버튼 안쪽 여백","카드 내부 간격"],"source":"glossary.md"},{"term":"sectionLevel","category":"Spacing","aliases":["섹션 레벨","구역 간격","블록 여백","콘텐츠 그룹 간격"],"source":"glossary.md"},{"term":"pageLevel","category":"Spacing","aliases":["페이지 레벨","화면 여백","외곽 마진","전체 페이지 마진","최상위 간격"],"source":"glossary.md"},{"term":"padding","category":"Layout & Dimensions","aliases":["패딩","여백","안쪽 여백","내부 여백"],"source":"glossary.md"},{"term":"margin","category":"Layout & Dimensions","aliases":["마진","바깥 여백","외부 여백","간격"],"source":"glossary.md"},{"term":"gap","category":"Layout & Dimensions","aliases":["갭","사이 간격","아이콘 간격","컴포넌트 간격","정렬 간격"],"source":"glossary.md"},{"term":"width","category":"Layout & Dimensions","aliases":["너비","가로","가로폭","가로 크기"],"source":"glossary.md"},{"term":"height","category":"Layout & Dimensions","aliases":["높이","세로","세로폭","세로 크기"],"source":"glossary.md"},{"term":"minWidth","category":"Layout & Dimensions","aliases":["최소 너비","최소 가로"],"source":"glossary.md"},{"term":"maxWidth","category":"Layout & Dimensions","aliases":["최대 너비","최대 가로"],"source":"glossary.md"},{"term":"radius","category":"Layout & Dimensions","aliases":["라운드","코너 라운드","곡률","모서리","둥글기","Corner"],"source":"glossary.md"},{"term":"border","category":"Layout & Dimensions","aliases":["테두리","보더","외곽선","선 스타일"],"source":"glossary.md"},{"term":"borderWidth","category":"Layout & Dimensions","aliases":["테두리 두께","선 두께","두께"],"source":"glossary.md"},{"term":"fontFamily","category":"Typography","aliases":["서체","폰트","글꼴","서체 패밀리","폰트패밀리"],"source":"glossary.md"},{"term":"fontWeight","category":"Typography","aliases":["자중","폰트 두께","글씨 두께","굵기","Bold 여부"],"source":"glossary.md"},{"term":"fontSize","category":"Typography","aliases":["글자 크기","폰트 사이즈","글꼴 크기"],"source":"glossary.md"},{"term":"lineHeight","category":"Typography","aliases":["행간","줄간격","텍스트 높이"],"source":"glossary.md"},{"term":"letterSpacing","category":"Typography","aliases":["자간","글자 간격"],"source":"glossary.md"},{"term":"ellipsis","category":"Typography","aliases":["말줄임","말줄임표","세 점","생략","글자 잘림","..."],"source":"glossary.md"},{"term":"label","category":"Structure & Policies","aliases":["레이블","라벨","텍스트","문구","글자 내용"],"source":"glossary.md"},{"term":"icon","category":"Structure & Policies","aliases":["아이콘","심볼","에셋","그래픽","이미지"],"source":"glossary.md"},{"term":"placeholder","category":"Structure & Policies","aliases":["플레이스홀더","가이드 문구","힌트 텍스트","입력 예시"],"source":"glossary.md"},{"term":"hug","category":"Structure & Policies","aliases":["허그","유동 너비","콘텐츠 맞춤","자동 늘어남","콘텐츠 포함"],"source":"glossary.md"},{"term":"fixed","category":"Structure & Policies","aliases":["픽스드","고정 너비","크기 고정","너비 고정","고정된"],"source":"glossary.md"},{"term":"fill","category":"Structure & Policies","aliases":["필","꽉 채우기","전체 너비","부모 맞춤","Full Width"],"source":"glossary.md"},{"term":"alignment","category":"Structure & Policies","aliases":["정렬","정렬 방식","정렬 방향","얼라인 (좌측정렬","중앙정렬 등)"],"source":"glossary.md"},{"term":"direction","category":"Structure & Policies","aliases":["방향","정렬 방향","가로 흐름(Horizontal)","세로 흐름(Vertical)"],"source":"glossary.md"},{"term":"align","category":"Structure & Policies","aliases":["정렬","정렬 방식","얼라인","위치 맞춤"],"source":"glossary.md"},{"term":"alignItems","category":"Structure & Policies","aliases":["교차축 정렬","세로 정렬(가로 흐름일 때)","가로 정렬(세로 흐름일 때)","상하단 정렬"],"source":"glossary.md"},{"term":"justifyContent","category":"Structure & Policies","aliases":["주축 정렬","정렬 방향 정렬","좌우 정렬","사이 간격 균등 분할"],"source":"glossary.md"},{"term":"container","category":"Structure & Policies","aliases":["컨테이너","박스","영역","감싸는 레이어","부모 박스"],"source":"glossary.md"},{"term":"card","category":"Structure & Policies","aliases":["카드","카드 UI","독립된 영역","모듈"],"source":"glossary.md"},{"term":"wrapper","category":"Structure & Policies","aliases":["래퍼","전체 감싸기","외곽 컨테이너"],"source":"glossary.md"},{"term":"grid","category":"Structure & Policies","aliases":["그리드","격자","레이아웃 그리드","가이드라인"],"source":"glossary.md"},{"term":"column","category":"Structure & Policies","aliases":["컬럼","열","세로 칸","그리드 열"],"source":"glossary.md"},{"term":"gutter","category":"Structure & Policies","aliases":["거터","컬럼 간격","그리드 사이 여백"],"source":"glossary.md"},{"term":"offset","category":"Structure & Policies","aliases":["오프셋","시작 여백","외곽 여백","마진 값"],"source":"glossary.md"},{"term":"constraints","category":"Structure & Policies","aliases":["제약 조건","콘스트레인츠","고정 기준","반응형 기준"],"source":"glossary.md"},{"term":"absolutePosition","category":"Structure & Policies","aliases":["절대 위치","앱솔루트","오토레이아웃 무시 고정","자유 배치"],"source":"glossary.md"},{"term":"aspectRatio","category":"Structure & Policies","aliases":["종횡비","비율 고정","가로세로 비율"],"source":"glossary.md"},{"term":"breakPoint","category":"Structure & Policies","aliases":["브레이크포인트","반응형 지점","화면 전환 기준","디바이스 분기점"],"source":"glossary.md"},{"term":"safeArea","category":"Structure & Policies","aliases":["세이프 에어리얼","안전 영역","노치 여백","상하단 데드존"],"source":"glossary.md"},{"term":"cursor","category":"Interactions & Feedback","aliases":["커서","마우스 포인터","손가락 모양","마우스 모양"],"source":"glossary.md"},{"term":"pointer","category":"Interactions & Feedback","aliases":["포인터","손가락 모양 커서","클릭 가능 커서"],"source":"glossary.md"},{"term":"notAllowed","category":"Interactions & Feedback","aliases":["금지 모양 커서","클릭 불가 커서"],"source":"glossary.md"},{"term":"tooltip","category":"Interactions & Feedback","aliases":["툴팁","말풍선","도움말","풍선도움말"],"source":"glossary.md"},{"term":"validation","category":"Interactions & Feedback","aliases":["벨리데이션","유효성 검사","입력 조건 확인","조건 검사"],"source":"glossary.md"},{"term":"error","category":"Interactions & Feedback","aliases":["에러","오류","실패","잘못된 입력","경고 상태"],"source":"glossary.md"},{"term":"default","category":"Interactions & Feedback","aliases":["기본","기본 상태","평상시","일반 상태"],"source":"glossary.md"},{"term":"hover","category":"Interactions & Feedback","aliases":["호버","마우스 오버","마우스 올렸을 때"],"source":"glossary.md"},{"term":"pressed","category":"Interactions & Feedback","aliases":["프레스드","클릭","누름","눌렀을 때"],"source":"glossary.md"},{"term":"focused","category":"Interactions & Feedback","aliases":["포커스","선택됨","초점","인풋 클릭"],"source":"glossary.md"},{"term":"disabled","category":"Interactions & Feedback","aliases":["디스에이블드","비활성화","선택불가","클릭안됨"],"source":"glossary.md"},{"term":"sorting","category":"Interactions & Feedback","aliases":["정렬 조건","정렬 기준","나열 기준","정렬 방식 (추천순","가격순 등)"],"source":"glossary.md"},{"term":"filtering","category":"Interactions & Feedback","aliases":["필터링","필터 조건","상세 검색","상세 조건","조건 선택 (브랜드","가격대 등)"],"source":"glossary.md"},{"term":"pagination","category":"Interactions & Feedback","aliases":["페이지네이션","페이지 넘김","페이지 번호","무한 스크롤","더보기 방식"],"source":"glossary.md"},{"term":"entryPath","category":"Screen Structure & IA","aliases":["진입 경로","유입 동선","진입점","이전 화면","유입 경로","이전 페이지"],"source":"glossary.md"},{"term":"layoutTemplate","category":"Screen Structure & IA","aliases":["화면 템플릿","레이아웃 구조","화면 골격","기본 레이아웃","와이어프레임"],"source":"glossary.md"},{"term":"header","category":"Screen Structure & IA","aliases":["헤더","상단 영역","상단 바","타이틀 바","GNB","로컬 네비게이션"],"source":"glossary.md"},{"term":"body","category":"Screen Structure & IA","aliases":["바디","본문","메인 영역","콘텐츠 영역","중심 구역"],"source":"glossary.md"},{"term":"footer","category":"Screen Structure & IA","aliases":["푸터","하단 영역","하단 바","고지 정보","사업자 정보 영역"],"source":"glossary.md"},{"term":"scrollArea","category":"Screen Structure & IA","aliases":["스크롤 영역","스크롤 뷰","스크롤 구간","내부 스크롤"],"source":"glossary.md"},{"term":"fixedArea","category":"Screen Structure & IA","aliases":["고정 영역","스티키","플로팅 바","고정 버튼","스크롤 고정"],"source":"glossary.md"},{"term":"aboveTheFold","category":"Screen Structure & IA","aliases":["첫 화면","첫 뷰","스크롤 전 영역","상단 노출 구역"],"source":"glossary.md"},{"term":"hierarchy","category":"Screen Structure & IA","aliases":["정보 위계","콘텐츠 우선순위","중요도","노출 순서","시각적 무게감"],"source":"glossary.md"},{"term":"801","category":"Screen Structure & IA","aliases":["태블릿 사이즈","뷰포트 사이즈","802","800","뷰포트 기준"],"source":"glossary.md"},{"term":"MO","category":"Screen Structure & IA","aliases":["모바일 웹","모바일","mobile","360 사이즈"],"source":"glossary.md"},{"term":"ctaButton","category":"Components","aliases":["CTA 버튼","버튼","씨티에이","액션 버튼","button"],"source":"glossary.md"},{"term":"ctaButtonIcon","category":"Components","aliases":["CTA 버튼 아이콘","CTA 아이콘 버튼","아이콘 버튼","버튼 아이콘","icon button"],"source":"glossary.md"},{"term":"popup","category":"Components","aliases":["팝업","모달","다이얼로그","팝업창"],"source":"glossary.md"},{"term":"dimmedShadow","category":"Components","aliases":["딤","딤드","그림자","섀도우","쉐도우","shadow","dimmed"],"source":"glossary.md"},{"term":"iconography","category":"Components","aliases":["아이코노그래피","아이콘 가이드","아이콘 스타일"],"source":"glossary.md"},{"term":"radius","category":"Components","aliases":["라운드","모서리","곡률"],"source":"glossary.md"},{"term":"badge","category":"Components","aliases":["뱃지","배지"],"source":"glossary.md"},{"term":"chip","category":"Components","aliases":["칩","태그 칩"],"source":"glossary.md"},{"term":"selectionControl","category":"Components","aliases":["셀렉션 컨트롤","체크박스","라디오","라디오 버튼","스위치","토글"],"source":"glossary.md"},{"term":"indicator","category":"Components","aliases":["인디케이터","페이지 인디케이터"],"source":"glossary.md"},{"term":"divider","category":"Components","aliases":["디바이더","구분선"],"source":"glossary.md"},{"term":"optionChip","category":"Components","aliases":["옵션칩","옵션 칩"],"source":"glossary.md"},{"term":"optionSelector","category":"Components","aliases":["옵션셀렉터","옵션 셀렉터","셀렉터"],"source":"glossary.md"},{"term":"primary","category":"한글 표기","aliases":["프라이머리"],"source":"ko_en.md"},{"term":"secondary","category":"한글 표기","aliases":["세컨더리","세컨드리"],"source":"ko_en.md"},{"term":"tertiary","category":"한글 표기","aliases":["터셔리","터티어리","써드"],"source":"ko_en.md"},{"term":"button","category":"한글 표기","aliases":["버튼"],"source":"ko_en.md"},{"term":"icon","category":"한글 표기","aliases":["아이콘"],"source":"ko_en.md"},{"term":"color","category":"한글 표기","aliases":["컬러","색상"],"source":"ko_en.md"},{"term":"typeface/typography","category":"한글 표기","aliases":["타이포"],"source":"ko_en.md"},{"term":"typeface/font","category":"한글 표기","aliases":["폰트"],"source":"ko_en.md"},{"term":"radius","category":"한글 표기","aliases":["라디우스","모서리"],"source":"ko_en.md"},{"term":"spacing/gap","category":"한글 표기","aliases":["간격"],"source":"ko_en.md"},{"term":"spacing","category":"한글 표기","aliases":["스페이싱"],"source":"ko_en.md"},{"term":"spacing/inset","category":"한글 표기","aliases":["여백"],"source":"ko_en.md"},{"term":"badge","category":"한글 표기","aliases":["뱃지","배지"],"source":"ko_en.md"},{"term":"chip","category":"한글 표기","aliases":["칩"],"source":"ko_en.md"},{"term":"checkbox/check box","category":"한글 표기","aliases":["체크박스"],"source":"ko_en.md"},{"term":"radio","category":"한글 표기","aliases":["라디오"],"source":"ko_en.md"},{"term":"switch","category":"한글 표기","aliases":["스위치"],"source":"ko_en.md"},{"term":"toggle/switch","category":"한글 표기","aliases":["토글"],"source":"ko_en.md"},{"term":"indicator","category":"한글 표기","aliases":["인디케이터"],"source":"ko_en.md"},{"term":"divider","category":"한글 표기","aliases":["디바이더","구분선"],"source":"ko_en.md"},{"term":"popup","category":"한글 표기","aliases":["팝업","모달"],"source":"ko_en.md"},{"term":"selector","category":"한글 표기","aliases":["셀렉터"],"source":"ko_en.md"},{"term":"option","category":"한글 표기","aliases":["옵션"],"source":"ko_en.md"},{"term":"tooltip","category":"한글 표기","aliases":["툴팁"],"source":"ko_en.md"},{"term":"tab","category":"한글 표기","aliases":["탭"],"source":"ko_en.md"},{"term":"list","category":"한글 표기","aliases":["리스트"],"source":"ko_en.md"},{"term":"filter","category":"한글 표기","aliases":["필터"],"source":"ko_en.md"},{"term":"text field","category":"한글 표기","aliases":["텍스트필드"],"source":"ko_en.md"},{"term":"field","category":"한글 표기","aliases":["필드"],"source":"ko_en.md"},{"term":"shadow","category":"한글 표기","aliases":["그림자"],"source":"ko_en.md"},{"term":"dimmed","category":"한글 표기","aliases":["딤드"],"source":"ko_en.md"},{"term":"outlined","category":"한글 표기","aliases":["아웃라인"],"source":"ko_en.md"},{"term":"underlined","category":"한글 표기","aliases":["언더라인","밑줄"],"source":"ko_en.md"},{"term":"label","category":"한글 표기","aliases":["레이블","라벨"],"source":"ko_en.md"},{"term":"size","category":"한글 표기","aliases":["사이즈"],"source":"ko_en.md"},{"term":"height/size","category":"한글 표기","aliases":["높이"],"source":"ko_en.md"}];</script>
+<script>window.MOA_FAQ = [{"topic":"Color","q":"{item}은 어디에 사용해?","a":"{item}은 {usage}에 사용합니다.","vars":"개별 항목, 용도"},{"topic":"Color","q":"{usage}에는 어떤 컬러를 사용해야 해?","a":"{usage}에는 {item}을 사용합니다.","vars":"개별 항목, 용도"},{"topic":"Color","q":"{type}은 언제 사용해?","a":"{type}은 {usage}에 사용합니다.","vars":"용도, 타입"},{"topic":"Color","q":"{usage}에는 어떤 타입을 사용해야 해?","a":"{usage}에는 {type}을 사용합니다.","vars":"용도, 타입"},{"topic":"Color","q":"{item}의 Hex 값이 뭐야?","a":"{item}의 Hex 값은 {value}입니다.","vars":"값, 개별 항목"},{"topic":"Color","q":"{item}의 Hex 값을 수정해서 사용해도 돼?","a":"아니요. {item}은 정의된 Hex 값을 임의로 수정하지 않습니다.","vars":"개별 항목"},{"topic":"Color","q":"새로운 컬러를 추가해도 돼?","a":"신규 Key Color는 메인·서브를 합쳐 1~2개부터 시작하는 것을 권장합니다. 먼저 기존 컬러와 Alpha 조합으로 해결 가능한지 확인해 주세요.","vars":""},{"topic":"Color","q":"{item}보다 밝은 컬러가 필요해","a":"신규 Hex 대신 {item} + Opacity(5~90) 조합을 사용합니다.","vars":"개별 항목"},{"topic":"Color","q":"{item}보다 어두운 컬러가 필요해","a":"신규 Hex 대신 {item} + Colors/Alpha/Black/Opacity(5~90) 오버레이를 사용합니다.","vars":"개별 항목"},{"topic":"Color","q":"{state} 상태에는 어떤 컬러를 사용해?","a":"{state}에 정의된 컬러 토큰이 있다면 해당 값을 사용합니다. 정의되지 않은 상태는 미정(TBD)으로 안내합니다.","vars":"상태"},{"topic":"Color","q":"사용할 수 있는 Opacity 값이 뭐야?","a":"사용할 수 있는 Opacity 값은 5/10/20/30/40/50/60/70/80/90입니다.","vars":""},{"topic":"Typeface","q":"{component} 만들 때 제목은 어떤 스타일 써야 해?","a":"{component} 및 개별 콘텐츠의 제목은 용도와 위계에 따라 {type} 을 적용합니다.\n• 메인 타이틀: {type} 적용\n- PC: 글자 크기 {value}, 행간 {value}\n- MO: 글자 크기 {value}, 행간 {value}","vars":"값, 컴포넌트, 타입"},{"topic":"Typeface","q":"{type /item} 크기 얼마야?","a":"{breakpoint} 기준 {type}의 {property}는 **{value}**입니다.","vars":"값, 속성, 해상도"},{"topic":"Typeface","q":"{breakpoint}에서 {type}은 어디에 써야 해?","a":"{breakpoint}에서 {type}은 정보 전달보다 시각적 시선 유도가 필요한 포인트 영역에 사용하며, {usage}에 적용합니다.","vars":"해상도"},{"topic":"Typeface","q":"{breakpoint}에서 {type} 스펙이 어떻게 돼?","a":"{breakpoint} 환경의 {type}은 기준 스펙을 상속합니다. 따라서 {property}는: **{value}**입니다.","vars":"값, 속성, 해상도"},{"topic":"Typeface","q":"{component} 텍스트는 어떤 스타일 써야 해?","a":"{component} 텍스트는 용도와 크기에 따라 {type} 을 적용합니다.\n• 주요 CTA 및 강조 ({type}):\n- PC: {value} / MO: {value}\n• 표준 버튼 ({type}):\n- PC: {value} / MO: {value}","vars":"값, 속성, 해상도"},{"topic":"Spacing","q":"{token_name}은 몇 px이야?","a":"{token}의 수치는 **{value} **입니다.","vars":"값, 토큰"},{"topic":"Spacing","q":"{px_value}에 해당하는 스페이싱 토큰이 뭐야?","a":"{value}에 해당하는 토큰은 {token}입니다.","vars":"값, 토큰"},{"topic":"Spacing","q":"{component}의 기본 {property} 값은 얼마야?","a":"{component}의 권장 {property}는 **{token} ({value})**입니다.","vars":"마진, 여백, 컴포넌트, 패딩"},{"topic":"Spacing","q":"{breakpoint} 환경에서 {component}의 {property} 값은 얼마야?","a":"{breakpoint} 기준 **{component}**의 {property} 설정값은 다음과 같습니다.\n **{token} ({value})**","vars":"마진, 여백, 패딩, 해상도"},{"topic":"Spacing","q":"{component} 사이 간격({property})은 몇으로 설정해야 해?","a":"{component} 요소 간 {property} 간격은 {token} ( **{value} **)를 사용합니다.","vars":"간격, 값, 여백, 컴포넌트, 토큰"},{"topic":"CTA Button","q":"{usage}에는 어떤 CTA Button을 사용해야 해?","a":"{usage}에는 {type}을 사용합니다.","vars":"용도, 타입"},{"topic":"CTA Button","q":"페이지의 주요 동작이 아닌 {usage}에는 어떤 버튼을 사용해?","a":"페이지의 핵심 목적과 직접 연결되지 않는 {usage}에는 Secondary Action Button을 우선 검토합니다.","vars":"용도, 타입"},{"topic":"CTA Button","q":"{type}은 어떤 형태로 사용해?","a":"Primary Action Button은 Filled / Primary 또는 Filled / Emphasis를, Secondary Action Button은 Outlined 또는 Underlined를 사용합니다.","vars":"속성, 타입"},{"topic":"CTA Button","q":"{size}는 어떤 상황에 사용해?","a":"버튼이 놓이는 콘텐츠 영역의 너비와 배치를 기준으로 선택합니다. 좁은 영역에는 small, 일반 페이지에는 default, 넓은 영역에서 단독으로 강조할 때는 large를 권장합니다.","vars":"대상 영역, 사이즈"},{"topic":"CTA Button","q":"{component}의 {state} 상태에는 어떤 스타일을 적용해?","a":"{component}의 {state} 상태는 {property}에 {value}를 적용합니다.","vars":"값, 상태, 컴포넌트, 테마"},{"topic":"CTA Button Icon","q":"{usage}에는 어떤 Utility Button을 사용해야 해?","a":"{type}은 {usage}에 사용합니다.","vars":"용도, 타입"},{"topic":"CTA Button Icon","q":"{position}에 아이콘을 배치한 버튼은 어떤 경우에 사용해?","a":"아이콘을 {position}에 배치하는 {type}은 {usage}에 사용합니다.","vars":"용도, 타입"},{"topic":"CTA Button Icon","q":"{usage}에는 어떤 형태의 아이콘 버튼을 사용해야 해?","a":"{type}은 {usage}에 사용합니다. 아이콘만으로 의미가 불명확하면 라벨이 있는 형태를 사용합니다.","vars":"용도, 타입"},{"topic":"CTA Button Icon","q":"{target}의 {breakpoint} 환경에서 재생 버튼은 어떤 크기를 사용해야 해?","a":"{breakpoint} 환경에서 {target} 너비가 기준 이상이면 default를 우선 검토하고, 좁은 영역에서는 small을 검토합니다.","vars":"대상 영역, 사이즈, 해상도"},{"topic":"CTA Button Icon","q":"{component}의 {state}는 어떻게 구분해?","a":"{component}는 선택 여부에 따라 시각적 스타일을 구분합니다. 선택 시에는 선택 상태에 정의된 {property}를 {value}로 적용하고, 해제 시에는 기본 상태의 스타일을 적용합니다.","vars":"상태, 컴포넌트"},{"topic":"Popup","q":"{component}의 {property}는 얼마야?","a":"{component}의 {property}는 {value}입니다.","vars":"컴포넌트, 투명도"},{"topic":"Popup","q":"{breakpoint}에서 {component}의 {property} 값은 얼마야?","a":"{breakpoint} 기준 {component}의 {property}는 {value}입니다.","vars":"값, 속성, 해상도"},{"topic":"Popup","q":"{component}의 닫기 아이콘 스펙은 어떻게 돼?","a":"{component}의 닫기 아이콘은 {property}에 {value}를 사용합니다.","vars":"값, 속성, 컴포넌트"},{"topic":"Popup","q":"{component}의 닫기 버튼을 다른 위치에 배치해도 돼?","a":"현재 표준에서는 {component} 의 닫기 버튼 위치 변경을 허용하지 않습니다. 우상단 X 아이콘 1개를 사용하며, 하단 중앙 원형 닫기 버튼은 레거시 예외입니다.","vars":"컴포넌트"},{"topic":"Popup","q":"타이틀 {property}는 얼마야?","a":"타이틀 {property}는 {value}입니다.","vars":"값, 속성"},{"topic":"Dimmed & Shadow","q":"다른 컬러 기반으로 {type}을 만들어도 돼?","a":"아니요. {type}에는 가이드에 정의된 컬러값 {value}를 사용합니다.","vars":"값, 타입"},{"topic":"Dimmed & Shadow","q":"규격 외 {type} 값은 어떻게 해?","a":"규격 외 {type} 값이라면 정의된 {item} 중 더 가까운 값으로 적용하는 것을 우선 검토합니다.","vars":"개별 항목, 타입"},{"topic":"Dimmed & Shadow","q":"{target}에는 어떤 Dimmed를 사용해?","a":"{target}에는 {item}을 사용합니다.","vars":"개별 항목, 대상 영역"},{"topic":"Dimmed & Shadow","q":"{target}에 Shadow를 사용해도 돼?","a":"{target}에 입체감이나 시각적 위계가 필요한 경우 Shadow를 사용할 수 있습니다.","vars":"대상 영역"},{"topic":"Dimmed & Shadow","q":"Shadow 수치를 조정해도 돼?","a":"정의된 값을 우선 사용하되, 필요에 따라 조정할 수 있습니다.","vars":"대상 영역"},{"topic":"Dimmed & Shadow","q":"Dimmed 수치를 임의로 바꿔도 돼?","a":"아니요. Dimmed는 가이드에 정의된 {value}를 기준으로 사용합니다.","vars":"값"},{"topic":"Iconography","q":"{type} 아이콘은 어떤 사이즈를 사용해?","a":"{type}아이콘에는 {value} 사이즈를 사용합니다.","vars":"값, 타입"},{"topic":"Iconography","q":"{target}에서 서로 다른 Stroke Type을 섞어 써도 돼?","a":"아니요. {target}에서는 동일한 Stroke Type을 사용합니다.","vars":"대상 영역"},{"topic":"Iconography","q":"{target}의 {property} 기본값은 얼마야?","a":"{target}의 {property} 는 기본적으로 {value}를 사용합니다. \n더 정밀한 표현이 필요하면 {value} 단위로 조정할 수 있습니다.","vars":"값"},{"topic":"Iconography","q":"{target}의 {property}는 얼마야?","a":"{target}의 {property}는 {value}입니다.","vars":"값, 대상 영역, 속성"},{"topic":"Iconography","q":"{type} 아이콘은 선 굵기 몇 써?","a":"{type}의 {property}는 {value}입니다.","vars":"값, 속성, 타입"},{"topic":"Iconography","q":"아이콘 그릴 때 굵기 몇 써야 돼?","a":"아이콘은 사이즈에 따라 권장 Stroke Type과 굵기가 달라집니다. 사용할 사이즈를 알려주세요.","vars":"사이즈, 타입"},{"topic":"Iconography","q":"{size} 아이콘은 굵기 몇 써야 돼?","a":"{size} 아이콘은 {type} 기준에 맞는 {value} 굵기를 사용합니다.","vars":"사이즈, 속성, 타입"},{"topic":"Radius","q":"{component}에는 어떤 Radius를 적용해야 해?","a":"{component}에는 {type} Radius를 적용합니다.","vars":"컴포넌트, 타입"},{"topic":"Radius","q":"Radius는 어떤 기준으로 선택해야 해?","a":"Radius는 UI 요소의 크기와 역할에 따라 선택합니다. 작은 컨트롤, 콘텐츠 컨테이너, 팝업 등 요소의 성격과 시각적 위계를 고려하여 적용합니다.","vars":"용도"},{"topic":"Radius","q":"{component}마다 Radius가 달라도 돼?","a":"Radius는 컴포넌트의 크기와 역할에 따라 다르게 적용할 수 있습니다. 단, 동일한 역할의 컴포넌트에는 일관된 곡률을 유지합니다.","vars":"컴포넌트"},{"topic":"Radius","q":"{target}의 양 끝을 완전히 둥글게 만들려면 어떻게 해?","a":"{target}의 높이에 따라 양 끝이 둥근 형태를 유지하려면 Max Radius를 적용합니다.","vars":"개별 항목, 대상 영역"},{"topic":"Radius","q":"{target}의 Radius 값은 얼마야?","a":"{target}에는 {value}의 Radius를 적용합니다.","vars":"값, 개별 항목, 대상 영역"},{"topic":"Badge","q":"{target}에 {type} {component} 써도 돼?","a":"적용할 수 없습니다. {target}에는 {type} 의 {component}을 사용할 수 없습니다. 대체안은 가이드에 정의된 다른 타입을 사용해 주세요.","vars":"대상 영역, 속성, 컴포넌트"},{"topic":"Badge","q":"{breakpoint} {type} {component} 의 {property}는 어떻게 돼?","a":"{breakpoint} 기준 {type} {component}의 {property}는 **{value}**입니다.","vars":"값, 마진, 여백, 토큰, 패딩, 해상도"},{"topic":"Badge","q":"{position}에 무슨 {component} 쓰는 게 좋아?","a":"{position}에 사용하는 **{component}**는 배치될 위치와 콘텐츠 성격에 맞춰 올바른 타입(type)을 규정에 따라 선택해야 합니다.\n• 배경 색상 및 텍스트 강조: filled\n• 텍스트 컬러만 강조: label\n• 신규 업데이트 알림: dot\n• 구체적 수치 노출: number\n• 특화 물류 혜택 안내: icon","vars":"속성, 위치, 토큰"},{"topic":"Chip","q":"{usage}에 {component} 사용해도 돼?","a":"{component}는 {usage}처럼 정보를 분류·필터링하거나 빠른 단독 액션이 필요한 경우 사용합니다. 해당 목적에 적합한 {type}을 선택해 사용해 주세요.","vars":"용도, 컴포넌트, 타입"},{"topic":"Chip","q":"{usage}에는 어떤 {type} {component}를 사용해야 해?","a":"{usage}에는 **{type} {component}**를 사용합니다. {type}은 {usage}에 적합한 형태입니다.","vars":"용도, 컴포넌트, 타입"},{"topic":"Chip","q":"{state} 상태의 {component} {property}는 어떻게 돼?","a":"{state} 상태의 {component} {property}에는 **{token} ({value})**을 적용합니다.","vars":"값, 상태, 속성, 컴포넌트, 토큰"},{"topic":"Chip","q":"{size} {component}의 {property} 값은 얼마야?","a":"{size} {component}의 {property}는 **{value}**입니다.","vars":"값, 사이즈, 속성, 컴포넌트"},{"topic":"Chip","q":"{target}에 {component}를 배치할 때?","a":"{target}에 {component}를 배치할 때는 정의된 사용 기준과 간격 규칙을 적용합니다. {property}에는 **{token} ({value})**을 사용합니다.","vars":"값, 대상 영역, 속성, 컴포넌트, 토큰"},{"topic":"Divider","q":"{component}의 두께({property})값은 얼마야?","a":"{component}의 {property}는 {value} 입니다.","vars":"값, 속성, 컴포넌트"},{"topic":"Divider","q":"{theme}에서 {component}의 색상({property})은 뭐야?","a":"{theme}에서 {component}의 {property}는 {token_name} ({value})입니다.","vars":"속성, 컴포넌트, 테마, 토큰"},{"topic":"Divider","q":"{type} {component}는 언제 사용해?","a":"{type} {component}는 {usage}할 때 사용합니다.","vars":"방향, 용도"},{"topic":"Divider","q":"{component}의 {property}를 변경해도 돼?","a":"{component}의 {property}는 {value}로 고정되어 있습니다.","vars":"값, 컴포넌트"},{"topic":"Divider","q":"{component} 간 {property} 간격은 어떻게 돼?","a":"{component} 간 {property} 간격은 Spacing DB에서 확인할 수 있습니다.","vars":"간격, 여백, 컴포넌트"},{"topic":"Option Selector","q":"{type}의 {breakpoint} {property} 값은 얼마야?","a":"{type}의 {breakpoint} {property}는 {value}입니다.","vars":"값, 속성, 해상도"},{"topic":"Option Selector","q":"{usage}에는 어떤 {type} {component}를 사용해?","a":"{usage}에는 {type} {component}를 사용합니다.","vars":"용도, 컴포넌트, 타입"},{"topic":"Option Selector","q":"{state} 상태의 {component} 스펙은 뭐야?","a":"{state} 상태의 {component} {property}는 다음 값을 적용합니다.\n•{property}: {value}","vars":"값, 상태"},{"topic":"Option Selector","q":"{component}의 {size} 스펙 알려줘","a":"{component}의 {size}에는 다음 스펙을 적용합니다. \n•  {property} ({value})","vars":"값, 사이즈, 컴포넌트, 패딩"},{"topic":"Option Selector","q":"{type} {component}의 {item} {property}는 어떻게 적용해?","a":"{type} {component} 의 {item}은 {property} ({value}) 기준으로 적용합니다.","vars":"정렬, 컴포넌트, 타입"}];</script>
 <script>window.MOA_EGG_MD = "<!--\n  Easter egg — 정해진 질문에 정해진 답변을 바로 보여줘요 (Gemini 키 없이도 동작, 모든 카테고리에서 동작).\n\n  작성법\n  ## 질문            ← 사용자가 입력할 질문 (띄어쓰기·물음표·대소문자는 무시하고 비교)\n  같은 질문: A, B    ← (선택) 같은 답을 보여줄 다른 표현. 쉼표로 여러 개\n  첫 줄              ← 답변 카드 제목\n  나머지 줄           ← 답변 본문 (줄바꿈 그대로)\n\n  - \"질문을 입력하세요\"로 시작하는 항목은 빈 칸으로 보고 건너뛰어요.\n  - 저장 후 push하면 플러그인에 반영돼요 (미리보기는 저장만 하면 반영).\n-->\n\n## 모아는 누구야?\n같은 질문: 넌 누구야, 너 누구야, 모아가 뭐야\n반가워요, 저는 모아예요!\n디자인 시스템 가이드를 찾아주는 챗봇이에요.\n궁금한 컴포넌트나 규칙을 물어봐 주세요.\n\n## 모아는 몇 살이야?\n같은 질문: 모아 나이, 너 몇 살이야\n비밀이에요.\n대신 가이드는 늘 최신으로 알고 있어요.\n\n## 질문을 입력하세요 03\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 04\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 05\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 06\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 07\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 08\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 09\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 10\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 11\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 12\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 13\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 14\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 15\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 16\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 17\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 18\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 19\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n\n## 질문을 입력하세요 20\n같은 질문:\n답변 제목을 입력하세요\n답변 내용을 입력하세요\n";</script>
 <script>/* Gemini 연동 — DB 데이터에만 근거해 답변.
    플러그인 UI(iframe)에서 직접 호출합니다. manifest.json의
@@ -1689,9 +1690,15 @@ function moaLoadDb(force){
     window.MOA_GLOSSARY_DB = (g[0] && g[0].length ? g[0] : []).concat(g[1] && g[1].length ? g[1] : [], keep).sort(function(a, b){ return (a.source === MOA_KOEN_SRC) - (b.source === MOA_KOEN_SRC); });
     return true;
   });
-  moaDbJob = Promise.all([guide.catch(function(){ return false; }), tokens, gloss]).then(function(r){
+  var faq = moaFetchText(base + 'data/faq/' + MOA_FAQ_FILE, 4000).then(function(t){
+    var list = moaParseFaq(t);
+    if(!list.length) return false;
+    window.MOA_FAQ = list;
+    return true;
+  }).catch(function(){ return false; });
+  moaDbJob = Promise.all([guide.catch(function(){ return false; }), tokens, gloss, faq]).then(function(r){
     moaDbJob = null;
-    if(r[0] || r[1] || r[2]){
+    if(r[0] || r[1] || r[2] || r[3]){
       moaDbFrom = (base === MOA_REPO_RAW ? 'GitHub' : '로컬') + ' data (최신)';
       if(typeof moaBuildGlossary === 'function') moaBuildGlossary();
       if(typeof window.moaOnDb === 'function') window.moaOnDb();
@@ -1701,6 +1708,75 @@ function moaLoadDb(force){
   return moaDbJob;
 }
 function moaDbSource(){ return moaDbFrom; }
+
+/* ── FAQ: data/faq/DB_FAQ.csv ─────────────────────────────────
+   카테고리별 [예상 질문 → 봇 응답 예시]. 답변의 "형식·어투"만 이 파일을 우선 따르고,
+   {변수} 자리의 실제 명칭·값·토큰은 DB_guide / DB_tokens(<context>)에서 채웁니다.
+   노션에서 내려받은 CSV를 같은 이름으로 덮어쓰면 됩니다 (실행 중 다시 읽음, 빌드 시 내장). */
+var MOA_FAQ_FILE = 'DB_FAQ.csv';
+function moaCsvRows(raw){
+  var rows = [], row = [], cur = '', q = false, s = String(raw).replace(/^\uFEFF/, '');
+  for(var i = 0; i < s.length; i++){
+    var c = s[i];
+    if(q){ if(c === '"'){ if(s[i + 1] === '"'){ cur += '"'; i++; } else q = false; } else cur += c; }
+    else if(c === '"') q = true;
+    else if(c === ','){ row.push(cur); cur = ''; }
+    else if(c === '\n' || c === '\r'){ if(c === '\r' && s[i + 1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }
+    else cur += c;
+  }
+  if(cur || row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(function(r){ return r.some(function(x){ return x.trim(); }); });
+}
+/* "01_Color (색상) (https://…)" → "Color" */
+function moaFaqTopic(cat){
+  return String(cat || '').replace(/\s*\(https?:[^)]*\)\s*$/, '').replace(/^\d+[_\-.]\s*/, '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+}
+function moaParseFaq(raw){
+  var rows = moaCsvRows(raw), head = (rows.shift() || []).map(function(h){ return h.trim(); });
+  var col = function(k){ for(var i = 0; i < head.length; i++) if(head[i].indexOf(k) > -1) return i; return -1; };
+  var ci = col('카테고리'), qi = col('예상 질문'), ai = col('봇 응답'), vi = col('변수');
+  if(qi < 0 || ai < 0) return [];
+  return rows.map(function(r){
+    return { topic: moaFaqTopic(ci > -1 ? r[ci] : ''), q: (r[qi] || '').trim(), a: (r[ai] || '').trim(), vars: vi > -1 ? (r[vi] || '').trim() : '' };
+  }).filter(function(x){ return x.q && x.a; });
+}
+var MOA_FAQ_HINT = [
+  ['breakpoint', /pc|mo|모바일|데스크톱|데스크탑|태블릿|해상도|breakpoint/i],
+  ['state', /상태|hover|호버|비활성|disabled|선택|pressed|눌림|focus|포커스/i],
+  ['theme', /다크|라이트|dark|light|테마/i],
+  ['size', /small|large|default|medium|사이즈|크기|\d+px/i],
+  ['token', /토큰|token/i]
+];
+function moaFaqKey(t){ return String(t || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+/* 질문과 비슷한 FAQ 예시를 topics(우선순위 순) 안에서 최대 n개 */
+function moaFaqMatch(question, topics, n){
+  var list = window.MOA_FAQ || [];
+  if(!n || !list.length) return [];
+  var keys = (topics || []).map(moaFaqKey).filter(Boolean);
+  var qs = moaTokenize(question).filter(function(t){ return t.length > 1; });
+  var raw = String(question || '');
+  return list.map(function(f){
+    var rank = keys.indexOf(moaFaqKey(f.topic));
+    if(keys.length && rank < 0) return null;
+    var words = moaTokenizeBase(f.q.replace(/\{[^}]*\}/g, ' ')).filter(function(w){ return w.length > 1; });
+    var s = 0;
+    words.forEach(function(w){ if(qs.some(function(t){ return t.indexOf(w) === 0 || w.indexOf(t) === 0; })) s += 1; });
+    MOA_FAQ_HINT.forEach(function(h){ if(f.q.indexOf('{' + h[0]) > -1 && h[1].test(raw)) s += 0.5; });
+    if(s < 1) return null;
+    return { f: f, s: s - rank * 0.01 };
+  }).filter(Boolean).sort(function(a, b){ return b.s - a.s; }).slice(0, n).map(function(r){ return r.f; });
+}
+function moaFaqContext(list){
+  if(!list || !list.length) return '';
+  return '<faq_style>\n' +
+    '아래는 이 카테고리의 공식 답변 예시입니다. 질문과 가장 비슷한 예시 하나를 골라 그 문장 구조·어투·목록 형식(•, -, **굵게**)을 우선 따라 답하세요.\n' +
+    '- {중괄호} 자리는 반드시 <context>(DB_guide·DB_tokens)에서 확인한 실제 명칭·값·토큰으로 채우세요. context에 없는 값은 지어내지 말고 그 부분을 생략하세요.\n' +
+    '- 예시에 적힌 고정 문장·수치라도 context와 다르면 context를 따르세요.\n' +
+    '- 이 예시 형식이 출력 프롬프트의 기본 구성(설명구/핵심 스펙/정의/사용 규칙)보다 우선합니다. 단, 첫 줄 제목 규칙과 JSON 출력 형식은 그대로 지키세요.\n' +
+    '- 비슷한 예시가 없으면 기본 출력 규칙을 따르세요.\n\n' +
+    list.map(function(f, i){ return '[예시 ' + (i + 1) + ' · ' + f.topic + ']\n질문: ' + f.q + '\n응답: ' + f.a; }).join('\n\n') +
+    '\n</faq_style>\n\n';
+}
 
 /* data/db_glossary/glossary.md → 사용자 표현 ↔ 공식 용어 (빌드 시 window.MOA_GLOSSARY_DB로 들어옴) */
 var MOA_GLOSSARY_CAT = { 'typography':'Typeface' };
@@ -2022,7 +2098,7 @@ function moaAskOnce(question, apiKey, opts){
   function end(i, detail, status){ report(i, status || 'done', detail || ''); }
   function skipRest(from, detail){ for(var k = from; k < MOA_STEPS.length; k++) report(k, 'skip', k === from ? detail : ''); }
 
-  var qs, sq, usage = false, topics = [], hits = [], db = window.MOA_DB || [];
+  var qs, sq, usage = false, topics = [], hits = [], faqs = [], db = window.MOA_DB || [];
   var hist = (opts.history || []).slice(-6);
   var last = hist[hist.length - 1];
 
@@ -2113,8 +2189,13 @@ function moaAskOnce(question, apiKey, opts){
       g = db.filter(function(c){ return c.topic === opts.topic && /정의|개요|타입별 ?요약|적용 ?상황|사용 ?기준|용도/.test(moaHead(c)); }).slice(0, 5);
     }
     hits = g.concat(t);
+    /* FAQ 형식: 지금 카테고리 → 질문에서 찾은 주제 → 근거 상위 주제 순 */
+    var ft = [], addT = function(x){ if(x && x !== opts.excludeTopic && ft.indexOf(x) < 0) ft.push(x); };
+    addT(opts.topic); topics.forEach(addT); g.slice(0, 2).forEach(function(c){ addT(c.topic); });
+    faqs = cmp ? [] : moaFaqMatch(question, ft, 3);
     var lab = function(c){ return (c.topic ? c.topic + ' › ' : '') + moaHead(c); };
     var info = (g.length ? '가이드: ' + g.slice(0, 2).map(lab).join(' / ') : '') + (g.length && t.length ? '\n' : '') + (t.length ? '토큰: ' + t.slice(0, 3).map(function(c){ return moaHead(c).replace(/ 토큰$/, ''); }).join(', ') : '');
+    if(faqs.length) info += '\nFAQ 형식: ' + faqs.map(function(f){ return f.q; }).slice(0, 2).join(' / ');
     end(3, hits.length ? info : '매칭된 결과 없음', hits.length ? 'done' : 'warn');
   })
   /* 5 */
@@ -2141,7 +2222,7 @@ function moaAskOnce(question, apiKey, opts){
         systemInstruction: { parts: [{ text: moaSystem() + MOA_JSON_RULE }] },
         contents: [].concat.apply([], hist.map(function(h){
           return [{ role: 'user', parts: [{ text: h.q }] }, { role: 'model', parts: [{ text: String(h.a || '').slice(0, 1200) }] }];
-        })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') + moaLeadHint() }] }]),
+        })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n' + moaFaqContext(faqs) + '질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') + moaLeadHint() }] }]),
       };
       var tried = [], fails = [], plain = false;
       function next(i){
@@ -2390,9 +2471,15 @@ moaFx.alt = ''; moaFx.setAttribute('aria-hidden','true');
 moaFx.style.cssText = 'position:absolute;left:-21px;top:-18px;width:120px;height:120px;object-fit:cover;pointer-events:none;visibility:hidden;transform-origin:0 0;transform:translate(5.9px,9px) scale(.877)';
 moa.appendChild(moaFx);
 fetch(moaImg.dataset.motion).then(function(r){ return r.blob(); }).then(function(b){ moaBlob = b; });
-function moaPlay(){
+/* 호버: 인사(moa_hi) · 호버 중 클릭: 360° 회전(moa_360turn, 734ms 1회) 후 다시 인사 / 호버 해제 시 정지 */
+var moaTurnBlob = null, moaHover = false, moaTurning = 0, MOA_TURN_MS = 734;
+fetch(moaImg.dataset.turn).then(function(r){ return r.blob(); }).then(function(b){ moaTurnBlob = b; });
+/* 호버할 때마다 인사(moa_hi) ↔ 선생님(moa_teacher) 번갈아 */
+var moaTeachBlob = null, moaHoverN = 0;
+fetch(moaImg.dataset.teacher).then(function(r){ return r.blob(); }).then(function(b){ moaTeachBlob = b; });
+function moaShow(blob, src, done){
   var tok = ++moaTok, old = moaUrl;
-  moaUrl = moaBlob ? URL.createObjectURL(moaBlob) : moaImg.dataset.motion + '?t=' + Date.now();
+  moaUrl = blob ? URL.createObjectURL(blob) : src + (src.indexOf('data:') === 0 ? '' : '?t=' + Date.now());
   var next = new Image(); next.src = moaUrl;
   (next.decode ? next.decode() : Promise.resolve()).catch(function(){}).then(function(){
     if(tok !== moaTok) return;
@@ -2400,16 +2487,32 @@ function moaPlay(){
     moaFx.style.visibility = 'visible';
     moaImg.style.visibility = 'hidden';
     if(old && old.indexOf('blob:') === 0) setTimeout(function(){ URL.revokeObjectURL(old); }, 500);
+    if(done) done(tok);
+  });
+}
+function moaPlay(){
+  moaTurning = 0;
+  if(moaHoverN % 2) moaShow(moaTeachBlob, moaImg.dataset.teacher);
+  else moaShow(moaBlob, moaImg.dataset.motion);
+}
+function moaTurn(){
+  moaShow(moaTurnBlob, moaImg.dataset.turn, function(tok){
+    moaTurning = tok;
+    setTimeout(function(){
+      if(tok !== moaTok) return;
+      moaTurning = 0;
+      if(moaHover) moaPlay(); else moaStop();
+    }, MOA_TURN_MS);
   });
 }
 function moaStop(){
-  moaTok++;
+  moaTok++; moaTurning = 0;
   moaImg.style.visibility = '';
   moaFx.style.visibility = 'hidden';
 }
-moa.addEventListener('mouseenter', moaPlay);
-moa.addEventListener('mouseleave', moaStop);
-moa.onclick = moaPlay;
+moa.addEventListener('mouseenter', function(){ moaHover = true; if(!moaTurning) moaPlay(); });
+moa.addEventListener('mouseleave', function(){ moaHover = false; moaHoverN++; if(!moaTurning) moaStop(); });
+moa.onclick = function(){ if(!moaTurning) moaTurn(); };
 
 HOME_CHIPS.forEach(function(row){
   var r = el('div','home-row');
@@ -2971,7 +3074,7 @@ function ask(q, typed){
             function(){ stayHere(); });
           return;
         }
-        if(res.model) setApiStatus(true);
+        if(res.model){ S.failAt = 0; setApiStatus(true); }
         /* 용어 식별 불가: 제목 없이 바디 텍스트 한 줄만 */
         /* 1) 의도 파악 불가일 때만 (2) 데이터 없음은 기존 '내용 없음' 답변 유지) */
         if(res.invalid || (!/가이드에 해당 내용이 없/.test(String(res.text || '')) && /용어\s*식별|식별이\s*(불가|어려)|어떤 정보를 찾으시는지|용어인지 다시 확인/.test(String(res.text || '')))){
@@ -3008,7 +3111,7 @@ function ask(q, typed){
         }
       }).catch(function(err){
         setIng(false);
-        if(err && err.moa && (/네트워크|API 키|끊겼/.test(err.message) || [400, 401, 403, 500, 503].indexOf(err.status) > -1)) setApiStatus(false);
+        if(!err || err.moa || err.status || /fetch|network|네트워크|API 키|끊겼/i.test(String(err && err.message))){ S.failAt = Date.now(); setApiStatus(false); }
         if(live && live.parentNode) live.parentNode.removeChild(live);
         var at = err.step > -1 ? (err.step + 1) + '단계(' + window.MOA_STEPS[err.step] + ')에서 ' : '';
         renderAnswer(body, { kind:'text', title:'답변을 가져오지 못했어요', desc:'', text:at + '오류가 발생했어요.\n\n이유: ' + err.message });
@@ -3275,7 +3378,7 @@ $('discGo').onclick = function(){ stopFlash(); $('discOverlay').classList.add('h
 function renderUsage(){
   var box = $('keyUsage');
   if(!box) return;
-  if(!S.apiOk || typeof moaUsage !== 'function'){ box.classList.remove('on'); return; }
+  if(!S.key || !S.apiOk || typeof moaUsage !== 'function'){ box.classList.remove('on'); box.innerHTML = ''; box.title = ''; return; }
   var u = moaUsage();
   box.innerHTML = '<i></i><span>' + u.model + '</span><span>·</span><span>오늘 남은 사용량 약 <b>' + u.left + '</b> / ' + u.limit + '회</span>';
   box.title = '이 기기에서 보낸 요청 수 기준 추정치예요. 정확한 값은 Google AI Studio에서 확인해 주세요.';
@@ -3288,12 +3391,15 @@ function setApiStatus(ok){
   $('statusDot').classList.toggle('off', !ok);
   $('statusDot').title = ok ? 'Gemini API 연결됨' : 'Gemini API 연결 끊김';
 }
-function checkApi(){
-  if(typeof moaPing !== 'function') return;
-  moaPing(S.key).then(setApiStatus);
+/* 빨강: 키 없음 · 오프라인 · 키 확인 실패 · 최근 5분 내 답변 요청 실패 */
+function checkApi(force){
+  if(force) S.failAt = 0;
+  if(!S.key || typeof moaPing !== 'function'){ setApiStatus(false); return; }
+  var k = S.key;
+  moaPing(k).then(function(ok){ if(k !== S.key) return; setApiStatus(ok && !(S.failAt && Date.now() - S.failAt < 300000)); });
 }
 setApiStatus(false);
-setInterval(function(){ if(S.key) checkApi(); }, 60000);
+setInterval(function(){ checkApi(); }, 60000);
 window.addEventListener('offline', function(){ setApiStatus(false); });
 window.addEventListener('online', checkApi);
 function setConnected(v){
@@ -3309,12 +3415,23 @@ keyInput.addEventListener('input', function(){
   keyBox.classList.remove('err');
   keyBox.classList.toggle('on', v.length > 0);
   keySave.disabled = v.length === 0;
+  if(!v && S.key) deleteKey();
 });
-$('keyClear').onclick = function(){ keyInput.value=''; keyBox.classList.remove('on','err'); keySave.disabled = true; };
+/* 키 삭제: 저장된 키 제거 → 빨간불 + 모델·사용량 표시 숨김 */
+function deleteKey(){
+  var had = !!S.key;
+  S.key = ''; S.hasKey = false; S.failAt = 0; S.history = [];
+  try{ localStorage.removeItem('moa-gemini-key'); }catch(e){}
+  post({type:'save-key', key:''});
+  setApiStatus(false);
+  renderUsage();
+  if(had) toast('API 키를 삭제했어요');
+}
+$('keyClear').onclick = function(){ keyInput.value=''; keyBox.classList.remove('on','err'); keySave.disabled = true; deleteKey(); keyInput.focus(); };
 keySave.onclick = function(){
   var v = keyInput.value.trim();
   if(v.length < 20 || v.indexOf(' ') > -1){ keyBox.classList.remove('on'); keyBox.classList.add('err'); return; }
-  S.key = v; S.hasKey = true; setConnected(true); checkApi();
+  S.key = v; S.hasKey = true; S.failAt = 0; setConnected(true);
   /* 기기별 저장 — 웹: 이 브라우저 / 플러그인: Figma clientStorage */
   try{ localStorage.setItem('moa-gemini-key', v); }catch(e){}
   post({type:'save-key', key:v});

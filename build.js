@@ -107,12 +107,16 @@ for (const l of R('data/db_glossary/ko_en.md').replace(/\r/g, '').split('\n')) {
   if (m && !/영어 용어/.test(m[1])) glossary.push({ term: m[1].trim(), category: '한글 표기', aliases: m[2].split(',').map(s => s.trim()).filter(Boolean), source: 'ko_en.md' });
 }
 
+/* data/faq/DB_FAQ.csv → MOA_FAQ  (src/gemini.js의 moaParseFaq와 같은 규칙) */
+const faqParse = new Function("function moaCsvRows(raw){\n  var rows = [], row = [], cur = '', q = false, s = String(raw).replace(/^\\uFEFF/, '');\n  for(var i = 0; i < s.length; i++){\n    var c = s[i];\n    if(q){ if(c === '\"'){ if(s[i + 1] === '\"'){ cur += '\"'; i++; } else q = false; } else cur += c; }\n    else if(c === '\"') q = true;\n    else if(c === ','){ row.push(cur); cur = ''; }\n    else if(c === '\\n' || c === '\\r'){ if(c === '\\r' && s[i + 1] === '\\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }\n    else cur += c;\n  }\n  if(cur || row.length){ row.push(cur); rows.push(row); }\n  return rows.filter(function(r){ return r.some(function(x){ return x.trim(); }); });\n}\n/* \"01_Color (색상) (https://…)\" → \"Color\" */\nfunction moaFaqTopic(cat){\n  return String(cat || '').replace(/\\s*\\(https?:[^)]*\\)\\s*$/, '').replace(/^\\d+[_\\-.]\\s*/, '').replace(/\\s*\\([^)]*\\)\\s*$/, '').trim();\n}\nfunction moaParseFaq(raw){\n  var rows = moaCsvRows(raw), head = (rows.shift() || []).map(function(h){ return h.trim(); });\n  var col = function(k){ for(var i = 0; i < head.length; i++) if(head[i].indexOf(k) > -1) return i; return -1; };\n  var ci = col('카테고리'), qi = col('예상 질문'), ai = col('봇 응답'), vi = col('변수');\n  if(qi < 0 || ai < 0) return [];\n  return rows.map(function(r){\n    return { topic: moaFaqTopic(ci > -1 ? r[ci] : ''), q: (r[qi] || '').trim(), a: (r[ai] || '').trim(), vars: vi > -1 ? (r[vi] || '').trim() : '' };\n  }).filter(function(x){ return x.q && x.a; });\n}" + '; return moaParseFaq;')();
+const faq = fs.existsSync(path.join(__dirname, 'data/faq/DB_FAQ.csv')) ? faqParse(R('data/faq/DB_FAQ.csv')) : [];
+
 const tokens = R('data/DB_tokens/tokens.json');
 const easteregg = fs.existsSync(path.join(__dirname, 'data/easteregg.md')) ? R('data/easteregg.md') : '';
 
 const map = {
   __IMG_HOME__: 'home', __IMG_KEY__: 'key', __IMG_KEYBG__: 'keybg', __IMG_SAD__: 'sad',
-  __IMG_MASCOT__: 'mascot', __IMG_PROFILE__: 'profile', __IMG_SMALL__: 'small', __IMG_INTROBG__: 'introbg', __IMG_MOAHI__: 'moahi'
+  __IMG_MASCOT__: 'mascot', __IMG_PROFILE__: 'profile', __IMG_SMALL__: 'small', __IMG_INTROBG__: 'introbg', __IMG_MOAHI__: 'moahi', __IMG_MOATURN__: 'moaturn', __IMG_MOATEACHER__: 'moateacher'
 };
 const esc = (s) => s.replace(/<\//g, '<\\/');
 const build = (get) => {
@@ -123,18 +127,19 @@ const build = (get) => {
     .split('__TOKENS_JSON__').join(esc(tokens))
     .split('__PROMPTS_JSON__').join(esc(JSON.stringify(prompts)))
     .split('__GLOSSARY_JSON__').join(esc(JSON.stringify(glossary)))
+    .split('__FAQ_JSON__').join(esc(JSON.stringify(faq)))
     .split('__EASTEREGG_JSON__').join(esc(JSON.stringify(easteregg)));
   for (const [tok, name] of Object.entries(map)) h = h.split(tok).join(get(name));
-  if (/__(IMG|DB|GEMINI|FONT|PROMPTS|TOKENS|GLOSSARY|EASTEREGG)_/.test(h)) throw new Error('unresolved token');
+  if (/__(IMG|DB|GEMINI|FONT|PROMPTS|TOKENS|GLOSSARY|FAQ|EASTEREGG)_/.test(h)) throw new Error('unresolved token');
   return h;
 };
 
 fs.writeFileSync(path.join(__dirname, 'index.html'), build(n => imgs[n]));
 fs.mkdirSync(path.join(__dirname, 'preview'), { recursive: true });
 fs.writeFileSync(path.join(__dirname, 'preview/ui.preview.html'),
-  build(n => n === 'moahi' ? '../assets/moa_hi_sequence.webp' : `../assets/img-${n}.${/^data:image\/jpe?g/.test(imgs[n]) ? 'jpg' : 'png'}`));
+  build(n => n === 'moahi' ? '../assets/moa_hi_sequence.webp' : n === 'moaturn' ? '../assets/moa_360turn_sequence.webp' : n === 'moateacher' ? '../assets/moa_teacher_sequence.webp' : `../assets/img-${n}.${/^data:image\/jpe?g/.test(imgs[n]) ? 'jpg' : 'png'}`));
 
 const by = {};
 chunks.forEach(c => by[c.source] = (by[c.source] || 0) + 1);
-console.log(`chunks: ${chunks.length} · glossary: ${glossary.length} · prompts: ${prompts.length}`);
+console.log(`chunks: ${chunks.length} · glossary: ${glossary.length} · faq: ${faq.length} · prompts: ${prompts.length}`);
 Object.entries(by).forEach(([f, n]) => console.log(`  ${f}  ${n}`));
