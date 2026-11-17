@@ -5,7 +5,28 @@
    status: 'run' | 'done' | 'warn' | 'error' | 'skip' */
 
 /* 앞에서부터 시도하고, 모델이 없으면(404) 다음 모델로 넘어갑니다. */
-var MOA_MODELS = ['gemini-3.5-flash', 'gemini-3.1-flash-lite', 'gemini-2.5-flash'];
+/* 빠른 lite 먼저 · 오류(429·503·시간 초과)면 다음 모델로 */
+var MOA_MODELS = ['gemini-3.1-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.8-flash', 'gemini-3.5-flash'];
+/* lite가 '내용 없음'으로 답하면 이 순번부터(상위 모델) 다시 물어봄 */
+var MOA_UPPER = 2;
+var MOA_COOL = {};
+/* 모델별 생성 설정 — 2.x: thinkingBudget / 3.x·latest: thinkingLevel(3.8은 minimal 미지원 → low) / 거부한 모델은 생각 설정 없이 */
+var MOA_NO_THINK = {};
+function moaGenCfg(model){
+  var c = { maxOutputTokens: 4096, responseMimeType: 'application/json' };
+  if(MOA_NO_THINK[model]) return c;
+  if(/^gemini-2/.test(model)){ c.temperature = 0; c.thinkingConfig = { thinkingBudget: 0 }; }
+  else c.thinkingConfig = { thinkingLevel: /^gemini-3\.[6-9]/.test(model) ? 'low' : 'minimal' };
+  return c;
+} /* 503·시간 초과 모델은 5분간 건너뜀 */
+function moaSkip(m){
+  if(MOA_COOL[m] && Date.now() < MOA_COOL[m]) return true;
+  if(typeof moaUsageAll !== 'function') return false;
+  var u = moaUsageAll(), lim = MOA_FREE_RPD[m] || 0;
+  return lim > 0 && (u.used[m] || 0) >= lim;
+}
+/* 응답 헤더가 이 시간 안에 안 오면 다음 모델로 */
+var MOA_CALL_TIMEOUT = 10000;
 
 var MOA_STEPS = [
   '질문 범위 및 의도 확인',
@@ -300,7 +321,7 @@ function moaBuildGlossary(){
   MOA_GLOSSARY = {}; MOA_GLOSSARY_PHRASE = []; MOA_GLOSSARY_TERM = {};
   var list = Array.isArray(window.MOA_GLOSSARY_DB) ? window.MOA_GLOSSARY_DB : [];
   var topics = {};
-  (window.MOA_DB || []).forEach(function(c){ if(c.topic) topics[c.topic.toLowerCase().replace(/[^a-z]/g, '')] = c.topic; });
+  (window.MOA_DB || []).concat(window.MOA_TOKENS || []).forEach(function(c){ if(c.topic) topics[c.topic.toLowerCase().replace(/[^a-z]/g, '')] = c.topic; });
   var norm = function(x){ return String(x || '').toLowerCase().replace(/\s+/g, ''); };
   list.forEach(function(it){
     if(!it || !it.term) return;
@@ -371,7 +392,8 @@ function moaEnglish(qs){
 }
 
 function moaTokenize(s){
-  return String(s).toLowerCase().replace(/[^\uac00-\ud7a3a-z0-9#.]+/g,' ').split(' ').filter(function(t){ return t.length > 1 || /[\uac00-\ud7a3]/.test(t); });
+  /* 영어 뒤에 붙은 조사 분리 (resting은 → resting) */
+  return String(s).toLowerCase().replace(/([a-z0-9#._]+)(?:은|는|이|가|을|를|의|에|로|으로|도|란|이란|이랑|랑|과|와|에서|이야|야|이에요|예요)(?=[^\uac00-\ud7a3]|$)/g, '$1 ').replace(/[^\uac00-\ud7a3a-z0-9#.]+/g,' ').split(' ').filter(function(t){ return t.length > 1 || /[\uac00-\ud7a3]/.test(t); });
 }
 
 function moaHead(ch){ return String(ch.title || ch.section || ch.group || ''); }
@@ -496,7 +518,7 @@ function moaPing(apiKey){
 
 /* 무료 사용량 추적 (Gemini API는 잔여량을 알려주지 않아 이 기기에서 보낸 요청 수로 추정)
    하루 한도는 무료 등급 기준 추정치 · 미국 태평양 시간 자정에 초기화 */
-var MOA_FREE_RPD = { 'gemini-3.5-flash': 20, 'gemini-3.1-flash-lite': 500, 'gemini-2.5-flash': 20 };
+var MOA_FREE_RPD = { 'gemini-3.8-flash': 20, 'gemini-3.5-flash': 20, 'gemini-3.1-flash-lite': 500, 'gemini-flash-lite-latest': 500 };
 var moaMem = {};
 function moaStore(k, v){
   try { if(v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch(_){ if(v === undefined) return moaMem[k]; moaMem[k] = v; }
@@ -534,9 +556,16 @@ function moaCall(model, apiKey, body, onDelta){
   var stream = typeof onDelta === 'function';
   var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model +
     (stream ? ':streamGenerateContent?alt=sse&key=' : ':generateContent?key=') + encodeURIComponent(apiKey);
-  return fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) })
-    .catch(function(){ throw moaFail('네트워크 연결 실패 · 인터넷 연결과 manifest의 allowedDomains를 확인해 주세요'); })
+  var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null, late = false;
+  var tm = setTimeout(function(){ late = true; if(ctl) ctl.abort(); }, MOA_CALL_TIMEOUT);
+  return fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body), signal: ctl ? ctl.signal : undefined })
+    .catch(function(){
+      clearTimeout(tm);
+      if(late){ var e = moaFail('HTTP 503 · ' + model + ' 응답 시간 초과(' + (MOA_CALL_TIMEOUT / 1000) + '초)'); e.status = 503; throw e; }
+      throw moaFail('네트워크 연결 실패 · 인터넷 연결과 manifest의 allowedDomains를 확인해 주세요');
+    })
     .then(function(res){
+      clearTimeout(tm);
       if(!res.ok){
         return res.text().catch(function(){ return ''; }).then(function(t){
           var json = {}; try { json = JSON.parse(t); } catch(_){}
@@ -594,6 +623,13 @@ function moaAsk(question, apiKey, opts){
   var own = opts.topic;
   return moaAskOnce(question, apiKey, opts).then(function(res){
     var none = !res.grounded || /가이드에 해당 내용이 없/.test(String(res.text || '').slice(0, 80));
+    /* Moa(카테고리 없음) 창: 근거가 가장 많이 나온 카테고리 창으로 안내 */
+    if(!own && !opts.compareTopics && !none){
+      var cnt = {}, best = null;
+      (res.hitTopics || []).forEach(function(t){ if(t){ cnt[t] = (cnt[t] || 0) + 1; if(!best || cnt[t] > cnt[best]) best = t; } });
+      res.movedTo = best;
+      return res;
+    }
     if(!own || opts.compareTopics || !none || !apiKey) return res;
     var o2 = {}; Object.keys(opts).forEach(function(k){ o2[k] = opts[k]; });
     o2.topic = null; o2.excludeTopic = own;
@@ -633,7 +669,7 @@ function moaAskOnce(question, apiKey, opts){
   .then(function(){ return begin(1); })
   .then(function(){
     var names = {};
-    db.forEach(function(c){ if(c.topic) names[c.topic.toLowerCase()] = c.topic; });
+    db.concat(window.MOA_TOKENS || []).forEach(function(c){ if(c.topic) names[c.topic.toLowerCase()] = c.topic; });
     var gm = moaGlossaryMatch(question, qs);
     gm.topics.forEach(function(t){ if(topics.indexOf(t) < 0) topics.push(t); });
     qs.forEach(function(t){ var hit = names[t]; if(hit && topics.indexOf(hit) < 0) topics.push(hit); });
@@ -741,20 +777,29 @@ function moaAskOnce(question, apiKey, opts){
       };
       var tried = [], fails = [], plain = false;
       function next(i){
+        while(i + 1 < MOA_MODELS.length && moaSkip(MOA_MODELS[i])) i++;
         var model = MOA_MODELS[i];
         tried.push(model);
         report(5, 'run', model + ' 호출 중');
         var req = JSON.parse(JSON.stringify(body));
-        req.generationConfig = /^gemini-3/.test(model)
-          ? { maxOutputTokens: 4096, thinkingConfig: { thinkingLevel: 'minimal' }, responseMimeType: 'application/json' }
-          : { temperature: 0, maxOutputTokens: 4096, thinkingConfig: { thinkingBudget: 0 }, responseMimeType: 'application/json' };
+        req.generationConfig = moaGenCfg(model);
         return moaCall(model, apiKey, req, opts.onDelta).catch(function(err){
+          /* 모델이 생각 설정을 거부(400)하면 같은 모델로 설정 없이 한 번 더 */
+          if(err.status === 400 && req.generationConfig.thinkingConfig){
+            MOA_NO_THINK[model] = true;
+            var r2 = JSON.parse(JSON.stringify(body)); r2.generationConfig = moaGenCfg(model);
+            return moaCall(model, apiKey, r2, opts.onDelta);
+          }
+          throw err;
+        }).catch(function(err){
+          if(err.status === 503 || err.status === 500) MOA_COOL[model] = Date.now() + 300000;
+          if(err.status === 429 && !/per ?minute|PerMinute/i.test(err.message)) moaCount(model, true);
           if([400, 404, 429, 500, 503].indexOf(err.status) > -1 && !/API key/i.test(err.message) && i + 1 < MOA_MODELS.length){
             fails.push(model + ' ' + err.status);
             return next(i + 1);
           }
           if(fails.length) err.message += ' (앞선 시도: ' + fails.join(', ') + ')';
-          if(err.status === 400 || err.status === 403) err.message += ' · API 키를 확인해 주세요';
+          if(err.status === 403 || /API key/i.test(err.message)) err.message += ' · API 키를 확인해 주세요';
           if(err.status === 429) err.message += ' · 사용량 한도 초과';
           err.message = model + ' · ' + err.message;
           throw err;
@@ -763,7 +808,9 @@ function moaAskOnce(question, apiKey, opts){
           if(text) return { text: text, model: model };
           var why = moaWhy(json);
           if(console && console.warn) console.warn('[moa] empty response', model, json);
-          if(!plain){
+          /* 빈 응답은 같은 모델 재시도 대신 5분간 건너뛰고 바로 다음 모델 */
+          MOA_COOL[model] = Date.now() + 300000;
+          if(false){
             plain = true;
             report(5, 'run', model + ' 빈 응답 (' + why + ') · 기본 설정으로 재시도');
             var retry = JSON.parse(JSON.stringify(body));
@@ -786,11 +833,11 @@ function moaAskOnce(question, apiKey, opts){
       /* 근거(hits)가 있는데 "가이드에 해당 내용이 없습니다"로 답하면 한 번 더 시도 — 같은 질문을 두 번 해야 답하던 문제 */
       return next(0).then(function(r){
         if(!/가이드에 해당 내용이 없/.test(String(r.text).slice(0, 80))) return r;
-        report(5, 'run', r.model + ' · 근거가 있어 다시 확인 중');
+        report(5, 'run', r.model + ' · 근거가 있어 상위 모델로 다시 확인 중');
         var lp = body.contents[body.contents.length - 1].parts[0];
         lp.text += '\n\n(위 <context>에 질문과 관련된 가이드 내용이 있습니다. "가이드에 해당 내용이 없습니다"로 답하지 말고 context 내용만 근거로 답하세요. context에 관련 내용이 정말 하나도 없을 때만 그 문장을 쓰세요.)';
         plain = false; fails = [];
-        return next(0).catch(function(){ return r; });
+        return next(MOA_UPPER < MOA_MODELS.length ? MOA_UPPER : 0).catch(function(){ return r; });
       });
     }).then(function(r){
       var pj = moaParseValid(r.text);

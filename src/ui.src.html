@@ -164,10 +164,12 @@ body.web{background:#1E1E1E}
 .bub-ing i:nth-child(2){animation-delay:.2s}.bub-ing i:nth-child(3){animation-delay:.4s}
 @keyframes blink{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-2px)}}
 .hx{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;vertical-align:baseline}
-.hx i{display:inline-block;width:10px;height:10px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);background-image:linear-gradient(45deg,#E0E3E9 25%,transparent 25%,transparent 75%,#E0E3E9 75%),linear-gradient(45deg,#E0E3E9 25%,#fff 25%,#fff 75%,#E0E3E9 75%);background-size:6px 6px;background-position:0 0,3px 3px;position:relative;top:1px;cursor:pointer;overflow:hidden}
-.hx i b{display:block;width:100%;height:100%}
+.hx i{display:inline-block;width:10px;height:10px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14);position:relative;top:1px;cursor:pointer;overflow:hidden}
+.hx i b{display:block;width:100%;height:100%;border-radius:inherit}
+.hx i.lite{box-shadow:none;background-image:none}
+.hx i.lite b{box-shadow:inset 0 0 0 1px rgba(112,112,112,.4)}
 .hx i:hover{box-shadow:inset 0 0 0 1px rgba(0,0,0,.14),0 0 0 2px #D6E4FF}
-.bub-note{align-self:flex-start;max-width:100%;border-radius:2px 20px 20px 20px;background:#fff;box-shadow:0 0 2px 0 rgba(0,0,0,.04);padding:10px 14px;font-size:13px;font-weight:500;line-height:19px;letter-spacing:-0.02em;color:#000;animation:stepIn .25s cubic-bezier(.22,1,.36,1)}
+.bub-note{align-self:flex-start;max-width:100%;border-radius:2px 20px 20px 20px;background:#fff;box-shadow:0 0 2px 0 rgba(0,0,0,.04);padding:10px 14px;font-size:13px;font-weight:500;line-height:19px;letter-spacing:-0.02em;color:#424751;animation:stepIn .25s cubic-bezier(.22,1,.36,1)}
 .steps{align-self:stretch;border-radius:2px 20px 20px 20px;background:#fff;box-shadow:0 0 2px 0 rgba(0,0,0,.04);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .step{display:flex;flex-direction:row;gap:8px;align-items:flex-start;animation:stepIn .25s cubic-bezier(.22,1,.36,1)}
 .step .ic{position:relative;width:14px;height:14px;margin-top:1px;flex-shrink:0;border-radius:50%}
@@ -187,13 +189,19 @@ body.web{background:#1E1E1E}
 .step.warn .d{color:#A86E00}
 @keyframes stepSpin{to{transform:rotate(360deg)}}
 @keyframes stepIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-.card{align-self:stretch;width:100%;border-radius:8px;background:#fff;padding:12px 16px;display:flex;flex-direction:column;gap:12px}
+.card{align-self:flex-start;width:100%;max-width:276px;box-sizing:border-box;border-radius:8px;background:#fff;padding:16px;display:flex;flex-direction:column;gap:12px}
 .card-h{display:flex;flex-direction:column;gap:2px}
 .card-h .t{font-size:14px;font-weight:600;line-height:1.33;color:#000}
 .card-h .d{font-size:12px;font-weight:400;line-height:1.33;color:#000}
-.card p{font-size:13px;font-weight:400;line-height:1.5;color:#555;white-space:pre-wrap}
+.card p{font-size:13px;font-weight:400;line-height:1.5;color:#424751;white-space:pre-wrap}
 .card p .ah{display:block;margin:12px 0 4px;font-size:13px;font-weight:700;line-height:1.5;color:inherit}
 .card p .ah.f{margin-top:0}
+.card,.lcard{word-break:keep-all;overflow-wrap:anywhere}
+.tk{color:#000000}
+.li{display:flex;gap:4px;align-items:baseline}
+.li>i{flex:none;font-style:normal}
+.li>span{flex:1;min-width:0}
+.sw .chipbox.lite,.lcard .lsw .sw.lite{box-shadow:inset 0 0 0 1px rgba(112,112,112,.4)}
 .sw-grid{display:flex;flex-direction:column;gap:8px}
 .sw-row{display:flex;flex-direction:row;gap:12px}
 .sw{flex:1;min-width:0;display:flex;flex-direction:row;gap:12px;align-items:center;height:33px;border-radius:4px;text-align:left}
@@ -201,11 +209,11 @@ body.web{background:#1E1E1E}
 .sw .chipbox{width:16px;height:16px;border-radius:2px;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
 .sw .meta{display:flex;flex-direction:column;min-width:0}
 .sw .n{font-size:13px;font-weight:500;line-height:17px;color:#000;white-space:nowrap}
-.sw .h{font-size:12px;font-weight:400;line-height:16px;color:#5C6473}
+.sw .h{font-size:12px;font-weight:400;line-height:16px;color:#000000}
 .tp-list{display:flex;flex-direction:column;gap:8px}
 .tp-row{display:flex;flex-direction:row;gap:8px;align-items:baseline;text-align:left}
 .tp-row .a{font-size:13px;font-weight:500;line-height:1.33;color:#000;white-space:nowrap}
-.tp-row .b{flex:1;font-size:12px;font-weight:400;line-height:1.33;text-align:right;color:#5C6473}
+.tp-row .b{flex:1;font-size:12px;font-weight:400;line-height:1.33;text-align:right;color:#000000}
 .tp-row:hover .a{color:#2063FF}
 .acts{display:flex;gap:12px;align-items:center}
 .acts button{display:flex;gap:4px;align-items:center;font-size:12px;font-weight:600;color:#555}
@@ -214,7 +222,7 @@ body.web{background:#1E1E1E}
 .backlink{display:flex;gap:2px;align-items:center;height:16px;border-radius:16px;background:none;box-shadow:none;padding:0;font-size:12px;font-weight:600;line-height:16px;letter-spacing:-.02em;color:#555;align-self:flex-start}
 .backlink:hover{color:#2063FF}
 .backlink svg{flex-shrink:0;fill:currentColor;transform:rotate(90deg);transform-origin:50% 50%}
-.caret{color:#2063FF;animation:caret 1s steps(1) infinite}
+.caret{color:#424751;animation:caret 1s steps(1) infinite}
 @keyframes caret{50%{opacity:0}}
 #btnSettings.hl{border-radius:50%;animation:setHl .6s ease-in-out 3}
 @keyframes setHl{0%,100%{box-shadow:0 0 0 0 rgba(65,133,255,0);background-color:transparent}50%{box-shadow:0 0 0 3px rgba(65,133,255,.4),0 0 12px 3px rgba(65,133,255,.4);background-color:rgba(65,133,255,.4)}}
@@ -360,16 +368,16 @@ body.web{background:#1E1E1E}
 .lcard .litems{display:flex;flex-direction:column;gap:12px}
 .lcard .litem{display:flex;flex-direction:column;gap:4px}
 .lcard .litem b{font-size:13px;font-weight:500;line-height:17px;letter-spacing:-0.02em;color:#000}
-.lcard .litem span{font-size:13px;font-weight:400;line-height:20px;letter-spacing:-0.02em;color:#000}
+.lcard .litem span{font-size:13px;font-weight:400;line-height:20px;letter-spacing:-0.02em;color:#424751}
 .lcard .lsw{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px;row-gap:8px}
 .lcard .lsw .it{display:flex;gap:12px;align-items:center;height:33px}
 .lcard .lsw .sw{display:block;width:16px;height:16px;padding:0;border-radius:2px;flex:0 0 16px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
 .lcard .lsw .nm{display:flex;flex-direction:column;min-width:0}
 .lcard .lsw .nm b{font-size:13px;font-weight:500;line-height:17px;letter-spacing:-0.02em;color:#000;white-space:nowrap}
-.lcard .lsw .nm span{font-size:12px;font-weight:400;line-height:16px;letter-spacing:-0.02em;color:#5C6473;white-space:nowrap}
+.lcard .lsw .nm span{font-size:12px;font-weight:400;line-height:16px;letter-spacing:-0.02em;color:#000000;white-space:nowrap}
 .lcard .lrow{display:flex;gap:8px;align-items:flex-start}
 .lcard .lrow .a{font-size:13px;font-weight:500;line-height:1.33;letter-spacing:-0.02em;color:#000;white-space:nowrap}
-.lcard .lrow .b{flex:1;font-size:12px;font-weight:400;line-height:1.33;letter-spacing:-0.02em;color:#5C6473;text-align:right}
+.lcard .lrow .b{flex:1;font-size:12px;font-weight:400;line-height:1.33;letter-spacing:-0.02em;color:#000000;text-align:right}
 .lcard .lnote{display:flex;gap:2px;font-size:13px;font-weight:400;line-height:20px;letter-spacing:-0.02em;color:#5C6473}
 .lcard .limg{display:block;width:100%;height:auto;border-radius:4px}
 </style>
@@ -608,13 +616,6 @@ function etcIntent(q){
   for(var i = 0; i < list.length; i++) if(list[i][1].test(t)) return list[i][0];
   return null;
 }
-function relatedFor(cat){
-  if(cat === '기타 문의') return [];
-  if(!USE_DB) return [];
-  var owner = S.topic || (isTopic(cat) ? cat : TOPICS.filter(function(t){ return SECTIONS[t].indexOf(cat) > -1; })[0]);
-  if(!owner) return [];
-  return SECTIONS[owner].filter(function(s){ return s !== cat; }).slice(0, 3);
-}
 
 /* ── DB 우선: data/ 폴더에 내용이 있으면 메뉴·답변을 DB에서 구성 ── */
 var DB = window.MOA_DB || [];
@@ -623,13 +624,26 @@ var USE_DB = DB.length > 0;
 /* 주제(파일) 목록과 주제별 섹션 목록 */
 var TOPICS = [], SECTIONS = {};
 /* DB가 최신 파일로 바뀌면(gemini.js moaLoadDb) 주제·섹션 목록을 다시 만듦 */
+/* 가이드 파일이 없는 카테고리(Text Field 등)는 랜딩메뉴 설명을 가이드 근거로 사용 */
+function landingChunk(cat, md){
+  var txt = String(md).replace(/<!--[\s\S]*?-->/g, '').replace(/^# 타이틀[\s\S]*?(?=^## )/m, '')
+    .replace(/^!\[[^\]]*\]\([^)]*\)\s*$/gm, '').replace(/^추가 질문:.*$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+  return txt ? { source: 'landingmenu/' + cat + '/landing.md', topic: cat, group: cat, section: cat + ' 개요', text: txt, kind: 'landing' } : null;
+}
 function indexDb(){
+  var LMD = window.MOA_LANDING_MD || {};
+  Object.keys(LMD).forEach(function(cat){
+    if(DB.some(function(c){ return c.topic === cat; })) return;
+    var ch = landingChunk(cat, LMD[cat]); if(ch) DB.push(ch);
+  });
   TOPICS.length = 0;
   Object.keys(SECTIONS).forEach(function(k){ delete SECTIONS[k]; });
   DB.forEach(function(ch){
     if(TOPICS.indexOf(ch.topic) < 0){ TOPICS.push(ch.topic); SECTIONS[ch.topic] = []; }
     if(ch.section && SECTIONS[ch.topic].indexOf(ch.section) < 0) SECTIONS[ch.topic].push(ch.section);
   });
+  /* 토큰만 있는 컴포넌트도 카테고리로 인식 */
+  (window.MOA_TOKENS || []).forEach(function(ch){ if(ch.topic && TOPICS.indexOf(ch.topic) < 0){ TOPICS.push(ch.topic); SECTIONS[ch.topic] = []; } });
   USE_DB = DB.length > 0;
 }
 window.moaOnDb = indexDb;
@@ -873,7 +887,8 @@ function loadLanding(force){
     Object.keys(LANDING).forEach(function(c){ if(cats.indexOf(c) < 0) cats = cats.concat([c]); });
     cats.forEach(function(cat){
       get(LANDING_TEXT_ROOT + 'data/landingmenu/' + encodeURIComponent(cat.replace(/\s*&\s*/g, ' - ')) + '/text/landing.md')
-        .then(function(t){ var j = t && moaParseLanding(t); if(j && j.chips.length) LANDING[cat] = j; }).catch(function(){});
+        .then(function(t){ var j = t && moaParseLanding(t); if(j && j.chips.length) LANDING[cat] = j;
+          if(t){ window.MOA_LANDING_MD = window.MOA_LANDING_MD || {}; var had = window.MOA_LANDING_MD[cat]; window.MOA_LANDING_MD[cat] = t; if(!had){ indexDb(); if(typeof moaBuildGlossary === 'function') moaBuildGlossary(); } } }).catch(function(){});
     });
   });
 }
@@ -945,7 +960,7 @@ function renderLanding(body, lp){
       var HEX = /^#[0-9A-F]{6}$/i, sw = (b.rows || []).filter(function(r){ return HEX.test(r[1]); });
       if(sw.length){
         var g = el('div','lsw');
-        sw.forEach(function(r){ var it = el('div','it'), ch = el('i','sw'), nm = el('div','nm'); ch.style.background = r[1]; nm.appendChild(el('b',null,r[0])); nm.appendChild(el('span',null,r[1].toUpperCase())); it.appendChild(ch); it.appendChild(nm); g.appendChild(it); });
+        sw.forEach(function(r){ var it = el('div','it'), ch = el('i','sw'), nm = el('div','nm'); ch.style.background = r[1]; if(moaLite(r[1])) ch.classList.add('lite'); nm.appendChild(el('b',null,r[0])); nm.appendChild(el('span',null,r[1].toUpperCase())); it.appendChild(ch); it.appendChild(nm); g.appendChild(it); });
         parts.push(g);
       }
       var plain = (b.rows || []).filter(function(r){ return !HEX.test(r[1]); });
@@ -1154,10 +1169,6 @@ function hasWord(q, w){
   var s = String(q).toLowerCase().replace(/\s+/g, '');
   return (TOPIC_WORD_KO[w] || [w]).some(function(x){ return s.indexOf(x) > -1; });
 }
-function relatedTopic(a, b){
-  if(!a || !b) return false;
-  return a === b || a.indexOf(b) > -1 || b.indexOf(a) > -1;
-}
 /* 지금 카테고리의 하위(더 구체적) 카테고리 고유 단어를 말하면 그쪽으로 (CTA Button + 아이콘 → CTA Button Icon, Chip + 옵션 → Option Chip) */
 function subTopicFor(cur, q){
   var cw = topicWords(cur);
@@ -1192,7 +1203,6 @@ function compareTopics(q){
 /* 다른 카테고리로 넘어가기 전 동의 받기: 넘어가기 / 여기서 답변 */
 /* 현재 카테고리에 남아서 새 질문 받기 */
 function stayHere(){ var m = $('msgInput'); if(m){ m.value = ''; if($('bar')) $('bar').classList.remove('typing'); if(typeof autoGrow === 'function') autoGrow(); try{ m.focus(); }catch(e){} } }
-function askHere(q){ S.stayQ = q; S.noUserRow = true; ask(q); }
 function confirmMove(body, text, mv, onGo, onStay){
   var here = S.topic || S.cat;
   var note = el('div','bub-note'), tx = el('div'); tx.textContent = text;
@@ -1207,6 +1217,9 @@ function confirmMove(body, text, mv, onGo, onStay){
   note.appendChild(tx); note.appendChild(cs); note.appendChild(hint);
   body.appendChild(note); scrollDown();
 }
+/* 답변 불가 안내 (제목 없이 바디 텍스트만) */
+function moaQShort(q){ q = String(q || '').replace(/\s+/g, ' ').trim(); return q.length > 20 ? q.slice(0, 20) + '…' : q; }
+function moaNote(body, text){ setIng(false); var n = el('div','bub-note'); n.style.whiteSpace = 'pre-line'; n.textContent = text; body.appendChild(n); scrollDown(); }
 function ask(q, typed){
   S.hold = false; S.userScroll = false; /* 새 질문이면 자동 스크롤 다시 켬 */
   var cmp = compareTopics(q);
@@ -1334,7 +1347,7 @@ function ask(q, typed){
           Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
           S.curQ = null;
           var here = S.topic || S.cat;
-          confirmMove(body, here + '에는 관련 내용이 없고, ' + mv + '에서 찾았어요. ' + mv + ' 질문창으로 넘어가서 답변할까요?', mv,
+          confirmMove(body, S.cat === GENERAL ? mv + ' 관련 질문이에요. ' + mv + ' 질문창으로 넘어가서 답변할까요?' : here + '에는 관련 내용이 없고, ' + mv + '에서 찾았어요. ' + mv + ' 질문창으로 넘어가서 답변할까요?', mv,
             function(){ S.preRes = { q:q, res:res }; openCategory(mv, mv); ask(q); },
             function(){ stayHere(); });
           return;
@@ -1346,18 +1359,19 @@ function ask(q, typed){
           if(live && live.parentNode) live.parentNode.removeChild(live);
           Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
           S.curQ = null;
-          var un = el('div','bub-note'); un.style.whiteSpace = 'pre-line'; un.textContent = '입력하신 내용을 이해하지 못했어요.\n질문을 다시 입력해 주세요.';
-          body.appendChild(un); scrollDown();
+          moaNote(body, '‘' + moaQShort(q) + '’에 대해 정확히 인식하지 못했어요.\n원하시는 내용을 다시 질문해 주세요.');
           return;
         }
-        if(res.grounded === false){
-          renderAnswer(body, { kind:'text', title:'답변할 수 없어요', desc:'', text:res.text + (res.reason ? '\n\n이유: ' + res.reason : ''), topics:res.topics });
-          return;
-        }
-        var finRaw = stripNA(res.text);
+        /* DB 가이드 범위 초과 · 결과 없음 */
+        var finRaw = res.grounded === false ? '' : stripNA(res.text);
+        /* 제목 한 줄 + '가이드에 해당 내용이 없습니다'만 있으면 결과 없음 */
+        if(finRaw && /가이드에 해당 내용이 없/.test(finRaw) && !stripNA(finRaw.replace(/^[^\n]*\n+/, ''))) finRaw = '';
         if(!finRaw){
           if(live && live.parentNode) live.parentNode.removeChild(live);
-          renderAnswer(body, { kind:'text', title:'답변할 수 없어요', desc:'', text:NA + '\n\n이유: 6단계(최종 답변 생성) · 검색된 근거 안에서 질문에 맞는 답을 찾지 못했어요', topics:res.topics });
+          Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
+          S.curQ = null;
+          if(res.reason && console && console.info) console.info('[moa] 결과 없음:', res.reason);
+          moaNote(body, '문의하신 내용은 시스템에 등록되어 있지 않아요.\n검색어를 변경하거나 전체 목록을 확인해 보세요.');
           return;
         }
         var sp = moaSplitTitle(finRaw, q);
@@ -1411,7 +1425,7 @@ function renderAnswer(body, a){
       row.forEach(function(it){
         flat.push(it[0]+' '+it[1]);
         var s = el('button','sw');
-        var box = el('div','chipbox'); box.style.background = it[1];
+        var box = el('div','chipbox'); box.style.background = it[1]; if(moaLite(it[1])) box.classList.add('lite');
         var meta = el('div','meta');
         meta.appendChild(el('div','n', it[0]));
         meta.appendChild(el('div','h', it[1]));
@@ -1452,7 +1466,77 @@ function renderAnswer(body, a){
 
 /* 답변 속 HEX 코드 옆에 작은 컬러 칩 — 클릭하면 선택한 요소에 채우기 적용 */
 var HEX_RE = /#([0-9A-Fa-f]{8}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})\b(\s*(\d{1,3})%)?/g;
-function paintHex(node, text){
+/* 밝은 색(#DDDDDD 이상)은 칩 테두리 #707070 40% */
+function moaLite(hex, a){
+  var h = String(hex).replace('#', ''); if(h.length === 3) h = h.replace(/./g, '$&$&');
+  if(!/^[0-9a-f]{6}/i.test(h)) return false;
+  a = a == null ? 1 : a;
+  var c = [0, 2, 4].map(function(k){ return parseInt(h.substr(k, 2), 16) * a + 255 * (1 - a); });
+  return .299 * c[0] + .587 * c[1] + .114 * c[2] >= 221;
+}
+/* 토큰명(_ / 경로)·스펙값(px, %, ms…)은 #000000, _ / 뒤에서 줄바꿈 허용 */
+var TK_RE = /([A-Za-z][A-Za-z0-9\-]*(?:[\/_][A-Za-z0-9\-]+)+|-?\d+(?:\.\d+)?\s?(?:px|pt|dp|sp|rem|em|ms|%)(?![A-Za-z]))/g;
+var moaSpec = false;
+/* 토큰명은 _ / 뒤에서 줄바꿈 허용 (색은 불릿 값에만) */
+function moaTk(s){ return s.replace(TK_RE, function(m){ return m.replace(/([\/_])/g, '$1<wbr>'); }); }
+/* 스펙 불릿: ':' 뒤 값만 #000000, 값이 길면 다음 줄(불릿 텍스트 시작점에 맞춤) */
+function moaBulletVal(html){
+  var depth = 0, cut = -1;
+  for(var k = 0; k < html.length; k++){
+    var c = html.charAt(k);
+    if(c === '<') depth++; else if(c === '>') depth--;
+    else if(c === ':' && depth === 0){ cut = k; break; }
+  }
+  if(cut < 0) return html;
+  var lab = html.slice(0, cut), val = html.slice(cut + 1).replace(/^\s+/, '');
+  if(!val.replace(/<[^>]+>/g, '').trim()) return html;
+  return lab + ': <span class="tkv">' + val + '</span>';
+}
+/* 렌더 후 실제 너비로 판단: 한 줄(244px)에 다 들어가면 그대로, 넘치면 ':' 뒤 값을 다음 줄로 */
+function moaFitVals(node){
+  var vs = node.querySelectorAll('.li .tkv');
+  for(var k = 0; k < vs.length; k++){
+    var v = vs[k], row = v.parentNode;
+    v.style.display = '';
+    var lh = parseFloat(getComputedStyle(row).lineHeight) || 19.5;
+    if(row.getBoundingClientRect().height > lh * 1.5) v.style.display = 'block';
+  }
+}
+/* 3문장 이상 문단은 2문장씩 문단 분리 */
+function moaParas(t){
+  return String(t).split('\n').map(function(ln){
+    if(!ln.trim() || /^\s*(\u2063|•|-\s|\d+\.\s|※)/.test(ln)) return ln;
+    var ss = ln.split(/(?<=[.!?])\s+(?=\S)/);
+    if(ss.length < 3) return ln;
+    var g = []; for(var k = 0; k < ss.length; k += 2) g.push(ss.slice(k, k + 2).join(' '));
+    return g.join('\n\n');
+  }).join('\n');
+}
+/* 소제목·불릿 줄을 블록으로 (불릿은 다음 줄을 닷 뒤 텍스트에 맞춰 들여쓰기) */
+/* 스펙 불릿의 영문은 소문자 (HEX 코드는 그대로) */
+function moaLower(html){
+  return html.replace(/(<[^>]+>)|([^<]+)/g, function(all, tag, txt){
+    return tag ? tag : txt.replace(/#[0-9A-Fa-f]{3,8}\b|[A-Z]+/g, function(s){ return s.charAt(0) === '#' ? s : s.toLowerCase(); });
+  });
+}
+function moaLines(html){
+  var L0 = html.split('\n');
+  var L = L0.filter(function(ln, k){ return ln.trim() || !((L0[k-1] || '').charAt(0) === '\u2063' || (L0[k+1] || '').charAt(0) === '\u2063'); });
+  var out = '';
+  L.forEach(function(ln, k){
+    var blk = false, m;
+    if(ln.charAt(0) === '\u2063'){ ln = '<span class="ah' + (k === 0 ? ' f' : '') + '" role="heading" aria-level="4">' + ln.slice(1) + '</span>'; blk = true; }
+    else if((m = ln.match(/^\s*(•|\d+\.|<span class="tk">\d+<\/span>\.|-|<span class="tk">-<\/span>)\s+(.*)$/))){ ln = '<span class="li' + (moaSpec ? ' tk' : '') + '"><i>' + m[1].replace(/<[^>]+>/g, '') + '</i><span>' + (moaSpec ? moaBulletVal(moaLower(m[2])) : m[2]) + '</span></span>'; blk = true; }
+    out += ln; if(k < L.length - 1 && !blk) out += '\n';
+  });
+  return out;
+}
+function moaFormat(text, chips){
+  text = moaParas(text);
+  TK_RE.lastIndex = 0; HEX_RE.lastIndex = 0;
+  /* 스펙 답변: 토큰·단위값·HEX가 있거나, '항목: 값' 목록이거나, 스펙/토큰/규격 안내 */
+  moaSpec = TK_RE.test(text) || HEX_RE.test(text) || /스펙|토큰|규격/.test(text) || /^\s*(•|-|\d+\.)\s+[^:\n]+:\s*\S/m.test(text);
+  TK_RE.lastIndex = 0;
   var esc = function(s){ return s.replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
   var out = '', i = 0, m;
   HEX_RE.lastIndex = 0;
@@ -1461,11 +1545,14 @@ function paintHex(node, text){
     var alpha = m[3] != null ? Math.min(100, +m[3]) / 100 : (h.length === 8 ? parseInt(h.slice(6), 16) / 255 : 1);
     var hex6 = '#' + h.slice(0, 6).toUpperCase();
     var r = parseInt(h.slice(0,2),16), g = parseInt(h.slice(2,4),16), b = parseInt(h.slice(4,6),16);
-    out += esc(text.slice(i, m.index)) + '<span class="hx"><i data-hex="' + hex6 + '" title="' + hex6 + ' · 클릭하면 선택한 요소에 적용"><b style="background:rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')"></b></i>' + esc(m[0]) + '</span>';
+    out += moaTk(esc(text.slice(i, m.index))) + (chips
+      ? '<span class="hx"><i' + (moaLite(hex6, alpha) ? ' class="lite"' : '') + ' data-hex="' + hex6 + '" title="' + hex6 + ' · 클릭하면 선택한 요소에 적용"><b style="background:rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')"></b></i>' + esc(m[0]) + '</span>'
+      : esc(m[0]));
     i = m.index + m[0].length;
   }
-  node.innerHTML = (out + esc(text.slice(i))).replace(/\n*\u2063([^\n]*)\n*/g, function(m, t, off){ return '<span class="ah' + (off === 0 ? ' f' : '') + '" role="heading" aria-level="4">' + t + '</span>'; });
+  return moaLines(out + moaTk(esc(text.slice(i))));
 }
+function paintHex(node, text){ node.innerHTML = moaFormat(text, true); moaFitVals(node); }
 document.addEventListener('click', function(e){
   var t = e.target.closest && e.target.closest('.hx i');
   if(!t) return;
@@ -1473,11 +1560,7 @@ document.addEventListener('click', function(e){
 });
 
 /* 소제목 마커(\u2063)가 있으면 타이핑 중에도 블랙 소제목으로 */
-function moaRich(node, s){
-  if(s.indexOf('\u2063') < 0){ node.textContent = s; return; }
-  var esc = s.replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; });
-  node.innerHTML = esc.replace(/\n*\u2063([^\n]*)\n*/g, function(m, t, off){ return '<span class="ah' + (off === 0 ? ' f' : '') + '" role="heading" aria-level="4">' + t + '</span>'; });
-}
+function moaRich(node, s){ node.innerHTML = moaFormat(s, false); moaFitVals(node); }
 function typeText(node, text, done){
   var i = 0;
   text = moaTagless(text);
@@ -1491,24 +1574,6 @@ function typeText(node, text, done){
   })();
 }
 
-function undoLast(){
-  if(S.convo && S.convo.length) S.convo.pop();
-  var con = $('chatCon');
-  var bots = con.querySelectorAll('.row-bot');
-  var bot = bots[bots.length - 1];
-  if(!bot) return;
-  var user = bot.previousElementSibling;
-  [bot, user].forEach(function(n){
-    if(!n || n.classList.contains('intro')) return;
-    if(n.animate){
-      n.animate([{opacity:1, transform:'translateY(0)'},{opacity:0, transform:'translateY(8px)'}], {duration:180, easing:'ease-in'})
-        .onfinish = function(){ if(n.parentNode) n.parentNode.removeChild(n); scrollDown(); };
-    } else n.parentNode.removeChild(n);
-  });
-  if(bots.length === 1){
-    Array.prototype.forEach.call(con.querySelectorAll('.intro .chip.sel'), function(c){ c.classList.remove('sel'); });
-  }
-}
 
 function addActions(body, copyText, cta, chipsOverride){
   var after = el('div','after');
@@ -1551,19 +1616,14 @@ function addActions(body, copyText, cta, chipsOverride){
     S.userScroll = false; /* 이전으로는 사용자가 직접 누른 이동이라 항상 스크롤 */
     con.scrollTo({ top: top, behavior: 'smooth' });
   };
-  after.appendChild(bl);
+  /* 카테고리 페이지의 첫 번째 답변에는 이전으로 없음 */
+  var conEl = document.querySelector('.chat-con'), rowEl = body.closest ? body.closest('.row-bot') : null;
+  if(!(conEl && rowEl && conEl.querySelector('.row-bot') === rowEl)) after.appendChild(bl);
 
   body.appendChild(after);
   scrollDown();
 }
 
-function copyToClipboard(text){
-  var ta = document.createElement('textarea');
-  ta.value = text; ta.style.cssText='position:fixed;opacity:0';
-  document.body.appendChild(ta); ta.select();
-  try{ document.execCommand('copy'); toast('복사했어요'); }catch(e){ toast('복사에 실패했어요'); }
-  document.body.removeChild(ta);
-}
 
 /* ── input bar ───────────────────────────────────────────────── */
 var msg = $('msgInput');
@@ -1610,7 +1670,7 @@ function send(){
   msg.value = ''; $('bar').classList.remove('typing'); autoGrow();
   if(isNoise(v)){
     if(S.screen !== 'chat') openCategory(GENERAL);
-    return reply(v, '입력하신 내용을 이해하지 못했어요.\n질문을 다시 입력해 주세요.');
+    return reply(v, '‘' + moaQShort(v) + '’에 대해 정확히 인식하지 못했어요.\n원하시는 내용을 다시 질문해 주세요.');
   }
   if(S.screen !== 'chat'){ var tp = detectTopics(v)[0]; if(tp && compareTopics(v)){ openCategory(tp, tp); ask(v); return; } if(tp){ openCategory(tp, tp); ask(v); return; } openCategory(GENERAL); }
   ask(v, true);
