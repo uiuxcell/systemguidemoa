@@ -174,6 +174,27 @@ function moaDataBase(){
   return /^https?:/.test(location.protocol) ? (/\/(preview|src)\//.test(location.pathname) ? '../' : '') : MOA_REPO_RAW;
 }
 function moaSwap(target, list){ target.length = 0; Array.prototype.push.apply(target, list); }
+/* 토큰 숫자 값에 단위 붙이기 (DB_tokens 파일은 그대로, 불러올 때만)
+   단위 맵은 빌드 때 *.tokens.json의 com.figma.scopes로 만듦 · 자체 범위가 없으면 별칭(괄호 안 경로)의 단위를 따름 */
+function moaUnitize(list){
+  var U = window.MOA_TOKEN_UNITS || {};
+  if(!Array.isArray(list) || !Object.keys(U).length) return list;
+  list.forEach(function(ch){
+    if(!ch || ch._u || typeof ch.text !== 'string') return;
+    ch.text = ch.text.split('\n').map(function(ln){
+      var m = /^([^\s:][^:]*?):\s(.+)$/.exec(ln);
+      if(!m || /#[0-9A-Fa-f]{3,8}/.test(m[2])) return ln;
+      var p = m[1].trim(), u = U[p];
+      if(u == null){ var al = /\(([^()\s]+\/[^()\s]+)\)/.exec(m[2]); u = al && U[al[1]] != null ? U[al[1]] : ''; }
+      if(/(^|\/)(x|y|blur|spread)$/i.test(p)) u = '';
+      if(!u) return ln;
+      return m[1] + ': ' + m[2].replace(/(^|Light |Dark )(-?\d+(?:\.\d+)?)(?![\d.%a-zA-Z])/g, '$1$2' + u);
+    }).join('\n');
+    ch._u = true;
+  });
+  return list;
+}
+moaUnitize(window.MOA_TOKENS);
 function moaGuideList(){
   var built = [];
   MOA_DB_BUILT.forEach(function(c){ if(built.indexOf(c.source) < 0) built.push(c.source); });
@@ -213,7 +234,7 @@ function moaLoadDb(force){
     var list = JSON.parse(t);
     if(!Array.isArray(list) || !list.length) return false;
     if(!Array.isArray(window.MOA_TOKENS)) window.MOA_TOKENS = [];
-    moaSwap(window.MOA_TOKENS, list);
+    moaSwap(window.MOA_TOKENS, moaUnitize(list));
     return true;
   }).catch(function(){ return false; });
   /* 용어집: glossary.md + ko_en.md (하나만 읽혀도 그 파일분만 교체) */

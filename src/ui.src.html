@@ -576,6 +576,7 @@ Gemini API 키가 필요해요</h1>
 
 <script>window.MOA_DB = __DB_JSON__;</script>
 <script>window.MOA_TOKENS = __TOKENS_JSON__;</script>
+<script>window.MOA_TOKEN_UNITS = __UNITS_JSON__;</script>
 <script>window.MOA_PROMPTS = __PROMPTS_JSON__;</script>
 <script>window.MOA_GLOSSARY_DB = __GLOSSARY_JSON__;</script>
 <script>window.MOA_FAQ = __FAQ_JSON__;</script>
@@ -598,10 +599,10 @@ var E = function(t,text,cta){return {kind:'text',title:t,desc:'',text:text,cta:c
 
 var GUIDE = {};
 GUIDE['기타 문의'] = {q:['담당자에게 직접 문의하고 싶어요','원하는 답변을 찾지 못했어요','가이드에 없는 경우에는 어떻게 해야 하나요?','잘못된 답변을 발견했어요','새로운 가이드나 항목을 제안하고 싶어요'],a:{
-  '원하는 답변을 찾지 못했어요':E('원하는 답변을 찾지 못했다면?','원하는 답변을 찾지 못했다면 질문을 조금 다르게 입력해 보세요.\n컴포넌트명이나 확인하려는 속성을 함께 입력하면 더 정확한 답변을 받을 수 있어요.\n\n예) Button의 높이를 변경할 수 있어?','메일로 문의하기'),
-  '가이드에 없는 경우에는 어떻게 해야 하나요?':E('가이드에 없는 경우라면?','가이드에 정의되지 않은 항목은 임의로 적용하기보다 담당자 확인을 권장해요.\n필요한 내용을 정리해 디자인 시스템 담당자에게 문의해 주세요.','메일로 문의하기'),
-  '잘못된 답변을 발견했어요':E('잘못된 답변을 발견했다면?','답변에 잘못된 내용이 있다면 알려주세요.\n\n질문 내용과 잘못된 답변을 함께 전달해 주시면 확인하는 데 도움이 돼요.','오류 제보하기'),
-  '새로운 가이드나 항목을 제안하고 싶어요':E('새로운 가이드나 항목을 제안하고 싶다면?','새롭게 필요한 가이드나 개선이 필요한 항목이 있다면 제안해 주세요.\n\n제안 내용과 필요한 이유를 함께 전달해 주시면 검토에 도움이 돼요.','가이드 제안하기'),
+  '원하는 답변을 찾지 못했어요':E('원하는 답변을 찾지 못했다면?','원하는 답변을 찾지 못했다면 질문을 조금 다르게 입력해 보세요.\n컴포넌트명이나 확인하려는 속성을 함께 입력하면 더 정확한 답변을 받을 수 있어요.\n\n예) Button의 높이를 변경할 수 있어?',''),
+  '가이드에 없는 경우에는 어떻게 해야 하나요?':E('가이드에 없는 경우라면?','가이드에 정의되지 않은 항목은 임의로 적용하기보다 담당자 확인을 권장해요.\n필요한 내용을 정리해 디자인 시스템 담당자에게 문의해 주세요.\n\n담당자 : 강지수 (Felix)\nE-mail: felix.kang@cheilpengtai.com',''),
+  '잘못된 답변을 발견했어요':E('잘못된 답변을 발견했다면?','답변에 잘못된 내용이 있다면 알려주세요.\n\n질문 내용과 잘못된 답변을 함께 전달해 주시면 확인하는 데 도움이 돼요.\n\n담당자 : 강지수 (Felix)\nE-mail: felix.kang@cheilpengtai.com',''),
+  '새로운 가이드나 항목을 제안하고 싶어요':E('새로운 가이드나 항목을 제안하고 싶다면?','새롭게 필요한 가이드나 개선이 필요한 항목이 있다면 제안해 주세요.\n\n제안 내용과 필요한 이유를 함께 전달해 주시면 검토에 도움이 돼요.\n\n담당자 : 강지수 (Felix)\nE-mail: felix.kang@cheilpengtai.com',''),
   '담당자에게 직접 문의하고 싶어요':E('추가 확인이 필요한 내용은 담당자에게 문의해 주세요.','담당자 : 강지수 (Felix)\nE-mail: felix.kang@cheilpengtai.com','')}};
 var ETC_INTENTS = [
   ['잘못된 답변을 발견했어요', /잘못|틀린|틀렸|오류|이상한답|답이이상/],
@@ -622,7 +623,7 @@ var DB = window.MOA_DB || [];
 var USE_DB = DB.length > 0;
 
 /* 주제(파일) 목록과 주제별 섹션 목록 */
-var TOPICS = [], SECTIONS = {};
+var TOPICS = [], SECTIONS = {}, TYPE_INDEX = {};
 /* DB가 최신 파일로 바뀌면(gemini.js moaLoadDb) 주제·섹션 목록을 다시 만듦 */
 /* 가이드 파일이 없는 카테고리(Text Field 등)는 랜딩메뉴 설명을 가이드 근거로 사용 */
 function landingChunk(cat, md){
@@ -641,6 +642,15 @@ function indexDb(){
   DB.forEach(function(ch){
     if(TOPICS.indexOf(ch.topic) < 0){ TOPICS.push(ch.topic); SECTIONS[ch.topic] = []; }
     if(ch.section && SECTIONS[ch.topic].indexOf(ch.section) < 0) SECTIONS[ch.topic].push(ch.section);
+  });
+  /* 타입 이름 → 카테고리 목록 (가이드의 'Type: Meta' 섹션 기준) — 여러 카테고리에 같은 타입이 있으면 질문 시 확인 */
+  Object.keys(TYPE_INDEX).forEach(function(k){ delete TYPE_INDEX[k]; });
+  DB.forEach(function(ch){
+    var m = /^type\s*[:=]\s*(.+)$/i.exec(String(ch.section || '').trim());
+    if(!m) return;
+    var k = m[1].trim().toLowerCase();
+    TYPE_INDEX[k] = TYPE_INDEX[k] || { name: m[1].trim(), topics: [] };
+    if(TYPE_INDEX[k].topics.indexOf(ch.topic) < 0) TYPE_INDEX[k].topics.push(ch.topic);
   });
   /* 토큰만 있는 컴포넌트도 카테고리로 인식 */
   (window.MOA_TOKENS || []).forEach(function(ch){ if(ch.topic && TOPICS.indexOf(ch.topic) < 0){ TOPICS.push(ch.topic); SECTIONS[ch.topic] = []; } });
@@ -1220,9 +1230,82 @@ function confirmMove(body, text, mv, onGo, onStay){
 /* 답변 불가 안내 (제목 없이 바디 텍스트만) */
 function moaQShort(q){ q = String(q || '').replace(/\s+/g, ' ').trim(); return q.length > 20 ? q.slice(0, 20) + '…' : q; }
 function moaNote(body, text){ setIng(false); var n = el('div','bub-note'); n.style.whiteSpace = 'pre-line'; n.textContent = text; body.appendChild(n); scrollDown(); }
+/* 질문 속 타입 이름이 여러 카테고리에 있고, 질문·현재 창으로 어느 쪽인지 정할 수 없으면 → 후보 목록 */
+function ambiguousType(q){
+  if(!USE_DB) return null;
+  var s = ' ' + String(q).toLowerCase().replace(/[^a-z0-9가-힣]+/g, ' ') + ' ';
+  var named = detectTopics(q, true);
+  var keys = Object.keys(TYPE_INDEX).sort(function(a, b){ return b.length - a.length; });
+  for(var i = 0; i < keys.length; i++){
+    var it = TYPE_INDEX[keys[i]];
+    if(it.topics.length < 2) continue;
+    if(!new RegExp('[ ]' + keys[i].replace(/[^a-z0-9가-힣]+/g, ' ').trim().replace(/ /g, '\\s?') + '(?=[ 가-힣])').test(s)) continue;
+    if(S.topic && it.topics.indexOf(S.topic) > -1) return null;          /* 지금 창이 후보 중 하나 */
+    if(named.some(function(t){ return it.topics.indexOf(t) > -1; })) return null; /* 질문에 카테고리 명시 */
+    if(isTopic(it.name) || named.some(function(t){ return t.toLowerCase() === keys[i]; })) return null; /* 'Color'처럼 카테고리 이름과 같은 단어 */
+    return it;
+  }
+  return null;
+}
+/* Moa·전체 검색창: 질문 단어가 여러 카테고리에 걸쳐 있고 하나로 정할 수 없으면 후보를 반환 */
+var MOA_AMBI_STOP = ['color','colors','size','radius','spec','specs','token','tokens','light','dark','default','normal','value','type','px','hex','font','text','line','width','height','state','guide'];
+function topicsForWord(w){
+  var re = new RegExp('(^|[^a-z0-9])' + w.replace(/[^a-z0-9]/g, '') + '([^a-z0-9]|$)', 'i'), out = [];
+  var add = function(t){ if(t && out.indexOf(t) < 0) out.push(t); };
+  DB.forEach(function(ch){ if(re.test(String(ch.section || '')) || re.test(String(ch.group || ''))) add(ch.topic); });
+  (window.MOA_TOKENS || []).forEach(function(ch){
+    if(out.indexOf(ch.topic) > -1) return;
+    if(String(ch.text || '').split('\n').some(function(l){ var p = l.split(':')[0]; return p.indexOf('/') > -1 && re.test(p.replace(/[\/_]/g, ' ')); })) add(ch.topic);
+  });
+  return out.filter(function(t){ return isTopic(t) || t === 'Tab'; });
+}
+function generalAmbiguity(q){
+  if(!USE_DB || (S.cat !== GENERAL && S.screen === 'chat')) return null;
+  if(compareTopics(q)) return null;
+  var named = detectTopics(q), base = named.filter(function(t){ return MOA_FOUNDATION.indexOf(t) > -1; });
+  named = named.filter(function(t){ return MOA_FOUNDATION.indexOf(t) < 0; }); /* 공통 스타일(Color·Radius 등)은 속성으로 보고 컴포넌트 우선 */
+  if(named.length > 1) return { name: '', topics: named.slice(0, 8) };
+  if(named.length === 1) return null;
+  var ty = ambiguousType(q); if(ty) return ty;
+  var cand = null, word = '';
+  moaTokenize(q).filter(function(w){ return /^[a-z][a-z0-9_]{2,}$/.test(w) && MOA_AMBI_STOP.indexOf(w) < 0; }).forEach(function(w){
+    var ts = topicsForWord(w);
+    if(!ts.length) return;
+    if(!cand){ cand = ts; word = w; return; }
+    var both = cand.filter(function(t){ return ts.indexOf(t) > -1; });
+    if(both.length){ cand = both; word = word + ' ' + w; }
+  });
+  if(cand && base.some(function(t){ return cand.indexOf(t) > -1; })) return null; /* 'Color primary'처럼 공통 스타일 안의 단어 */
+  return cand && cand.length > 1 ? { name: word, topics: cand.slice(0, 8), plain: true } : null;
+}
+function askWhich(q, it){
+  var con = $('chatCon');
+  if(!S.noUserRow){ var ur = el('div','row-user'); ur.appendChild(el('div','bub-user', q)); con.appendChild(ur); }
+  S.noUserRow = false;
+  var br = el('div','row-bot'), av = el('div','avatar'); av.innerHTML = AVATAR_HTML;
+  var bb = el('div','bot-body'); br.appendChild(av); br.appendChild(bb); con.appendChild(br);
+  var note = el('div','bub-note'); note.style.whiteSpace = 'pre-line';
+  note.textContent = !it.name ? '질문에 ' + it.topics.join(', ') + ' 내용이 함께 있어요.\n어떤 카테고리로 이동해서 답변할까요?'
+    : it.plain ? '‘' + it.name + '’은(는) ' + it.topics.join(', ') + '에 모두 있어요.\n어떤 카테고리로 이동해서 답변할까요?'
+    : '‘' + it.name + '’ 타입은 ' + it.topics.join(', ') + '에 모두 있어요.\n어떤 항목의 ' + it.name + '에 대해 알려드릴까요?';
+  bb.appendChild(note);
+  var chips = el('div','qchips'); /* 버블과 8px (bot-body gap) */
+  it.topics.forEach(function(t){
+    var b = el('button','chip', it.name && !it.plain ? t + ' ' + it.name : t);
+    b.onclick = function(){
+      Array.prototype.forEach.call(chips.children, function(x){ x.disabled = true; x.style.pointerEvents = 'none'; });
+      openCategory(t, t); ask(q);
+    };
+    chips.appendChild(b);
+  });
+  bb.appendChild(chips);
+  scrollDown();
+}
 function ask(q, typed){
   S.hold = false; S.userScroll = false; /* 새 질문이면 자동 스크롤 다시 켬 */
   var cmp = compareTopics(q);
+  var amb = !cmp && S.cat !== '기타 문의' && !eggFor(q) && (typed && S.cat === GENERAL ? generalAmbiguity(q) : ambiguousType(q));
+  if(amb){ askWhich(q, amb); return; }
   if(typed && !cmp){
     var mv = redirectTopic(q);
     if(mv){
@@ -1513,6 +1596,15 @@ function moaParas(t){
   }).join('\n');
 }
 /* 소제목·불릿 줄을 블록으로 (불릿은 다음 줄을 닷 뒤 텍스트에 맞춰 들여쓰기) */
+/* 불릿 한 줄이 스펙·토큰 값인지: ':' 뒤 값(없으면 줄 전체)에 숫자·HEX·토큰 경로가 있을 때만 */
+function moaSpecLine(html){
+  var t = html.replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, ' ').trim();
+  var i = t.indexOf(':'), v = i > -1 ? t.slice(i + 1).trim() : t;
+  if(!v) return false;
+  if(/#[0-9A-Fa-f]{3,8}\b/.test(v) || /[A-Za-z][\w\-]*[\/_][\w\-]+/.test(v)) return true;
+  if(/^[~\-–]?\s*\d/.test(v) || /\d\s?(px|pt|dp|sp|%|ms)\b/.test(v)) return true;
+  return i < 0 ? /^[\w\/_\-]+$/.test(v) : false;
+}
 /* 스펙 불릿의 영문은 소문자 (HEX 코드는 그대로) */
 function moaLower(html){
   return html.replace(/(<[^>]+>)|([^<]+)/g, function(all, tag, txt){
@@ -1526,7 +1618,8 @@ function moaLines(html){
   L.forEach(function(ln, k){
     var blk = false, m;
     if(ln.charAt(0) === '\u2063'){ ln = '<span class="ah' + (k === 0 ? ' f' : '') + '" role="heading" aria-level="4">' + ln.slice(1) + '</span>'; blk = true; }
-    else if((m = ln.match(/^\s*(•|\d+\.|<span class="tk">\d+<\/span>\.|-|<span class="tk">-<\/span>)\s+(.*)$/))){ ln = '<span class="li' + (moaSpec ? ' tk' : '') + '"><i>' + m[1].replace(/<[^>]+>/g, '') + '</i><span>' + (moaSpec ? moaBulletVal(moaLower(m[2])) : m[2]) + '</span></span>'; blk = true; }
+    else if((m = ln.match(/^\s*(•|\d+\.|<span class="tk">\d+<\/span>\.|-|<span class="tk">-<\/span>)\s+(.*)$/))){ var sp = moaSpec && moaSpecLine(m[2]);
+      ln = '<span class="li' + (sp ? ' tk' : '') + '"><i>' + m[1].replace(/<[^>]+>/g, '') + '</i><span>' + (sp ? moaBulletVal(moaLower(m[2])) : m[2]) + '</span></span>'; blk = true; }
     out += ln; if(k < L.length - 1 && !blk) out += '\n';
   });
   return out;
@@ -1672,6 +1765,7 @@ function send(){
     if(S.screen !== 'chat') openCategory(GENERAL);
     return reply(v, '‘' + moaQShort(v) + '’에 대해 정확히 인식하지 못했어요.\n원하시는 내용을 다시 질문해 주세요.');
   }
+  if(S.screen !== 'chat' && detectTopics(v).length > 1 && !compareTopics(v)){ openCategory(GENERAL); ask(v, true); return; } /* 여러 카테고리 → Moa 창에서 후보 확인 */
   if(S.screen !== 'chat'){ var tp = detectTopics(v)[0]; if(tp && compareTopics(v)){ openCategory(tp, tp); ask(v); return; } if(tp){ openCategory(tp, tp); ask(v); return; } openCategory(GENERAL); }
   ask(v, true);
 }
