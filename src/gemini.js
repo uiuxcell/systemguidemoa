@@ -465,6 +465,7 @@ function moaParseGlossary(md){
       if(/^#/.test(h[2])) return;
       var t = moaClean(h[2]), p = /\(([^)]*[A-Za-z][^)]*)\)\s*$/.exec(t);
       t = p && !/[가-힣]/.test(p[1]) ? p[1].trim() : t.replace(/\s*\([^)]*\)\s*$/, '').trim();
+      if(h[1].length === 3 && /[가-힣]/.test(t)) return; /* 한글 소제목(###)은 상위 ## 카테고리 유지 */
       if(t) cat = t;
       return;
     }
@@ -651,7 +652,9 @@ function moaAsk(question, apiKey, opts){
       res.movedTo = best;
       return res;
     }
-    if(!own || opts.compareTopics || !none || !apiKey) return res;
+    /* 카테고리 창: 해당 카테고리 안에서만 검색 (다른 카테고리로 다시 찾지 않음) */
+    if(own) return res;
+    if(opts.compareTopics || !none || !apiKey) return res;
     var o2 = {}; Object.keys(opts).forEach(function(k){ o2[k] = opts[k]; });
     o2.topic = null; o2.excludeTopic = own;
     return moaAskOnce(question, apiKey, o2).then(function(r2){
@@ -698,8 +701,9 @@ function moaAskOnce(question, apiKey, opts){
     var inherited = false;
     if(opts.compareTopics && opts.compareTopics.length){ opts.compareTopics.forEach(function(t){ if(topics.indexOf(t) < 0) topics.push(t); }); }
     var onlyBase = topics.every(function(t){ return MOA_FOUNDATION.indexOf(t) > -1; });
-    if(last && last.topics && onlyBase && !opts.compareTopics){ last.topics.forEach(function(t){ if(topics.indexOf(t) < 0){ topics.push(t); inherited = true; } }); }
-    if(!topics.length && opts.topic) topics.push(opts.topic);
+    /* 카테고리 창: 이전 질문 주제는 같은 카테고리일 때만 이어받음 (다른 카테고리 스펙이 섞이지 않게) */
+    if(last && last.topics && onlyBase && !opts.compareTopics){ last.topics.forEach(function(t){ if(opts.topic && t !== opts.topic) return; if(topics.indexOf(t) < 0){ topics.push(t); inherited = true; } }); }
+    if(opts.topic && !opts.compareTopics){ topics = topics.filter(function(t){ return t === opts.topic; }); if(topics.indexOf(opts.topic) < 0) topics.unshift(opts.topic); }
     var termTxt = gm.terms.length ? '\n용어 ' + gm.terms.slice(0, 6).join(', ') : '';
     if(opts.compareTopics) termTxt += '\n비교 모드 · ' + opts.compareTopics.join(' vs ');
     end(1, (topics.length ? topics.join(', ') + (inherited ? ' (이전 질문 주제 포함)' : '') : '매핑된 주제 없음 · 전체 DB 검색') + termTxt, (topics.length || gm.terms.length) ? 'done' : 'warn');
@@ -742,7 +746,8 @@ function moaAskOnce(question, apiKey, opts){
   .then(function(){
     var rank = function(list, n){
       /* 지금 카테고리 안에서 먼저 찾고, 없을 때만 다른 카테고리 */
-      if(opts.topic && !opts.compareTopics){ var own = list.filter(function(r){ return r.ch.topic === opts.topic; }); if(own.length) list = own; }
+      /* 카테고리 창: 해당 카테고리 근거만 사용 (다른 카테고리로 넘어가지 않음) */
+      if(opts.topic && !opts.compareTopics) list = list.filter(function(r){ return r.ch.topic === opts.topic; });
       if(opts.excludeTopic){ var other = list.filter(function(r){ return r.ch.topic !== opts.excludeTopic; }); if(other.length) list = other; }
       list.forEach(function(r){ if(topics.indexOf(r.ch.topic) > -1) r.score *= 2; });
       list.sort(function(a,b){ return b.score - a.score; });
@@ -760,6 +765,8 @@ function moaAskOnce(question, apiKey, opts){
     if(!g.length && opts.topic && !cmp){
       g = db.filter(function(c){ return c.topic === opts.topic && /정의|개요|타입별 ?요약|적용 ?상황|사용 ?기준|용도/.test(moaHead(c)); }).slice(0, 5);
     }
+    /* 스펙·토큰 질문인데 키워드가 안 걸리면 해당 카테고리 토큰 전체를 근거로 */
+    if(!t.length && !usage && opts.topic && !cmp) t = (window.MOA_TOKENS || []).filter(function(c){ return c.topic === opts.topic; }).slice(0, 4);
     hits = g.concat(t);
     /* FAQ 형식: 지금 카테고리 → 질문에서 찾은 주제 → 근거 상위 주제 순 */
     var ft = [], addT = function(x){ if(x && x !== opts.excludeTopic && ft.indexOf(x) < 0) ft.push(x); };

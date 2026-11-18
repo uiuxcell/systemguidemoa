@@ -96,6 +96,7 @@ for (const l of R('data/db_glossary/glossary.md').replace(/\r/g, '').split('\n')
     let t = clean(h[2]);
     const p = /\(([^)]*[A-Za-z][^)]*)\)\s*$/.exec(t);
     t = p && !/[가-힣]/.test(p[1]) ? p[1].trim() : t.replace(/\s*\([^)]*\)\s*$/, '').trim();
+    if (h[1].length === 3 && /[가-힣]/.test(t)) continue; /* 한글 소제목(###)은 상위 ## 카테고리 유지 */
     if (t) cat = t;
     continue;
   }
@@ -112,6 +113,38 @@ const faqParse = new Function("function moaCsvRows(raw){\n  var rows = [], row =
 const faq = fs.existsSync(path.join(__dirname, 'data/faq/DB_FAQ.csv')) ? faqParse(R('data/faq/DB_FAQ.csv')) : [];
 
 const tokens = R('data/DB_tokens/tokens.json');
+
+/* data/DB_tokens/*.tokens.json의 com.figma.scopes → 숫자 토큰 단위 맵 (tokens.json은 그대로, 불러올 때 gemini.js moaUnitize가 적용)
+   px: CORNER_RADIUS, GAP, WIDTH_HEIGHT, STROKE_FLOAT, FONT_SIZE, LINE_HEIGHT · %: OPACITY · 그 외(x/y/blur/spread, FONT_WEIGHT 등): 단위 없음 */
+const UNIT_PX = ['CORNER_RADIUS', 'GAP', 'WIDTH_HEIGHT', 'STROKE_FLOAT', 'FONT_SIZE', 'LINE_HEIGHT'];
+const units = {};
+const unitOf = (p, s) => {
+  if (/(^|\/)(x|y|blur|spread)$/i.test(p) || s.includes('FONT_WEIGHT')) return '';
+  if (s.some(x => UNIT_PX.includes(x))) return 'px';
+  if (s.includes('OPACITY')) return '%';
+  return '';
+};
+const walkTok = (o, p) => {
+  if (!o || typeof o !== 'object') return;
+  if ('$value' in o) {
+    if (o.$type === 'number') { const s = (o.$extensions && o.$extensions['com.figma.scopes']) || []; if (s.length) units[p.join('/')] = unitOf(p.join('/'), s); }
+    return;
+  }
+  for (const k of Object.keys(o)) if (k[0] !== '$') walkTok(o[k], p.concat(k));
+};
+const tokDir = path.join(__dirname, 'data/DB_tokens');
+const tokFiles = [];
+const listTok = (d, rel) => { for (const n of fs.readdirSync(d)) { const full = path.join(d, n), rp = rel ? rel + '/' + n : n; if (/\.tokens\.json$/.test(n)) tokFiles.push(rp); else if (!/\./.test(n)) listTok(full, rp); } };
+listTok(tokDir, '');
+const aliasOf = {};
+const walkAlias = (o, p) => {
+  if (!o || typeof o !== 'object') return;
+  if ('$value' in o) { const a = o.$extensions && o.$extensions['com.figma.aliasData']; if (o.$type === 'number' && a && a.targetVariableName) aliasOf[p.join('/')] = a.targetVariableName; return; }
+  for (const k of Object.keys(o)) if (k[0] !== '$') walkAlias(o[k], p.concat(k));
+};
+tokFiles.forEach(f => { const j = JSON.parse(R('data/DB_tokens/' + f)); walkTok(j, []); walkAlias(j, []); });
+/* 범위가 없는 원시 토큰(space/spacing/8 등)은 그 토큰을 참조하는 토큰의 단위를 따름 */
+Object.keys(aliasOf).forEach(p => { const t = aliasOf[p]; if (units[t] == null && units[p]) units[t] = units[p]; });
 const easteregg = fs.existsSync(path.join(__dirname, 'data/easteregg.md')) ? R('data/easteregg.md') : '';
 
 const map = {
@@ -125,12 +158,13 @@ const build = (get) => {
     .split('__DB_JSON__').join(esc(JSON.stringify(chunks)))
     .split('__GEMINI_JS__').join(gem)
     .split('__TOKENS_JSON__').join(esc(tokens))
+    .split('__UNITS_JSON__').join(esc(JSON.stringify(units)))
     .split('__PROMPTS_JSON__').join(esc(JSON.stringify(prompts)))
     .split('__GLOSSARY_JSON__').join(esc(JSON.stringify(glossary)))
     .split('__FAQ_JSON__').join(esc(JSON.stringify(faq)))
     .split('__EASTEREGG_JSON__').join(esc(JSON.stringify(easteregg)));
   for (const [tok, name] of Object.entries(map)) h = h.split(tok).join(get(name));
-  if (/__(IMG|DB|GEMINI|FONT|PROMPTS|TOKENS|GLOSSARY|FAQ|EASTEREGG)_/.test(h)) throw new Error('unresolved token');
+  if (/__(IMG|DB|GEMINI|FONT|PROMPTS|TOKENS|GLOSSARY|FAQ|EASTEREGG|UNITS)_/.test(h)) throw new Error('unresolved token');
   return h;
 };
 
@@ -141,5 +175,5 @@ fs.writeFileSync(path.join(__dirname, 'preview/ui.preview.html'),
 
 const by = {};
 chunks.forEach(c => by[c.source] = (by[c.source] || 0) + 1);
-console.log(`chunks: ${chunks.length} · glossary: ${glossary.length} · faq: ${faq.length} · prompts: ${prompts.length}`);
+console.log(`chunks: ${chunks.length} · units: ${Object.keys(units).length} · glossary: ${glossary.length} · faq: ${faq.length} · prompts: ${prompts.length}`);
 Object.entries(by).forEach(([f, n]) => console.log(`  ${f}  ${n}`));
