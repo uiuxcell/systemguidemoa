@@ -528,6 +528,17 @@ function moaWhy(json){
 }
 
 /* Gemini 연결 확인: 키로 모델 목록을 1건 조회 */
+/* 키 검증: 'ok' | 'invalid' | 'network' */
+function moaVerifyKey(apiKey){
+  if(!apiKey) return Promise.resolve('invalid');
+  if(typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve('network');
+  var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var tm = setTimeout(function(){ if(ctl) ctl.abort(); }, 8000);
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1&key=' + encodeURIComponent(apiKey), ctl ? { signal: ctl.signal } : {})
+    .then(function(r){ clearTimeout(tm); if(r.ok) return 'ok'; return (r.status === 400 || r.status === 401 || r.status === 403) ? 'invalid' : 'network'; })
+    .catch(function(){ clearTimeout(tm); return 'network'; });
+}
+
 function moaPing(apiKey){
   if(!apiKey) return Promise.resolve(false);
   if(typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve(false);

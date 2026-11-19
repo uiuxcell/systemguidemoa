@@ -485,7 +485,7 @@ Gemini API 키가 필요해요</h1>
           <input id="keyInput" type="text" placeholder="키를 입력해 주세요." autocomplete="off" spellcheck="false">
           <button class="clear" id="keyClear" aria-label="지우기"><i></i><svg width="5.833" height="5.833" viewBox="0 0 5.833 5.833"><path d="M 5.833 0.587 L 5.246 0 L 2.917 2.329 L 0.587 0 L 0 0.587 L 2.329 2.917 L 0 5.246 L 0.587 5.833 L 2.917 3.504 L 5.246 5.833 L 5.833 5.246 L 3.504 2.917 L 5.833 0.587 Z" fill="#fff"/></svg></button>
         </div>
-        <div class="err-msg">키 형식이 올바르지 않습니다</div>
+        <div class="err-msg" id="keyErr">키 형식이 올바르지 않습니다</div>
         <div class="key-usage" id="keyUsage"></div>
       </div>
     </div>
@@ -2022,6 +2022,17 @@ function moaWhy(json){
 }
 
 /* Gemini 연결 확인: 키로 모델 목록을 1건 조회 */
+/* 키 검증: 'ok' | 'invalid' | 'network' */
+function moaVerifyKey(apiKey){
+  if(!apiKey) return Promise.resolve('invalid');
+  if(typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve('network');
+  var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  var tm = setTimeout(function(){ if(ctl) ctl.abort(); }, 8000);
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1&key=' + encodeURIComponent(apiKey), ctl ? { signal: ctl.signal } : {})
+    .then(function(r){ clearTimeout(tm); if(r.ok) return 'ok'; return (r.status === 400 || r.status === 401 || r.status === 403) ? 'invalid' : 'network'; })
+    .catch(function(){ clearTimeout(tm); return 'network'; });
+}
+
 function moaPing(apiKey){
   if(!apiKey) return Promise.resolve(false);
   if(typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve(false);
@@ -3689,7 +3700,22 @@ function deleteKey(){
 $('keyClear').onclick = function(){ keyInput.value=''; keyBox.classList.remove('on','err'); keySave.disabled = true; deleteKey(); keyInput.focus(); };
 keySave.onclick = function(){
   var v = keyInput.value.trim();
-  if(v.length < 20 || v.indexOf(' ') > -1){ keyBox.classList.remove('on'); keyBox.classList.add('err'); return; }
+  var keyErr = $('keyErr');
+  var fail = function(msg){ keyErr.textContent = msg; keyBox.classList.remove('on'); keyBox.classList.add('err'); };
+  if(v.length < 20 || v.indexOf(' ') > -1){ fail('키 형식이 올바르지 않습니다'); return; }
+  if(keySave._busy) return;
+  keySave._busy = true; keySave.disabled = true;
+  var label = keySave.textContent; keySave.textContent = '확인 중…';
+  var done = function(){ keySave._busy = false; keySave.disabled = false; keySave.textContent = label; };
+  var check = typeof moaVerifyKey === 'function' ? moaVerifyKey(v) : Promise.resolve('ok');
+  check.then(function(res){
+    done();
+    if(res === 'invalid'){ fail('키가 올바르지 않아요. 다시 확인해 주세요'); return; }
+    if(res === 'network'){ fail('키를 확인할 수 없어요. 네트워크 상태를 확인해 주세요'); return; }
+    applyKey(v);
+  });
+};
+function applyKey(v){
   S.key = v; S.hasKey = true; S.failAt = 0; setConnected(true);
   /* 기기별 저장 — 웹: 이 브라우저 / 플러그인: Figma clientStorage */
   try{ localStorage.setItem('moa-gemini-key', v); }catch(e){}
@@ -3697,7 +3723,7 @@ keySave.onclick = function(){
   toast('API 키를 저장했어요');
   S.history = [];
   show('home');
-};
+}
 
 function moaSplitTitle(t, q){
   var s = String(t || '').replace(/^\s+/, ''), i = s.indexOf('\n');
