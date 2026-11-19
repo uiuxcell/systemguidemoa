@@ -3155,7 +3155,8 @@ function ask(q, typed){
   var cmp = (inCat || fixed) ? null : compareTopics(q);
   var amb = !inCat && !fixed && !cmp && S.cat !== '기타 문의' && !eggFor(q) && (typed && S.cat === GENERAL ? generalAmbiguity(q) : ambiguousType(q));
   if(amb){ askWhich(q, amb); return; }
-  if(typed && !cmp && !inCat && !fixed){
+  /* 카테고리 안이라도 질문이 다른 카테고리를 가리키면(예: Color 창에서 Title 사이즈 → Typeface) 이동 여부를 물어봄. 고정답변이 있으면 제외 */
+  if(typed && !cmp && !fixed){
     var mv = redirectTopic(q);
     if(mv){
       var con0 = $('chatCon');
