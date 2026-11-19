@@ -166,11 +166,11 @@ DB 등록: 1차
 #### 2.5.1. 배너 타이틀
 
 - status: SHOULD
-content: 메인 대형 키비주얼 배너의 타이틀은 font-size 48px 사용을 권장합니다.
+content: 메인 대형 키비주얼 배너의 타이틀은 Display 타입을 적용하고 PC는 md, MO는 sm 사용을 권장합니다.
 - status: SHOULD
-content: 중간 크기 배너의 타이틀은 font-size 40px 사용을 권장합니다.
+content: 중간 크기 배너의 타이틀은 Heading 타입을 적용하고 PC는 md, MO는 sm 사용을 권장합니다.
 - status: SHOULD
-content: 작은 크기 배너의 타이틀은 font-size 32px 사용을 권장합니다.
+content: 작은 크기 배너의 타이틀은 Title 타입을 적용하고, md 또는 lg 사용을 권장합니다.
 
 #### 2.5.2. 서체 적용 기준
 
