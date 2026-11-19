@@ -3,9 +3,9 @@
 DB 등록: 1차
 담당자: Joy
 분류: 02. Element
-작업: 2026년 10월 28일 오후 7:10
+작업: 2026년 11월 19일 오후 2:22
 작업상태: 1차 완료
-하위 항목: Primary Action Button (https://app.notion.com/p/Primary-Action-Button-398159291832807b835af36f91ac6531?pvs=21), Secondary Action Button (https://app.notion.com/p/Secondary-Action-Button-3981592918328061ad30cd34bcb6ff79?pvs=21), Tertiary Action Button (https://app.notion.com/p/Tertiary-Action-Button-3981592918328044bd34e7eef49b65dd?pvs=21)
+하위 항목: Primary Action Button (Primary%20Action%20Button%20398159291832807b835af36f91ac6531.md), Secondary Action Button (Secondary%20Action%20Button%203981592918328061ad30cd34bcb6ff79.md), Tertiary Action Button (Tertiary%20Action%20Button%203981592918328044bd34e7eef49b65dd.md)
 
 ## **0. 메타**
 
@@ -60,6 +60,8 @@ DB 등록: 1차
 - status: MUST content: 여러 CTA를 함께 배치할 때 PC는 가로로 배치하고 우선순위가 높은 CTA를 오른쪽에 두며, Mobile은 세로로 배치하고 우선순위가 높은 CTA를 위에 둡니다.
 - status: SHOULD content: 여러 CTA를 함께 사용할 때는 정의된 위계 조합(Secondary + Primary, Tertiary + Primary, Tertiary + Secondary)으로 우선순위를 시각적으로 드러냅니다.
 - status: SHOULD content: 배경색에 따라 Light BG 버전과 Dark BG 버전을 구분하여 사용합니다.
+- status: SHOULD content: 최대 너비 (max-width)는 모바일은 Fill로 사용하고, 태블릿/데스크톱은 팝업사이즈나 컨텐츠 폼 너비에 Fill로 맞추거나, 312px~480px 사이의 4의 배수로 컨텐츠 메인 영역을 침범하지 않도록 지정합니다.
+- status: SHOULD content: 아이콘이랑 레이블 사이 간격은은 4px 또는 8px으로 적용합니다.
 - status: AVOID content: 동일한 액션에 화면마다 다른 라벨을 사용하지 않습니다.
 - status: AVOID content: 정의된 용도와 다른 목적으로 상위 위계의 버튼을 사용하지 않습니다.
 
@@ -147,3 +149,22 @@ DB 등록: 1차
 - 같은 페이지에서 콘텐츠를 더 펼치는 View more에는 아래 방향 화살표 아이콘을 붙입니다.
 - Filled 타입은 Icon_trailing 형태만 제공하고, Outlined와 Label 타입은 Icon_leading과 Icon_trailing 형태를 모두 제공합니다.
 - 아이콘만으로 구성된 버튼은 CTA Button Icon (아이콘 버튼) 카테고리를 따릅니다.
+
+2.5.1. Large 사이즈
+
+- status: ALLOW
+- content: Filled / Primary 버튼은 기본 높이 40px보다 큰 Large 사이즈(높이 48px)를 사용할 수 있습니다.
+- status: ALLOW
+- content: Filled / Emphasis 버튼은 기본 높이 40px보다 큰 Large 사이즈(높이 48px)를 사용할 수 있습니다.
+
+2.5.2. 추가 버튼 형태
+
+- status: ALLOW
+- content: 현재 상태와 드롭다운 탐색을 하나의 좁은 CTA로 압축해 보여줘야 할 때는 Icon trailing number 버튼을 사용할 수 있습니다.
+- status: ALLOW
+- content: 화면 공간을 절약하면서 특정 기능을 바로 실행해야 할 때는 Icon only 버튼을 사용할 수 있으며, 높이 40px 버튼 안에 24px × 24px 아이콘을 배치합니다.
+
+2.5.3. 폰트
+
+- status: MUST
+- content: CTA 버튼의 영문, 한글, 숫자에는 모두 SamsungOneKoreanOTF 폰트 700을 사용합니다.

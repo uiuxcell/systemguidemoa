@@ -3,9 +3,9 @@
 DB 등록: 2차
 담당자: Lani
 분류: 02. Element
-작업: 2026년 10월 29일 오후 5:20
+작업: 2026년 11월 18일 오후 1:01
 작업상태: 1차 완료
-하위 항목: Horizontal (https://app.notion.com/p/Horizontal-40015929183280419f68ee5a31373de8?pvs=21), Vertical (https://app.notion.com/p/Vertical-40015929183280ceaef5d156ede1da70?pvs=21)
+하위 항목: Horizontal (Horizontal%2040015929183280419f68ee5a31373de8.md), Vertical (Vertical%2040015929183280ceaef5d156ede1da70.md)
 
 # Divider (구분선)
 
@@ -121,4 +121,17 @@ DB 등록: 2차
 
 #### 2.4.1. Variant 제공 범위
 
-- Light Gray Variant는 Horizontal의 Light BG에서만 제공하며, Vertical에는 제공하지 않습니다.
+- status: MUST
+    
+    content: Light Gray Variant는 Horizontal의 Light BG에서만 사용합니다. Vertical에는 제공하지 않습니다.
+    
+
+### 2.5. 내부 운영 규칙
+
+- status: MUST
+    
+    content: 텍스트 사이에 사용하는 Vertical Divider의 높이는 인접한 텍스트의 폰트 크기를 초과하지 않도록 적용합니다.
+    
+- status: MUST
+    
+    content: Vertical Divider와 텍스트 사이의 간격은 Spacing 가이드를 따릅니다.

@@ -3,7 +3,7 @@
 DB 등록: 1차
 담당자: Joy
 분류: 02. Element
-작업: 2026년 10월 29일 오후 5:37
+작업: 2026년 11월 19일 오후 2:10
 작업상태: 1차 완료
 
 # **CTA Button Icon (아이콘 버튼)**
@@ -54,6 +54,7 @@ DB 등록: 1차
 - status: SHOULD content: 누른 뒤 무슨 일이 일어날지 예상할 수 있는 아이콘을 사용합니다.
 - status: SHOULD content: 같은 동작에는 사이트 전체에서 같은 아이콘을 사용합니다.
 - status: SHOULD content: 배경색에 따라 Light BG 버전과 Dark BG 버전을 구분하여 사용합니다.
+- status: SHOULD content: 아이콘이랑 레이블 사이 간격은은 4px, 8px으로 적용합니다.
 - status: AVOID content: 구매하기, 장바구니 담기처럼 페이지의 핵심 액션은 Icon 버튼으로 제공하지 않고 일반 CTA Button을 사용합니다.
 - status: AVOID content: 상담 예약, 보상 판매처럼 아이콘만으로 뜻이 전달되지 않는 동작에는 Icon 버튼을 사용하지 않습니다.
 
@@ -96,3 +97,15 @@ DB 등록: 1차
 - status: SHOULD content: Mobile에서는 영상을 전체 화면으로 재생하고, 가로 영상은 가로 모드로 재생합니다.
 - status: AVOID content: 영상이 아닌 이미지나 링크에 Play 아이콘을 사용하지 않습니다.
 - status: AVOID content: 한 화면에 큰 Play 버튼을 여러 개 두지 않습니다. 가장 중요한 영상 하나만 크게 두고 나머지는 작은 크기를 사용합니다.
+
+2.5.1. 아이콘 형태
+
+- status: ALLOW
+- content: CTA Button Icon은 채워진(Filled) 형태의 아이콘 디자인을 사용할 수 있습니다.
+
+2.5.2. 쿠폰받기 아이콘
+
+- status: ALLOW
+- content: 사용자가 바로 쿠폰을 다운로드하게 하려면 쿠폰받기 아이콘 버튼을 사용할 수 있습니다.
+- status: MUST
+- content: 쿠폰받기 아이콘 버튼은 Default 108px × 40px, Small 91px × 32px 크기를 사용합니다.

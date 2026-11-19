@@ -3,7 +3,7 @@
 DB 등록: 3차
 담당자: Lani
 분류: 03. Component
-작업: 2026년 10월 30일 오후 4:44
+작업: 2026년 11월 19일 오후 2:33
 작업상태: 1차 완료
 
 # Tooltip (툴팁)
@@ -141,3 +141,46 @@ DB 등록: 3차
 - status: MUST
     
     content: Center, Right, Left는 말풍선 꼬리를 각각 중앙, 오른쪽, 왼쪽에 배치합니다.
+    
+- status: SHOULD
+    
+    content: Bubble은 Trigger 위쪽에 배치하는 것을 기본으로 합니다.
+    
+- status: AVOID
+    
+    content: Bubble의 배경, 꼬리, 텍스트 컬러를 임의 변경하는 것을 지양합니다.
+    
+- status: MUST
+    
+    content: 모바일에서는 Tooltip 컨테이너의 왼쪽 또는 오른쪽 가장자리를 Trigger의 같은 쪽 가장자리에 맞춰 배치합니다.
+    
+- status: MUST
+    
+    content: Bubble의 꼬리는 Trigger의 가로 중앙에 맞춥니다.
+    
+
+### 2.5. 내부 운영 규칙
+
+- status: MUST
+    
+    content: Trigger와 Tooltip 사이의 간격은 4px로 적용합니다.
+    
+- status: MUST
+    
+    content: Standard A, Label, Meta는 PC와 Mobile에서 동일한 기본 사이즈를 사용합니다.
+    
+- status: MUST
+    
+    content: Standard B와 Bubble은 PC와 Mobile을 구분하여 다바이스별 규격을 적용합니다.
+    
+- status: MUST
+    
+    content: Mobile에서 Tooltip의 최대 너비는 화면 너비에서 좌우 페이지 여백을 제외한 범위로 제한합니다. 텍스트가 최대 너비를 초과하면 줄바꿈합니다.
+    
+- status: MUST
+    
+    content: Tooltip 배치 방향과 관계없이 내부 텍스트는 항상 좌측 정렬을 적용합니다.
+    
+- status: MUST
+    
+    content: Mobile에서 Tooltip은 Trigger 위치에 따라 좌측 또는 우측에 배치하며, 텍스트 길이가 긴 경우 시각적 균형을 고려하여 Tooltip을 화면 중앙에 정렬합니다.

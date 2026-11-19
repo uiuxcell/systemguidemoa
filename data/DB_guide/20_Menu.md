@@ -3,9 +3,9 @@
 DB 등록: 3차
 담당자: Daisy
 분류: 03. Component
-작업: 2026년 11월 2일 오후 6:54
+작업: 2026년 11월 18일 오후 4:09
 작업상태: 1차 완료
-하위 항목: Dropdown menu (https://app.notion.com/p/Dropdown-menu-38a15929183280849fc1d28192ee2196?pvs=21), Icon leading menu (https://app.notion.com/p/Icon-leading-menu-38a15929183280e89542ff6f0e034003?pvs=21), Select Field (https://app.notion.com/p/Select-Field-38a159291832804e9081fbc4fbb039d0?pvs=21)
+하위 항목: Dropdown menu (Dropdown%20menu%2038a15929183280849fc1d28192ee2196.md), Icon leading menu (Icon%20leading%20menu%2038a15929183280e89542ff6f0e034003.md), Select Field (Select%20Field%2038a159291832804e9081fbc4fbb039d0.md)
 
 # menu (메뉴)
 
@@ -86,3 +86,14 @@ content: 아이콘이나 버튼을 트리거로 사용하며, 사용자 인터�
 content: 현재 선택된 값을 표시하여 사용자가 설정 상태를 확인할 수 있도록 합니다.
 - status: MUST
 content: Select Field를 선택하면 해당 필드에 연결된 Dropdown Menu를 표시하여 옵션을 선택할 수 있도록 합니다.
+
+### 2.5. 내부 운영 규칙
+
+#### 2.5.1. 아이콘
+
+- status: MUST
+content: Select Field의 화살표 아이콘 컨테이너는 PC 환경에서 24×24px, MO 환경에서 18×18px을 적용합니다.
+- status: MUST
+content: Icon Leading Menu의 아이콘 컨테이너는 PC와 MO 환경 모두 24×24px을 적용합니다.
+- status: AVOID
+content: Select Field에 정의된 Arrow 아이콘을 다른 아이콘으로 임의 변경하지 않습니다.

@@ -3,9 +3,9 @@
 DB 등록: 2차
 담당자: Joy
 분류: 02. Element
-작업: 2026년 10월 28일 오후 7:11
+작업: 2026년 11월 19일 오후 1:38
 작업상태: 1차 완료
-하위 항목: Check Box (체크박스) (https://app.notion.com/p/Check-Box-38a1592918328076be31e9d9b537c65d?pvs=21), Radio (라디오) (https://app.notion.com/p/Radio-38a15929183280df89b8ce24291de03e?pvs=21), Switch (스위치) (https://app.notion.com/p/Switch-38a15929183280a89020deb58dcb07e4?pvs=21)
+하위 항목: Check Box (체크박스) (Check%20Box%20(%EC%B2%B4%ED%81%AC%EB%B0%95%EC%8A%A4)%2038a1592918328076be31e9d9b537c65d.md), Radio (라디오) (Radio%20(%EB%9D%BC%EB%94%94%EC%98%A4)%2038a15929183280df89b8ce24291de03e.md), Switch (스위치) (Switch%20(%EC%8A%A4%EC%9C%84%EC%B9%98)%2038a15929183280a89020deb58dcb07e4.md)
 
 ## **0. 메타**
 
@@ -78,6 +78,7 @@ DB 등록: 2차
 - status: MUST content: 계층형 구조에서는 상위 항목을 선택하면 하위 항목이 모두 선택되고, 하위 항목을 하나라도 해제하면 상위 항목도 해제되도록 합니다.
 - status: SHOULD content: 라벨이나 이미지는 박스 바로 옆에 두어 연결 관계가 보이게 합니다.
 - status: AVOID content: 하나만 선택해야 하는 옵션에는 Check Box를 사용하지 않고 Radio를 사용합니다.
+- status: AVOID content: 현재 페이지에는 원형 체크박스도 사용되고 있지만, 가이드가 변경되면서 이제는 가이드의 사각형 체크박스만 권장합니다.
 
 #### **2.3.2. Type: Radio**
 

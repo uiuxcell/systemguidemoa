@@ -3,9 +3,9 @@
 DB 등록: 2차
 담당자: Daisy
 분류: 02. Element
-작업: 2026년 10월 26일 오후 5:55
+작업: 2026년 11월 18일 오후 4:07
 작업상태: 1차 완료
-하위 항목: Action Chip (https://app.notion.com/p/Action-Chip-3c315929183280888900ca1e465174e4?pvs=21), Select Chip (https://app.notion.com/p/Select-Chip-3c31592918328046a5f3ea0eee23d10e?pvs=21)
+하위 항목: Action Chip (Action%20Chip%203c315929183280888900ca1e465174e4.md), Select Chip (Select%20Chip%203c31592918328046a5f3ea0eee23d10e.md)
 
 # Chip (칩)
 
@@ -87,7 +87,7 @@ DB 등록: 2차
 #### 2.3.1. Type: Action Chip
 
 - status: MUST
-content: PC 환경에서는 Small, Medium, Large 중 선택하고, MO 환경에서는 Small, Medium 중 선택하여 적용합니다.
+content: PC 환경에서는 Small, Medium, Large, Extra Large 중 선택하고, MO 환경에서는 Small, Medium 중 선택하여 적용합니다.
 
 #### 2.3.2. Type: Select Chip
 
@@ -98,3 +98,24 @@ content: PC 환경에서는 Small, Medium, Large 중 선택하고, MO 환경에�
 - status: SHOULD
     
     content: 삭제 아이콘을 선택하면 해당 칩이 목록에서 즉시 제거되도록 인터랙션을 제공합니다.
+    
+
+### 2.5. 내부 운영 규칙
+
+#### 2.5.1. 칩 간격
+
+- status: SHOULD
+content: 칩이 두 줄 이상으로 배치되는 경우, 줄 사이의 세로 간격은 칩 간 가로 간격과 같거나 큰 값을 사용하는 것을 권장합니다.
+
+#### 2.5.2. 칩 패딩
+
+- status: MUST
+content: 칩은 사이즈별 정의된 높이를 기준으로 제작하며, 좌우 패딩은 각 사이즈에 맞게 적용합니다.
+- status: MUST
+content: Small(sm) 사이즈의 좌우 패딩은 각각 12px을 적용합니다.
+- status: MUST
+content: Medium(md) 사이즈의 좌우 패딩은 각각 16px을 적용합니다.
+- status: MUST
+content: Large(lg) 사이즈의 좌우 패딩은 각각 20px을 적용합니다.
+- status: MUST
+content: Extra Large(xlg) 사이즈의 좌우 패딩은 각각 24px을 적용합니다.

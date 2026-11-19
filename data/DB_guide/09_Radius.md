@@ -3,9 +3,9 @@
 DB 등록: 2차
 담당자: Daisy
 분류: 01. Foundation
-작업: 2026년 10월 26일 오후 5:42
+작업: 2026년 11월 18일 오후 4:05
 작업상태: 1차 완료
-하위 항목: 4px (https://app.notion.com/p/4px-3ba1592918328097b57df0bac6575a38?pvs=21), 6px (https://app.notion.com/p/6px-3ba15929183280c59f7ff6b2a6e8cf37?pvs=21), 8px (https://app.notion.com/p/8px-3ba1592918328043a4e4f981b4bddafc?pvs=21), 20px (https://app.notion.com/p/20px-3ff1592918328080bceed6fc882c09e3?pvs=21), 24px (https://app.notion.com/p/24px-3ff15929183280178c94dcb8f0745947?pvs=21), Max (https://app.notion.com/p/Max-3ba15929183280c390cbec83a305bf22?pvs=21), None (https://app.notion.com/p/None-3ff1592918328019867eee43152b0526?pvs=21)
+하위 항목: 4px (4px%203ba1592918328097b57df0bac6575a38.md), 6px (6px%203ba15929183280c59f7ff6b2a6e8cf37.md), 8px (8px%203ba1592918328043a4e4f981b4bddafc.md), 20px (20px%203ff1592918328080bceed6fc882c09e3.md), 24px (24px%203ff15929183280178c94dcb8f0745947.md), Max (Max%203ba15929183280c390cbec83a305bf22.md), None (None%203ff1592918328019867eee43152b0526.md)
 
 # Radius (라운드)
 
@@ -131,3 +131,8 @@ content: Button - CTA, Indicator, Number Counter, Scroll, Search Field 등 완�
 content: 모서리 곡률을 적용하지 않고 0px로 설정합니다.
 - status: SHOULD
 content: List, Popup - Full Screen 등 화면 너비를 가득 채우는 컨테이너에 적용합니다.
+
+### 2.5. 내부 운영 규칙
+
+- status: ALLOW
+content: 12px과 16px은 공식 Radius 타입에는 포함되지 않지만, 8px과 20px 사이의 중간 곡률이 필요한 경우 정의된 토큰을 사용할 수 있습니다.

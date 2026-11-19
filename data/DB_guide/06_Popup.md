@@ -3,9 +3,9 @@
 DB 등록: 1차
 담당자: Lani
 분류: 03. Component
-작업: 2026년 10월 29일 오후 5:38
+작업: 2026년 11월 18일 오후 12:57
 작업상태: 1차 완료
-하위 항목: Confirmation (https://app.notion.com/p/Confirmation-39d159291832806d925afec8971b9fa1?pvs=21), Input Data (https://app.notion.com/p/Input-Data-39d15929183280cfbf19ee91ca3bd5a0?pvs=21), Notification (https://app.notion.com/p/Notification-39d15929183280d4a7a7d381afdea8e8?pvs=21), Contents (https://app.notion.com/p/Contents-39d159291832806b822dd26808d3538e?pvs=21)
+하위 항목: Confirmation (Confirmation%2039d159291832806d925afec8971b9fa1.md), Input Data (Input%20Data%2039d15929183280cfbf19ee91ca3bd5a0.md), Notification (Notification%2039d15929183280d4a7a7d381afdea8e8.md), Contents (Contents%2039d159291832806b822dd26808d3538e.md)
 
 # Popup (팝업)
 
@@ -29,11 +29,6 @@ DB 등록: 1차
 - Input Data: `입력 팝업`, `정보 입력`, `옵션 선택`
 - Notification: `알림 팝업`, `Alert`, `앱 다운로드`
 - Contents: `콘텐츠 팝업`, `이미지`, `동영상`
-
-### 0.4. 작성 기준 및 범위
-
-- 기준 자료의 배경 테마: Light BG
-- Input Data 수록 범위: PC / Standard 구성
 
 ---
 
@@ -104,6 +99,18 @@ DB 등록: 1차
 - status: AVOID
     
     content: 본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.
+    
+- status: MUST
+    
+    content: Close Icon은 우측 상단에 배치합니다.
+    
+- status: MUST
+    
+    content: PC의 Popup / Standard는 Default와 Expanded Popup 모두 컨테이너 너비를 448~1320px 범위에서 적용합니다.
+    
+- status: MUST
+    
+    content: 모바일의 Popup / Standard는 컨테이너 너비를 최소 312px로 적용합니다.
     
 
 ### 2.2. 타입 선택 기준
@@ -192,20 +199,35 @@ DB 등록: 1차
     
 - status: MUST
     
+    content: PC·모바일의 Media는 Dimmed Background(#000000, 불투명도 90%)를 적용합니다.
+    
+- status: MUST
+    
     content: PC·모바일에서 이미지·동영상만 단독으로 제공할 때는 Media 구성을 사용하며, 원본 비율을 유지하고 중앙 정렬합니다.
     
 - status: MUST
     
-    content: PC·모바일의 Media는 Dimmed Background를 함께 사용합니다.
+    content: Media / Single Visual_Horizontal은 16:9 비율을 적용합니다. 이미지·동영상의 너비는 PC에서 Viewport 너비의 90%, 모바일에서 Viewport 너비의 80%로 설정합니다.
     
 - status: MUST
     
-    content: PC의 가로형 Media는 Viewport 너비를, 세로형 Media는 Viewport 높이를 기준으로 표시 크기를 조정합니다.
+    content: Media / Single Visual_Vertical은 9:16 비율을 적용합니다. 이미지·동영상의 높이는 PC에서 Viewport 높이의 100%, 모바일에서 Device 높이의 80%로 설정합니다.
     
 - status: MUST
     
-    content: 모바일의 가로형 Media는 Device 너비를, 세로형 Media는 Device 높이를 기준으로 표시 크기를 조정합니다.
+    content: 모바일의 Sheet / Bottom Sheet와 Full Screen / Standard는 Device 너비의 100%를 적용합니다.
     
+
+### 2.5. 내부 운영 규칙
+
 - status: MUST
     
-    content: PC·모바일의 Media에서 Close Icon은 우측 상단에 배치합니다.
+    content: 신규 팝업의 Close Icon은 글로벌 가이드에 따라 우측 상단에 고정 배치합니다. 일부 기존 안내 팝업의 컨테이너 외부 하단 중앙 배치는 기존 운영 사례에 한해 적용됩니다.
+    
+- status: SHOULD
+    
+    content: Title Text는 모바일 24px, PC 28px를 기본으로 적용합니다.
+    
+- status: ALLOW
+    
+    content: PC의 Title Text에는 예외적으로 24px를 적용할 수 있습니다.

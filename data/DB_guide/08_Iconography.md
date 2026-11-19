@@ -3,9 +3,9 @@
 DB 등록: 2차
 담당자: semi
 분류: 01. Foundation
-작업: 2026년 10월 30일 오후 5:03
+작업: 2026년 11월 19일 오후 2:46
 작업상태: 1차 완료
-하위 항목: Bold (https://app.notion.com/p/Bold-40715929183280e6972ad06759855706?pvs=21), Regular (https://app.notion.com/p/Regular-40715929183280a8b5a3ffdc27ef5767?pvs=21), Light (https://app.notion.com/p/Light-40715929183280a694c5eb3d7f7a3f8d?pvs=21)
+하위 항목: Bold (Bold%2040715929183280e6972ad06759855706.md), Regular (Regular%2040715929183280a8b5a3ffdc27ef5767.md), Light (Light%2040715929183280a694c5eb3d7f7a3f8d.md)
 
 # Iconography (아이콘)
 
@@ -24,7 +24,7 @@ DB 등록: 2차
 
 ### 0.3. 검색 키워드
 
-- `Bold` : `Bold Type`, `굵은 아이콘`, `Exterior Stroke`, `Interior Stroke`, `12×12`, `16×16`, `24×24`
+- `Bold` : `Bold Type`, `굵은 아이콘`, `Exterior Stroke`, `Interior Stroke`, `12×12`, `16×16`, `24×24`, `GNB`
 - `Regular` : `Regular Type`, `기본 아이콘`, `Exterior Stroke`, `Interior Stroke`, `24×24`, `36×36`, `48×48`
 - `Light` : `Light Type`, `얇은 아이콘`, `Exterior Stroke`, `Interior Stroke`, `64×64`, `72×72`, `96×96`
 
@@ -72,9 +72,9 @@ DB 등록: 2차
 
 ### 2.2. 타입 선택 기준
 
-- Bold: `12×12px`, `16×16px`, `24×24px` 크기의 아이콘에 적용하며, 작은 크기에서도 명확한 형태 표현이 필요한 경우 선택합니다.
-- Regular: `24×24px`, `36×36px`, `48×48px` 크기의 아이콘에 적용하며, 일반적인 UI 요소에 균형 잡힌 굵기가 필요한 경우 선택합니다.
-- Light: `64×64px`, `72×72px`, `96×96px` 크기의 아이콘에 적용하며, 큰 크기에서 가벼운 형태 표현이 필요한 경우 선택합니다.
+- `Bold` : UI 적용 크기는 `12×12px`, `16×16px`, `24×24px`입니다. 작은 크기에서도 형태를 명확히 표현해야 할 때 선택합니다. `24×24px`의 `Bold`는 `GNB` 영역에서만 사용합니다.
+- `Regular` : UI 적용 크기는 `24×24px`, `36×36px`, `48×48px`입니다. 일반적인 UI 요소에 균형 잡힌 굵기가 필요할 때 선택합니다.
+- `Light` : UI 적용 크기는 `64×64px`, `72×72px`, `96×96px`입니다. 큰 크기에서 가벼운 형태를 표현해야 할 때 선택합니다.
 
 ### 2.3. 타입별 사용 규칙
 
@@ -113,12 +113,10 @@ DB 등록: 2차
 
 - status: MUST
     
-    content: 아이콘은 `96×96px` 그리드를 기준으로 제작하며, 확대 비율(`100%`, `300%`)과 관계없이 동일한 그리드·키라인 비율을 유지합니다.
+    content: 아이콘 제작에는 `96×96px` 그리드를 사용하며, 확대 비율(`100%`, `300%`)과 관계없이 동일한 그리드·키라인 비율을 유지합니다.
     
 - status: MUST
-    
-    content: 아이콘의 크기와 정렬은 정의된 `Grid` 및 `Keyline`을 기준으로 설정하여 형태의 일관성을 유지합니다.
-    
+content: 제작 단계에서 아이콘의 크기와 정렬은 정의된 `Grid` 및 `Keyline`을 기준으로 설정합니다.
 
 #### 2.4.3. Keyline Shapes
 
@@ -259,3 +257,14 @@ content: 브랜드 로고는 해당 브랜드에서 제공하는 공식 로고 �
 - status: MUST
 
 content: `24×24px` 아이콘에 `Bold` 타입을 적용하는 경우, `GNB` 영역에서만 사용합니다.
+
+### 2.5. 내부 운영 규칙
+
+- status: SHOULD
+- content: 화면에 아이콘을 배치할 때는 `2.2. 타입 선택 기준`에 정의된 UI 적용 크기를 우선 사용합니다. 정의된 크기로 배치하기 어려운 경우에는 4px 배수의 크기를 우선 적용합니다.
+- status: ALLOW
+- content: 레이아웃 제약으로 4px 배수의 크기를 적용하기 어려운 경우, `18×18px`, `22×22px` 등 다른 짝수 크기를 사용할 수 있습니다.
+- status: SHOULD
+- content: 아이콘은 `Black(#000000)`을 기본으로 사용하며, 텍스트와 함께 사용하는 경우에는 해당 텍스트의 컬러에 맞춰 적용합니다.
+- status: SHOULD
+- content: 한 페이지에서 사용하는 3D 아이콘은 재질, 색감, 시점, 조명 등 표현 스타일을 일관되게 유지합니다.

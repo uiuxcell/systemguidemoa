@@ -3,9 +3,9 @@
 DB 등록: 2차
 담당자: semi
 분류: 01. Foundation
-작업: 2026년 10월 30일 오후 4:04
+작업: 2026년 11월 18일 오후 1:50
 작업상태: 1차 완료
-하위 항목: Dimmed (https://app.notion.com/p/Dimmed-400159291832800f921cc731764e2bf1?pvs=21), Shadow (https://app.notion.com/p/Shadow-4001592918328020abf7d81e32f9257e?pvs=21)
+하위 항목: Dimmed (Dimmed%20400159291832800f921cc731764e2bf1.md), Shadow (Shadow%204001592918328020abf7d81e32f9257e.md)
 
 # Dimmed & Shadow (딤드 & 그림자)
 
@@ -91,3 +91,9 @@ DB 등록: 2차
 - status: SHOULD
     
     content: 실제 UI에서는 다양한 `Shadow` 수치가 사용되고 있으나, 모든 값을 별도 규칙으로 정의하지는 않습니다. 기존 스타일과 유사한 경우 `Shadow 01` 또는 `Shadow 02` 중 가까운 값으로 통일하는 것을 우선 검토합니다.
+    
+
+### 2.4. 내부 운영 규칙
+
+- status: ALLOW
+content: 기존 공식 스타일로 화면에 필요한 위계를 표현하기 어려운 경우, 적용 대상과 사유를 기록하고 해당 화면에서만 Shadow 수치를 조정할 수 있습니다.이때 `Black(#000000)`은 유지하며, `Opacity` · `Offset`·`Blur`·`Spread` 범위에서 조정합니다.

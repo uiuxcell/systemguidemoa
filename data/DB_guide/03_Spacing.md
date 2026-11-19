@@ -3,9 +3,9 @@
 DB 등록: 1차
 담당자: Daisy
 분류: 01. Foundation
-작업: 2026년 10월 27일 오후 1:30
+작업: 2026년 11월 19일 오후 2:32
 작업상태: 1차 완료
-하위 항목: Inset (https://app.notion.com/p/Inset-39815929183280409a8ede3d218060f9?pvs=21), Gap (https://app.notion.com/p/Gap-398159291832807fbe1fd946c7322c0a?pvs=21), Grid (https://app.notion.com/p/Grid-398159291832807a9f4af34867452d02?pvs=21)
+하위 항목: Inset (Inset%2039815929183280409a8ede3d218060f9.md), Gap (Gap%20398159291832807fbe1fd946c7322c0a.md), Grid (Grid%20398159291832807a9f4af34867452d02.md)
 
 # Spacing (간격)
 
@@ -125,3 +125,19 @@ content: 레이아웃 구성에 따라 가로와 세로 방향의 Grid 간격을
 content: 단일 요소 간 간격이나 컴포넌트 내부 패딩을 설정하기 위해 Grid를 사용하지 않습니다.
 - status: AVOID
 content: 그리드 구조와 관계없는 개별 요소나 단순 나열 구조에 Grid를 혼용하지 않습니다.
+
+### 2.5. 내부 운영 규칙
+
+#### 2.5.1. 화면 좌우 여백
+
+- status: MUSTcontent: PC 1440px 화면에서는 좌우 24px의 여백을 제외한 1392px을 콘텐츠 작업영역으로 사용합니다.
+- status: MUSTcontent: 모바일 및 Fold 환경에서는 화면 좌우에 각각 24px의 여백을 적용합니다.
+
+#### 2.5.2. 섹션 간격
+
+- status: SHOULDcontent: PC 환경에서 섹션 간 세로 간격은 100~160px 사용을 권장합니다.
+- status: SHOULDcontent: 모바일 및 Fold 환경에서 섹션 간 세로 간격은 60~100px 사용을 권장합니다.
+
+#### 2.5.3. 타이틀 및 디스클레이머 간격
+
+- status: SHOULDcontent: 타이틀과 디스클레이머 사이에는 고정된 간격이 정의되어 있지 않으며, Element Gap 기준으로 주변 컴포넌트 간격보다 좁게 적용하는 것을 권장합니다.

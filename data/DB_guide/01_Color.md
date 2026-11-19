@@ -3,9 +3,9 @@
 DB 등록: 1차
 담당자: semi
 분류: 01. Foundation
-작업: 2026년 10월 30일 오후 5:03
+작업: 2026년 11월 19일 오후 2:34
 작업상태: 1차 완료
-하위 항목: Primary Color (https://app.notion.com/p/Primary-Color-3981592918328061a90fe60615a6f12a?pvs=21), Secondary Color (https://app.notion.com/p/Secondary-Color-39815929183280029da6e1518e68fedf?pvs=21), Grayscale (https://app.notion.com/p/Grayscale-3981592918328044a673e7cc430308e4?pvs=21), Neutral Color (https://app.notion.com/p/Neutral-Color-398159291832808bb835ec1aa700ae82?pvs=21), Theme (https://app.notion.com/p/Theme-40015929183280acae03cf21ef5a2d78?pvs=21)
+하위 항목: Primary Color (Primary%20Color%203981592918328061a90fe60615a6f12a.md), Secondary Color (Secondary%20Color%2039815929183280029da6e1518e68fedf.md), Grayscale (Grayscale%203981592918328044a673e7cc430308e4.md), Neutral Color (Neutral%20Color%20398159291832808bb835ec1aa700ae82.md), Theme (Theme%2040015929183280acae03cf21ef5a2d78.md), Accent (Accent%2041b15929183280c5a497c6a256e5a403.md)
 
 # Colors (컬러)
 
@@ -23,6 +23,7 @@ DB 등록: 1차
 - `Grayscale`
 - `Neutral Color`
 - `Theme`
+- `Accent`
 
 ### 0.3. 검색 키워드
 
@@ -31,12 +32,13 @@ DB 등록: 1차
 - `Grayscale` : `그레이스케일`, `회색`, `텍스트`, `명도`, `구분선`, `비활성`, `텍스트 위계`
 - `Neutral Color` : `Neutral`, `뉴트럴`, `배경색`, `카드 배경`, `표면 컬러`
 - `Theme` : `라이트`, `다크`, `Light`, `Dark`, `배경 대비`, `명도 대비`, `텍스트 가독성`, `테마`
+- `Accent` : `Accent`, `Rating_star`, `상품평`, `리뷰`, `별점`, `별 아이콘`, `별점 컬러`, `#FFAA4E`
 
 ## 1. 개요
 
 ### 1.1. 정의
 
-- Colors: 디자인 시스템 전반에 적용되는 색상 체계로, 브랜드 아이덴티티와 UI 요소의 시각적 일관성을 유지하기 위한 기준입니다. `Primary Color`, `Secondary Color`, `Grayscale`, `Neutral Color`의 4개 색상 그룹을 중심으로 구성됩니다.
+- Colors: 디자인 시스템 전반에 적용되는 색상 체계로, 브랜드 아이덴티티와 UI 요소의 시각적 일관성을 유지하기 위한 기준입니다. `Primary Color`, `Secondary Color`, `Grayscale`, `Neutral Color`, `Accent`의 5개 색상 그룹을 중심으로 구성됩니다.
 - 확장 및 적용 기준: 배경에 따른 명도 대비(`Theme`), 투명도(`Alpha`), 의미 및 상태별 컬러(`Semantic Color`, `States`), 기획전·시즌별 신규 컬러 확장 규칙을 함께 정의합니다.
 
 ### 1.2. 적용 상황
@@ -55,7 +57,7 @@ DB 등록: 1차
     
 - status: MUST
     
-    content: `Primary Color`, `Secondary Color`, `Grayscale`, `Neutral Color`는 각 그룹의 역할과 목적에 맞게 사용하며, 서로 대체하지 않습니다.
+    content: `Primary Color`, `Secondary Color`, `Grayscale`, `Neutral Color`, `Accent`는 각 그룹의 역할과 목적에 맞게 사용하며, 서로 대체하지 않습니다.
     
 - status: MUST
     
@@ -85,6 +87,10 @@ DB 등록: 1차
 - Grayscale: 텍스트·배경·구분선 등의 명도 차이와 시각적 위계를 설정해야 하는 경우 선택합니다.
 - Neutral Color: 배경이나 카드 표면에 은은한 컬러를 적용해야 하는 경우 선택합니다.
 - Theme: 배경의 밝기에 따라 텍스트 컬러의 명도 대비를 조정해야 하는 경우 선택합니다.
+- Accent: 상품평 별점에만 사용하는 전용 색상입니다.
+
+Accent는 상품평 별점에만 사용하는
+전용 색상이에요.
 
 ### 2.3. 타입별 사용 규칙
 
@@ -128,6 +134,10 @@ DB 등록: 1차
     
     content: 텍스트·배경·구분선의 시각적 위계는 정의된 `Grayscale` 10단계를 기준으로 관리합니다.
     
+- status: ALLOW
+    
+    content: 화면에 밝은 회색 배경을 적용할 때 `#F7F7F7`을 사용할 수 있습니다.
+    
 - status: AVOID
     
     content: `Snackbar` 등 어두운 배경(`#313131`)에서는 명도 대비가 부족한 `Grayscale 70(#555555)` 이하의 어두운 컬러를 본문 텍스트에 사용하지 않습니다.
@@ -136,8 +146,9 @@ DB 등록: 1차
 #### 2.3.4. Type: Neutral Color
 
 - status: SHOULD
-
-content: `Neutral Color`는 배경·카드 표면 등 넓은 영역에 은은한 색상을 적용할 때 사용하며, 텍스트 컬러로는 사용을 권장하지 않습니다.
+    
+    content: `Neutral Color`는 배경·카드 표면 등 넓은 영역에 은은한 색상을 적용할 때 사용하며, 텍스트 컬러로는 사용을 권장하지 않습니다.
+    
 
 #### 2.3.5. Type: Theme
 
@@ -163,17 +174,24 @@ content: `Neutral Color`는 배경·카드 표면 등 넓은 영역에 은은한
     content: `color-theme-white`, `color-theme-black`은 글로벌 서비스의 전체 테마 전환에 가까운 토큰으로, KR 서비스의 전체 테마 전환 목적으로 그대로 적용하지 않습니다.
     
 
+#### 2.3.6. Type: Accent
+
+- status: MUST
+    
+    content: 상품평의 별점 아이콘에는 `Accent`의 `Rating_star` 컬러(`#FFAA4E`)를 사용합니다.
+    
+
 ### 2.4. 세부 적용 규칙
 
 #### 2.4.1. 투명도 적용 규칙 (Alpha)
 
 - status: MUST
     
-    content: `Opacity`는 `10`, `15` ,`20`, `30`, `40`, `50`, `60`, `70`, `80`, `90`의 10단계만 사용하며, 정의되지 않은 수치는 적용하지 않습니다.
+    content: 컬러에 `Opacity` 를 적용할 때는 `10`, `15`, `20`, `30`, `40`, `50`, `60`, `70`, `80`, `90`의 10단계만 사용하며, 정의되지 않은 수치는 적용하지 않습니다.
     
 - status: MUST
     
-    content: 배경에 `Opacity`를 적용하는 경우, 동일 요소의 텍스트·아이콘에도 같은 투명도 값을 적용합니다.
+    content: `Dimmed`와 `Shadow`의 `Opacity`는 `Dimmed & Shadow` 가이드에 정의된 공식 스타일 값을 따릅니다.
     
 
 #### 2.4.2. 컬러 확장 규칙 (Event Extension)
@@ -224,3 +242,22 @@ content: `Neutral Color`는 배경·카드 표면 등 넓은 영역에 은은한
 - status: AVOID
     
     content: 오류 상태에 `Skyblue` 계열을 사용하는 등 컬러의 의미와 실제 상태가 일치하지 않는 표현은 사용하지 않습니다.
+    
+
+### 2.5. 내부 운영 규칙
+
+- status: SHOULD
+    
+    content: 타이틀과 서브텍스트는 밝은 배경에서 `Black(#000000)`, 어두운 배경에서 `White(#FFFFFF)`를 기본으로 사용합니다.
+    
+- status: ALLOW
+    
+    content: 타이틀과 서브텍스트의 위계를 컬러로 구분할 필요가 있는 경우, 밝은 배경에서는 서브텍스트에 `Grayscale 70(#555555)`을 사용할 수 있습니다. 어두운 배경에서는 실제 배경과 `4.5:1` 이상의 명도 대비를 충족하는 기존 `Grayscale` 컬러를 사용할 수 있습니다.
+    
+- status: SHOULD
+    
+    content: 밝은 배경의 디스클레이머에는 `Grayscale 70(#555555)`을 기본으로 사용합니다. `Black(#000000)` 배경의 유의사항 영역에서는 강조 타이틀에 `White(#FFFFFF)`, 본문에 `#AAAAAA`를 사용합니다.
+    
+- status: MUST
+    
+    content: 텍스트 색상은 실제 적용 배경과 `4.5:1` 이상의 명도 대비를 확보합니다.

@@ -3,8 +3,8 @@
 DB 등록: 3차
 담당자: Rhea
 분류: 03. Component
-작업: 2026년 10월 23일 오후 2:40
-작업상태: 진행 중
+작업: 2026년 11월 19일 오후 2:39
+작업상태: 1차 완료
 
 # Tab (탭)
 
@@ -17,13 +17,26 @@ DB 등록: 3차
 
 ### 0.2. 타입 목록
 
-- `Standard`
-- `Icon`
+**글로벌 타입**
+
+- `Standard / Anchor` : 텍스트 레이블과 하단 Underline을 활용하는 기본 탭
+- `Icon` : 아이콘과 텍스트 레이블을 함께 제공하는 카드형 탭
+
+**한총 전용 타입 (`Only_SEC`)**
+
+- `Outlined` : 둥근 외곽 Border로 선택 상태를 표현하는 탭
+- `Filled` : 선택된 항목의 배경색을 채워 선택 상태를 표현하는 탭
+- `Toggle` : 선택된 항목의 Container와 Border를 강조하는 탭
+- `Underlined / Standard / Primary` : PC에서 사용하는 한총 전용 Underline 탭
 
 ### 0.3. 검색 키워드
 
-- Standard : `탭`, `텍스트 탭`, `카테고리`, `콘텐츠 전환`, `언더라인`, `Underline`, `Filled`, `테두리 탭`, `고정형 탭`, `스크롤 탭`
-- Icon : `탭`, `아이콘 탭`, `카드형 탭`, `아이콘 메뉴`, `콘텐츠 전환`, `선택 상태`, `가로 스크롤`
+- Standard / Anchor : `기본 탭`, `텍스트 탭`, `앵커 탭`, `Anchor`, `Underline`, `밑줄 탭`, `콘텐츠 전환`
+- Icon : `아이콘 탭`, `아이콘 레이블`, `카드형 탭`, `아이콘 내비게이션`, `콘텐츠 전환`
+- Outlined : `아웃라인 탭`, `테두리 탭`, `외곽선 탭`, `Pill 탭`, `둥근 테두리`, `선택 테두리`
+- Filled : `채움형 탭`, `배경형 탭`, `배경색 선택`, `검정 배경`, `텍스트 탭`
+- Toggle : `토글 탭`, `토글형 탭`, `선택 전환`
+- Underlined / Standard / Primary : `언더라인 탭`, `밑줄 탭`, `텍스트 탭`
 
 ---
 
@@ -31,20 +44,21 @@ DB 등록: 3차
 
 ### 1.1. 정의
 
-- Tab은 동일한 화면 내에서 서로 연관된 콘텐츠를 구분하고, 사용자가 원하는 콘텐츠 영역을 선택하여 전환할 수 있도록 제공하는 내비게이션 컴포넌트이다.
-- Tab은 `Standard`, `Icon` 2가지 Type으로 구성한다.
-- `Standard`는 텍스트 Label을 중심으로 구성하며, `Underline`, `Filled` 2가지 스타일로 구분한다.
-- `Icon`은 Icon과 Label을 결합한 카드 형태로 구성한다.
-- 선택된 탭은 시각적으로 구분되며, 탭 선택 시 해당 콘텐츠 영역이 함께 전환된다.
-- 탭의 배치 방식은 `Fixed`, `Scrollable`로 구분한다.
-- PC와 Mobile 환경에 따라 상태 및 인터랙션 방식을 구분하여 적용한다.
+- **정의:** Tab은 동일한 화면에서 연관된 콘텐츠를 구분하고, 사용자가 원하는 콘텐츠 영역을 선택하여 전환할 수 있도록 제공하는 내비게이션 컴포넌트이다.
+- **사용 목적:** 콘텐츠를 카테고리별로 구분하고 현재 선택된 항목을 명확하게 표시한다.
+- **기본 구성:** 글로벌 `Standard / Anchor`, `Icon`과 한총 전용 `Outlined`, `Filled`, `Toggle`, `Underlined / Standard / Primary`로 구분한다.
+- **기본 요소:** 타입에 따라 `Label`, `Underline`, `Container`, `Border`, `Icon` 등을 적용한다.
+- **기본 원칙:** 선택된 탭은 시각적으로 구분하고, 탭 선택 시 연결된 콘텐츠를 함께 전환한다.
+- **플랫폼:** 각 타입에 정의된 `PC`, `Mobile` 규격과 상태를 구분하여 적용한다.
 
 ### 1.2. 적용 상황
 
-- 동일한 정보 위계의 콘텐츠를 여러 카테고리로 분류하고 전환해야 하는 경우
-- 사용자가 현재 선택한 콘텐츠 영역을 명확하게 인지해야 하는 경우
-- 동일한 화면에서 연관된 콘텐츠를 탐색하거나 전환해야 하는 경우
-- 탭 항목이 화면 너비를 초과하여 가로 스크롤이 필요한 경우
+- `Standard / Anchor` : 텍스트 중심의 카테고리를 구분하고, 선택 항목을 하단 Underline으로 표시할 때 사용한다.
+- `Icon` : 아이콘과 레이블을 함께 사용하여 카테고리를 시각적으로 구분할 때 사용한다.
+- `Outlined` : 둥근 외곽 테두리를 통해 선택 항목을 강조할 때 사용한다.
+- `Filled` : 선택 항목의 배경색을 변경하여 활성 상태를 명확하게 표현할 때 사용한다.
+- `Toggle` : 선택된 항목의 컨테이너와 테두리를 강조하는 방식으로 탭을 구성할 때 사용한다.
+- `Underlined / Standard / Primary` : 한총 PC 환경에서 텍스트와 Underline으로 선택 상태를 표현할 때 사용한다.
 
 ---
 
@@ -58,216 +72,287 @@ DB 등록: 3차
     
 - status: `MUST`
     
-    content: 탭 선택 시 선택 상태 변경과 연결된 콘텐츠 전환이 함께 시작되어야 한다.
+    content: 탭 선택 시 기존 선택 항목을 선택 해제하고, 새롭게 선택된 항목에 선택 상태를 적용한다.
     
 - status: `MUST`
     
-    content: 탭 선택 시 기존 선택 항목은 선택 해제되고, 새롭게 선택된 항목에 선택 상태가 적용되어야 한다.
+    content: 탭 선택 시 연결된 콘텐츠 영역도 함께 전환한다.
     
 - status: `MUST`
     
-    content: 선택된 탭은 각 Type 및 스타일에 정의된 방식으로 선택되지 않은 탭과 시각적으로 구분한다.
+    content: 선택 상태는 각 타입에 정의된 `Underline`, `Border`, `Container` 등의 스타일을 기준으로 표시한다.
     
 - status: `MUST`
     
-    content: PC와 Mobile 환경에 따라 정의된 상태 및 인터랙션 방식을 구분하여 적용한다.
+    content: 글로벌 타입과 한총 전용 타입을 구분하고, 해당 타입에 정의된 규격을 적용한다.
+    
+- status: `MUST`
+    
+    content: 각 타입에 정의된 플랫폼, 상태, 서체, 컬러 및 구성 요소 규격을 임의로 변경하지 않는다.
+    
+- status: `SHOULD`
+    
+    content: 탭 항목의 수와 화면 너비를 고려하여 모든 항목을 표시하거나 가로 스크롤 방식으로 제공한다.
     
 
-### 2.2. 타입 선택 기준
+### **2.2. Type 선택 규칙**
 
-- Standard:
-    - 텍스트 중심으로 콘텐츠 카테고리를 구분하고 전환하는 경우 사용한다.
-    - 선택 상태를 Underline 또는 Border로 표현하는 경우 사용한다.
-    - `Underline`은 Label 하단의 선으로 선택 상태를 구분하는 스타일이다.
-    - `Filled`는 둥근 Border를 가진 텍스트 탭으로, Border 스타일을 통해 선택 상태를 구분한다.
-- Icon:
-    - Icon과 Label을 함께 제공하여 항목을 시각적으로 구분하는 경우 사용한다.
-    - 각 항목을 독립적인 카드 형태로 제공하는 경우 사용한다.
-    - Icon을 통해 각 항목의 의미를 시각적으로 전달하는 경우 사용한다.
+- `Standard / Anchor`:
+    - 텍스트 레이블을 중심으로 카테고리를 구분하고 하단 `Underline`으로 선택 상태를 표시할 때 사용합니다.
+    - 글로벌 규격에 따라 텍스트 기반의 콘텐츠를 전환할 때 사용합니다.
+- `Icon`:
+    - 아이콘과 텍스트 레이블을 함께 제공하여 각 항목의 의미를 시각적으로 구분할 때 사용합니다.
+    - 글로벌 규격에 따라 카테고리를 아이콘과 함께 직관적으로 표시할 때 사용합니다.
+- `Outlined`:
+    - 둥근 외곽 `Border`의 색상과 두께를 통해 선택 상태를 강조할 때 사용합니다.
+    - 한총 전용 규격에 따라 테두리형 탭을 구성할 때 사용합니다.
+- `Filled`:
+    - 선택된 항목의 배경색을 채워 활성 상태를 명확하게 구분할 때 사용합니다.
+    - 한총 전용 규격에 따라 배경색을 활용한 강조형 탭을 구성할 때 사용합니다.
+- `Toggle`:
+    - 선택된 항목의 `Container`와 `Border`를 강조하여 선택 상태를 구분할 때 사용합니다.
+    - 한총 전용 규격에 따라 토글 형태의 탭을 구성할 때 사용합니다.
+- `Underlined / Standard / Primary`:
+    - 텍스트 레이블 하단의 `Underline`으로 선택 상태를 표시할 때 사용합니다.
+    - 한총 전용 `PC Only` 규격에 따라 텍스트 기반의 콘텐츠를 전환할 때 사용합니다.
 
 ### 2.3. 타입별 사용 규칙
 
-#### 2.3.1. Type: Standard
+#### 2.3.1. Type: Standard / Anchor
 
 - status: `MUST`
     
-    content: 텍스트 Label을 중심으로 탭 항목을 구성한다.
+    content: 텍스트 `Label`과 선택 항목의 하단 `Underline`으로 구성한다.
     
 - status: `MUST`
     
-    content: `Underline`과 `Filled` 스타일을 구분하고, 각 스타일에 정의된 선택 상태 표현 방식을 적용한다.
+    content: `PC`와 `Mobile`에 정의된 상태 및 서체 규격을 구분하여 적용한다.
     
 - status: `MUST`
     
-    content: `Underline` 스타일은 Label 하단의 Underline으로, `Filled` 스타일은 Border로 선택 상태를 표현한다.
+    content: 선택된 항목에 `2px` 높이의 Underline을 표시한다.
     
 - status: `MUST`
     
-    content: 각 스타일의 상태별 시각적 변화는 해당 스타일에 정의된 가이드를 따른다.
+    content: 탭 그룹의 구분선은 `#DDDDDD`, `1px` 규격을 적용한다.
     
 
 #### 2.3.2. Type: Icon
 
 - status: `MUST`
     
-    content: Icon과 Label을 함께 제공하여 탭 항목을 구성한다.
+    content: `Icon`과 `Label`을 함께 제공하며, 두 요소를 중앙 정렬한다.
     
 - status: `MUST`
     
-    content: Icon은 Label 상단에 배치하고 두 요소를 중앙 정렬한다.
+    content: `PC`의 Icon은 `32×32px`, `Mobile`의 Icon은 `24×24px` 규격을 적용한다.
     
 - status: `MUST`
     
-    content: 탭 항목은 Border로 구분되는 카드 형태로 제공한다.
+    content: 탭 항목의 Border는 `2px`, Radius는 `8px`을 적용한다.
     
 - status: `MUST`
     
-    content: 선택된 탭은 Border 컬러 변경을 통해 선택 상태를 표시한다.
+    content: 각 플랫폼에 정의된 상태별 Border 컬러를 적용한다.
+    
+
+#### 2.3.3. Type: Outlined
+
+- status: `MUST`
+    
+    content: 둥근 Border를 가진 텍스트 탭으로 구성한다.
     
 - status: `MUST`
     
-    content: 선택되지 않은 탭은 기본 Border 스타일을 유지한다.
+    content: Radius는 `999`로 정의된 규격을 적용한다.
     
 - status: `MUST`
     
-    content: 상태별 시각적 변화는 Icon Type에 정의된 가이드를 따른다.
+    content: 기본 상태는 `1px`, 선택 상태는 `2px` Border를 적용한다.
+    
+- status: `MUST`
+    
+    content: `PC`와 `Mobile`의 상태별 Label 및 Border 컬러를 구분하여 적용한다.
+    
+
+#### 2.3.4. Type: Filled
+
+- status: `MUST`
+    
+    content: 선택되지 않은 항목에는 흰색 Container와 기본 Border를 적용하고, 선택된 항목에는 검정색 Container를 적용한다.
+    
+- status: `MUST`
+    
+    content: 선택된 항목의 Label은 흰색으로 표시한다.
+    
+- status: `MUST`
+    
+    content: `PC`는 `20px`, `Mobile`은 `8px` Radius를 적용한다.
+    
+- status: `MUST`
+    
+    content: `Normal`, `Selected` 상태를 기준으로 적용한다.
+    
+
+#### 2.3.5. Type: Toggle
+
+- status: `MUST`
+    
+    content: `Normal`, `Selected` 상태를 기준으로 적용한다.
+    
+- status: `MUST`
+    
+    content: `PC`는 `32px`, `Mobile`은 `24px` Radius를 적용한다.
+    
+- status: `MUST`
+    
+    content: 선택된 항목에는 흰색 Container와 검정색 `2px` Border를 적용한다.
+    
+- status: `MUST`
+    
+    content: 선택된 항목의 Label은 검정색으로 표시한다.
+    
+
+#### 2.3.6. Type: Underlined / Standard / Primary
+
+- status: `MUST`
+    
+    content: `PC`에서만 사용한다.
+    
+- status: `MUST`
+    
+    content: 선택된 항목의 Label 하단에 `2px` Underline을 적용한다.
+    
+- status: `MUST`
+    
+    content: `Normal`, `Hover`, `Selected`, `Selected_hover` 상태를 기준으로 적용한다.
+    
+- status: `MUST`
+    
+    content: `Samsung One Korean 700`, `18px`의 Label 규격을 적용한다.
     
 
 ### 2.4. 세부 적용 규칙
 
-#### 2.4.1. Fixed Type
+#### 2.4.1. PC 상태 및 인터랙션
 
 - status: `MUST`
     
-    content: Fixed Type은 지정된 영역에 탭 항목을 고정하여 배치한다.
+    content: `Standard / Anchor`, `Icon`, `Outlined`, `Underlined / Standard / Primary`는 `Normal`, `Hover`, `Selected`, `Selected_hover` 상태를 기준으로 적용한다.
     
 - status: `MUST`
     
-    content: 탭 선택 시 항목의 배치 순서와 위치는 변경되지 않는다.
+    content: `Filled`, `Toggle`은 제공된 가이드에 정의된 `Normal`, `Selected` 상태를 기준으로 적용한다.
+    
+- status: `MUST`
+    
+    content: `Hover`는 마우스 포인터가 위치한 상태로, `Selected_hover`는 선택된 항목에 마우스 포인터가 위치한 상태로 구분한다.
+    
+
+#### 2.4.2. Mobile 상태 및 인터랙션
+
+- status: `MUST`
+    
+    content: `Standard / Anchor`, `Icon`, `Outlined`는 `Normal`, `Pressed`, `Selected`, `Pressed_selected` 상태를 기준으로 적용한다.
+    
+- status: `MUST`
+    
+    content: `Filled`, `Toggle`은 제공된 가이드에 정의된 `Normal`, `Selected` 상태를 기준으로 적용한다.
+    
+- status: `MUST`
+    
+    content: `Underlined / Standard / Primary`는 Mobile에 적용하지 않는다.
+    
+
+#### 2.4.3. 배치 및 스크롤
+
+- status: `SHOULD`
+    
+    content: 탭 항목이 지정된 영역 안에 모두 표시되는 경우 고정 배치 방식으로 제공한다.
+    
+- status: `MUST`
+    
+    content: 가로 스크롤 방식으로 구성한 경우 화면 밖의 항목도 스크롤을 통해 접근할 수 있도록 한다.
     
 - status: `SHOULD`
     
-    content: 모든 탭 항목을 지정된 영역 안에 표시할 수 있는 경우 Fixed Type을 사용한다.
+    content: 모바일 화면에서 일부 항목이 보이지 않는 경우 가이드에 정의된 좌우 이동 컨트롤을 활용한다.
     
 
-#### 2.4.2. Scrollable Type
+---
 
-- status: `MUST`
-    
-    content: 탭 항목이 디바이스 너비를 초과하는 경우 가로 스크롤 방식으로 전환한다.
-    
-- status: `MUST`
-    
-    content: 화면 밖에 위치한 탭도 가로 스크롤을 통해 접근할 수 있어야 한다.
-    
-- status: `MUST`
-    
-    content: 숨겨진 탭을 선택하면 해당 항목이 화면에 표시되도록 스크롤 위치가 이동해야 한다.
-    
-- status: `MUST`
-    
-    content: Scrollable Type의 스크롤 이동 위치와 인터랙션은 해당 Type에 정의된 기준을 따른다.
-    
+### 2.5. 내부 운영 규칙
 
-#### 2.4.3. PC 상태 및 인터랙션
+#### 2.5.1. 한총 전용 타입 구분
 
 - status: `MUST`
     
-    content: PC 환경에서는 `Normal`, `Hover`, `Selected`, `Selected Hover` 상태를 구분하여 적용한다.
+    content: `Outlined`, `Filled`, `Toggle`, `Underlined / Standard / Primary`는 가이드에 `Only_SEC`로 표시된 한총 전용 타입으로 구분한다.
     
 - status: `MUST`
     
-    content: `Normal`은 선택되지 않은 탭의 기본 상태로 제공한다.
-    
-- status: `MUST`
-    
-    content: `Hover`는 선택되지 않은 탭에 마우스를 올렸을 때 적용한다.
-    
-- status: `MUST`
-    
-    content: `Selected`는 현재 선택된 탭에 적용한다.
-    
-- status: `MUST`
-    
-    content: `Selected Hover`는 선택된 탭에 마우스를 올렸을 때 적용하며 선택 상태를 유지한다.
-    
-- status: `MUST`
-    
-    content: 상태별 시각적 변화는 각 Type 및 스타일에 정의된 가이드를 따른다.
+    content: 한총 전용 타입은 글로벌 `Standard / Anchor`, `Icon`과 별도 규격으로 관리한다.
     
 
-#### 2.4.4. Mobile 상태 및 인터랙션
+#### 2.5.2. Outlined와 Filled의 차이
 
 - status: `MUST`
     
-    content: Mobile 환경에서는 `Normal`, `Pressed`, `Selected`, `Pressed Selected` 상태를 구분하여 적용한다.
+    content: `Outlined`는 둥근 외곽 Border의 색상과 두께를 변경하여 선택 상태를 표시한다.
     
 - status: `MUST`
     
-    content: `Normal`은 선택되지 않은 탭의 기본 상태로 제공한다.
+    content: `Filled`는 선택된 항목의 Container를 검정색으로 채우고 Label을 흰색으로 표시한다.
     
-- status: `MUST`
+- status: `AVOID`
     
-    content: `Pressed`는 선택되지 않은 탭을 누르고 있는 동안 적용한다.
-    
-- status: `MUST`
-    
-    content: `Selected`는 현재 선택된 탭에 적용한다.
-    
-- status: `MUST`
-    
-    content: `Pressed Selected`는 선택된 탭을 누르고 있는 동안 적용하며 선택 상태를 유지한다.
-    
-- status: `MUST`
-    
-    content: 상태별 시각적 변화는 각 Type 및 스타일에 정의된 가이드를 따른다.
+    content: `Filled`를 Border만 변경하는 스타일로 해석하거나 `Outlined`와 혼용하지 않는다.
     
 
-#### 2.4.5. Standard / Underline
+#### 2.5.3. Toggle 적용 규격
 
 - status: `MUST`
     
-    content: 선택된 탭은 Label 하단의 Underline을 통해 표시한다.
+    content: `Toggle`은 `Normal`, `Selected` 상태로 구분하며, 선택된 항목에 흰색 Container와 검정색 Border를 적용한다.
     
 - status: `MUST`
     
-    content: Underline은 선택된 Label의 텍스트 너비를 기준으로 표시한다.
-    
-- status: `MUST`
-    
-    content: 선택되지 않은 탭에는 Underline을 표시하지 않는다.
-    
-- status: `MUST`
-    
-    content: 탭 선택 시 기존 Underline이 사라지고 새롭게 선택된 항목에 Underline이 표시되어야 한다.
+    content: 플랫폼별 Radius는 `PC 32px`, `MO 24px`을 적용한다.
     
 
-#### 2.4.6. Standard / Filled
+#### 2.5.4. Underlined / Standard / Primary 적용 범위
 
 - status: `MUST`
     
-    content: Filled 스타일은 텍스트 Label과 둥근 Border를 가진 탭 항목으로 구성한다.
+    content: `Underlined / Standard / Primary`는 한총 전용 `PC Only` 타입으로 구분한다.
+    
+- status: `AVOID`
+    
+    content: `MO`에 해당 타입을 임의로 확장하여 사용하지 않는다.
+    
+
+#### 2.5.5. 탭 노출 개수 및 배치 기준
+
+- status: `ALLOW`
+    
+    content: 하나의 탭 그룹 내 구성할 수 있는 탭 항목의 개수에는 제한을 두지 않는다.
+    
+- status: `SHOULD`
+    
+    content: 디바이스별 화면 뷰포트(`Viewport`)를 고려하여 탭 항목을 배치하고, 가용 영역 내에서 `1줄` 노출을 권장한다.
+    
+- status: `ALLOW`
+    
+    content: 탭 항목이 화면 뷰포트의 가로 영역을 초과하는 경우 `2줄 배치` 또는 `가로 스크롤` 방식으로 구성할 수 있다.
     
 - status: `MUST`
     
-    content: Filled 스타일의 선택 상태는 Border 컬러 및 두께를 통해 구분한다.
+    content: 가로 스크롤 적용 시 화면 밖의 모든 탭 항목에 접근하고 선택할 수 있도록 구성한다.
     
 - status: `MUST`
     
-    content: 선택되지 않은 탭은 해당 상태에 정의된 기본 Border 스타일을 적용한다.
+    content: `MO`에서 탭 항목이 화면 뷰포트를 초과하여 가로 스크롤을 적용하는 경우, 탭 항목과 좌우 이동 버튼이 겹치는 영역에는 딤 처리(`Dimmed`)와 `Arrow Icon`이 결합된 컴포넌트를 적용하며 기존 형태를 유지한다.
     
 - status: `MUST`
     
-    content: PC의 `Hover`, `Selected Hover` 상태에서는 각 상태에 정의된 Label 및 Border 스타일을 적용한다.
-    
-- status: `MUST`
-    
-    content: Mobile의 `Pressed`, `Pressed Selected` 상태에서는 각 상태에 정의된 Label 및 Border 스타일을 적용한다.
-    
-- status: `MUST`
-    
-    content: `Selected Hover`, `Pressed Selected` 상태에서는 선택 상태를 유지하면서 해당 인터랙션 상태의 스타일을 적용한다.
-    
-- status: `MUST`
-    
-    content: Filled 스타일은 일반적인 배경 채움 방식으로 해석하지 않고, 정의된 Label 및 Border 스타일을 기준으로 적용한다.
+    content: 배치 방식에 관계없이 각 타입에 정의된 컴포넌트 규격을 유지한다.

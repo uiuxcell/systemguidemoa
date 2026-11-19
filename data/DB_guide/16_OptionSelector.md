@@ -3,9 +3,9 @@
 DB 등록: 2차
 담당자: Lani
 분류: 02. Element
-작업: 2026년 10월 29일 오후 5:13
+작업: 2026년 11월 19일 오후 2:35
 작업상태: 1차 완료
-하위 항목: Image (https://app.notion.com/p/Image-3ba159291832802a8cc6fcf8bb0e4a67?pvs=21), Label  (https://app.notion.com/p/Label-3ba15929183280d89974ea2b6e90caae?pvs=21), Meta (https://app.notion.com/p/Meta-3ba159291832802cbea0db474a1a6962?pvs=21), Color (https://app.notion.com/p/Color-3ba15929183280828f7ae9e6719a03dc?pvs=21)
+하위 항목: Image (Image%203ba159291832802a8cc6fcf8bb0e4a67.md), Label  (Label%203ba15929183280d89974ea2b6e90caae.md), Meta (Meta%203ba159291832802cbea0db474a1a6962.md), Color (Color%203ba15929183280828f7ae9e6719a03dc.md)
 
 # Option Selector (옵션 선택)
 
@@ -148,6 +148,20 @@ DB 등록: 2차
     content: Inner Circle과 Inner Circle Border로 컬러칩을 구성합니다.
     
 
-### 2.4. 세부 적용 규칙
+### 2.5. 내부 운영 규칙
 
-- Light BG 기준입니다.
+- status: MUST
+    
+    content: PC와 Mobile 모두 Option Selector의 옵션 간 가로 간격을 8px로 적용합니다. 두 줄로 배치하는 경우 줄 사이 간격도 8px로 적용합니다.
+    
+- status: SHOULD
+    
+    content: 두 줄로 배치할 때 마지막 줄의 옵션 수가 적어도 첫 줄과 같은 정렬 기준과 옵션 너비를 유지합니다.
+    
+- status: MUST
+    
+    content: Option Selector의 컬러 선택 타입은 PF 영역에서 사용하며, Option Chip의 Colorchip 타입은 PD 영역의 프로덕트 카드 내부에서 사용한다.
+    
+- status: MUST
+    
+    content: Color 옵션의 텍스트는 상단 16px 또는 하단 8px 간격으로 배치합니다.
