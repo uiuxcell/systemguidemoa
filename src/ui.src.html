@@ -1094,7 +1094,7 @@ function openCategory(cat, topic){
   loadLanding();
   S.cat = cat;
   S.topic = cat === GENERAL ? null : (topic || (USE_DB && isTopic(cat) ? cat : null));
-  S.convo = [];
+  S.convo = S.convo || []; /* 카테고리를 옮겨도 최근 5개 대화는 유지 */
   var g = GUIDE[cat];
   var con = $('chatCon');
   con.innerHTML = '';
@@ -1187,11 +1187,11 @@ function scrollDown(){ if(S.hold || S.userScroll) return; var c=$('chatCon'); c.
   c.addEventListener('keydown', function(e){ if(/^(ArrowUp|ArrowDown|PageUp|PageDown|Home|End| )$/.test(e.key)) mark(); });
 })();
 
-/* 한 채팅창 안의 대화 기록 — 카테고리를 새로 열면 초기화 */
+/* 최근 대화 5개 기록 — 카테고리를 옮겨도 유지, 플러그인을 닫으면 초기화 */
 function remember(q, text, topics){
   S.convo = S.convo || [];
   S.convo.push({ q: q, a: text, topics: topics && topics.length ? topics : (S.topic ? [S.topic] : []) });
-  if(S.convo.length > 10) S.convo.shift();
+  while(S.convo.length > 5) S.convo.shift();
 }
 var AVATAR_HTML = '<img src="__IMG_PROFILE__" alt="Moa">';
 /* 입력한 질문의 주제가 지금 채팅창과 다르면 맞는 카테고리로 이동 */

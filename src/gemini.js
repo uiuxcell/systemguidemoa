@@ -700,7 +700,7 @@ function moaAskOnce(question, apiKey, opts){
   function skipRest(from, detail){ for(var k = from; k < MOA_STEPS.length; k++) report(k, 'skip', k === from ? detail : ''); }
 
   var qs, sq, usage = false, topics = [], hits = [], faqs = [], db = window.MOA_DB || [];
-  var hist = (opts.history || []).slice(-6);
+  var hist = (opts.history || []).slice(-5);
   var last = hist[hist.length - 1];
 
   return moaLoadDb()
