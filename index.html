@@ -2446,11 +2446,11 @@ var ETC_INTENTS = [
   ['새로운 가이드나 항목을 제안하고 싶어요', /제안|추가해|추가요청|새로운(가이드|항목)|개선/],
   ['가이드에 없는 경우에는 어떻게 해야 하나요?', /가이드에없|정의(되지|안)|없는경우/],
   ['원하는 답변을 찾지 못했어요', /못찾|답(변)?이?(없|안나)|원하는답/],
-  ['담당자에게 직접 문의하고 싶어요', /담당자|문의|연락|메일|felix|강지수|직접물어/]
+  ['담당자에게 직접 문의하고 싶어요', /담당자|관리자|책임자|매니저|manager|운영자|운영팀|어드민|admin|오너|owner|디자인시스템팀|ds팀|dsteam|문의|연락|메일|felix|강지수|직접물어|누구한테|누구에게/]
 ];
 function etcIntent(q){
   var t = String(q).replace(/\s+/g, '').toLowerCase();
-  var list = S.cat === '기타 문의' ? ETC_INTENTS : ETC_INTENTS.slice(-1).map(function(x){ return [x[0], /담당자|felix|강지수/]; });
+  var list = S.cat === '기타 문의' ? ETC_INTENTS : ETC_INTENTS.slice(-1).map(function(x){ return [x[0], /담당자|관리자|책임자|매니저|manager|운영자|운영팀|어드민|admin|오너|owner|디자인시스템팀|ds팀|dsteam|felix|강지수/]; });
   for(var i = 0; i < list.length; i++) if(list[i][1].test(t)) return list[i][0];
   return null;
 }
@@ -3199,8 +3199,9 @@ function ask(q, typed){
   var cmp = (inCat || fixed) ? null : compareTopics(q);
   var amb = !inCat && !fixed && !cmp && S.cat !== '기타 문의' && !eggFor(q) && (typed && S.cat === GENERAL ? generalAmbiguity(q) : ambiguousType(q));
   if(amb){ askWhich(q, amb); return; }
-  if(typed && !cmp && !fixed && (!inCat || foundationRedirect(q))){
-    var mv = inCat ? foundationRedirect(q) : redirectTopic(q);
+  /* 카테고리 안에서도 다른 카테고리 이름(한글·영문)을 물으면 이동 여부를 물어봄 */
+  if(typed && !cmp && !fixed && S.stayQ !== q){
+    var mv = (inCat && foundationRedirect(q)) || redirectTopic(q);
     if(mv){
       var con0 = $('chatCon');
       var ur = el('div','row-user'); ur.appendChild(el('div','bub-user', q)); con0.appendChild(ur);
