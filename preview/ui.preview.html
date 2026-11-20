@@ -3047,6 +3047,19 @@ function subTopicFor(cur, q){
     return topicWords(t).some(function(w){ return cw.indexOf(w) < 0 && hasWord(q, w); });
   })[0] || null;
 }
+/* Foundation 창에서 글자 크기·서체 질문이면 Typeface로 (Color 창에서 "배너 Title 사이즈" 등) */
+function typeIntent(q){
+  var s = String(q || '').toLowerCase().replace(/\s+/g, '');
+  var text = /title|타이틀|제목|헤드라인|headline|heading|헤딩|display|디스플레이|body|본문|caption|캡션|label|레이블|라벨|텍스트|text|글자|글씨|폰트|font|서체|typo|타이포/.test(s);
+  var size = /사이즈|size|크기|px|pt|행간|lineheight|라인하이트|자간|letterspacing|굵기|weight|웨이트|폰트|font|서체|typo|타이포/.test(s);
+  var color = /컬러|color|색|colour|hex|#[0-9a-f]{3}/.test(s);
+  return text && size && !color;
+}
+function foundationRedirect(q){
+  var cur = S.topic || S.cat;
+  if(!cur || cur === 'Typeface' || typeof MOA_FOUNDATION === 'undefined' || MOA_FOUNDATION.indexOf(cur) < 0) return null;
+  return typeIntent(q) && isTopic('Typeface') ? 'Typeface' : null;
+}
 function redirectTopic(q){
   if(S.cat === '기타 문의' && etcIntent(q)) return null;
   var cur = (S.cat === '기타 문의' || S.cat === GENERAL) ? null : (S.topic || S.cat);
@@ -3170,8 +3183,8 @@ function ask(q, typed){
   var cmp = (inCat || fixed) ? null : compareTopics(q);
   var amb = !inCat && !fixed && !cmp && S.cat !== '기타 문의' && !eggFor(q) && (typed && S.cat === GENERAL ? generalAmbiguity(q) : ambiguousType(q));
   if(amb){ askWhich(q, amb); return; }
-  if(typed && !cmp && !inCat && !fixed){
-    var mv = redirectTopic(q);
+  if(typed && !cmp && !fixed && (!inCat || foundationRedirect(q))){
+    var mv = inCat ? foundationRedirect(q) : redirectTopic(q);
     if(mv){
       var con0 = $('chatCon');
       var ur = el('div','row-user'); ur.appendChild(el('div','bub-user', q)); con0.appendChild(ur);
