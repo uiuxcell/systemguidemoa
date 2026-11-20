@@ -116,7 +116,7 @@ body.web{background:#1E1E1E}
 .hero-mark .mascot img{will-change:transform}
 .hero-mark .mascot:active img{transform:scale(.95)}
 .hero-mark .mascot img{position:absolute;left:-21px;top:-18px;width:120px;height:120px;object-fit:cover}
-.hero-sub{align-self:stretch;font-size:16px;font-weight:600;line-height:24px;text-align:center;white-space:pre-line;color:#000000}
+.hero-sub{align-self:stretch;min-height:48px;font-size:16px;font-weight:600;line-height:24px;text-align:center;white-space:pre-line;word-break:keep-all;text-wrap:balance;color:#000000}
 .home-chips{height:226px;display:flex;flex-direction:column;gap:32px;align-items:center;align-self:stretch}
 .home-select{padding:0 24px;display:flex;flex-direction:column;gap:10px;align-items:center;align-self:stretch}
 .home-chips{height:auto;flex:1 1 auto;min-height:0;overflow:hidden;gap:20px;justify-content:flex-start}
@@ -132,6 +132,7 @@ body.web{background:#1E1E1E}
 .home-info .qi{width:18px;height:18px;position:relative;color:rgba(0,0,0,.6)}
 .home-info .qi svg{position:absolute;left:2.25px;top:2.25px}
 .home-info span{font-size:14px;font-weight:700;line-height:20px;color:rgba(0,0,0,.6);white-space:nowrap}
+.hero-sub.desc{color:rgba(0,0,0,.6)}
 
 /* ── chat (2:726) ── */
 .chat-con{position:absolute;left:0;top:80px;width:360px;bottom:0;overflow-y:auto;overflow-x:hidden;padding-bottom:104px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;z-index:5;scrollbar-width:none}
@@ -767,7 +768,7 @@ fetch(moaImg.dataset.motion).then(function(r){ return r.blob(); }).then(function
 var moaTurnBlob = null, moaHover = false, moaTurning = 0, MOA_TURN_MS = 734;
 fetch(moaImg.dataset.turn).then(function(r){ return r.blob(); }).then(function(b){ moaTurnBlob = b; });
 /* 호버할 때마다 인사(moa_hi) ↔ 선생님(moa_teacher) 번갈아 */
-var moaTeachBlob = null, moaHoverN = 0;
+var moaTeachBlob = null, moaHoverN = 0, moaChipHover = false, moaChipOn = false, moaChipT = 0;
 fetch(moaImg.dataset.teacher).then(function(r){ return r.blob(); }).then(function(b){ moaTeachBlob = b; });
 function moaShow(blob, src, done){
   var tok = ++moaTok, old = moaUrl;
@@ -784,8 +785,7 @@ function moaShow(blob, src, done){
 }
 function moaPlay(){
   moaTurning = 0;
-  if(moaHoverN % 2) moaShow(moaTeachBlob, moaImg.dataset.teacher);
-  else moaShow(moaBlob, moaImg.dataset.motion);
+  moaShow(moaBlob, moaImg.dataset.motion);
 }
 function moaTurn(){
   moaShow(moaTurnBlob, moaImg.dataset.turn, function(tok){
@@ -806,11 +806,27 @@ moa.addEventListener('mouseenter', function(){ moaHover = true; if(!moaTurning) 
 moa.addEventListener('mouseleave', function(){ moaHover = false; moaHoverN++; if(!moaTurning) moaStop(); });
 moa.onclick = function(){ if(!moaTurning) moaTurn(); };
 
+var HOME_DESC = {
+  'Color': '브랜드 느낌과 정보의 중요도를 전달하기 위해 정해둔 색상 체계예요.',
+  'Typeface': '화면에 쓰는 글꼴과 글자 크기, 굵기, 줄 간격 규칙이에요.',
+  'Spacing': '요소와 요소 사이, 화면 가장자리에 두는 여백의 기준이에요.',
+  'CTA Button': "'구매하기', '더 알아보기'처럼 사용자가 다음 행동을 하도록 이끄는 버튼이에요.",
+  'CTA Button Icon': '글자 없이 아이콘만으로 기능을 실행하는 버튼이에요. (재생, 닫기, 좋아요 등)',
+  'Popup': '화면 위에 떠서 중요한 안내나 선택을 요청하는 창이에요.',
+  'Chip': '키워드나 카테고리를 작은 알약 모양으로 보여주고, 눌러서 필터링할 수 있는 요소예요.',
+  'Option Chip': '색상, 용량처럼 제품 옵션 중 하나를 고를 때 쓰는 선택용 칩이에요.',
+  'Tab': '같은 화면 안에서 여러 콘텐츠를 나눠 두고 전환해서 볼 수 있게 하는 메뉴예요.',
+  'Radius': '버튼이나 카드 같은 요소의 모서리를 얼마나 둥글게 할지 정한 값이에요.'
+};
+var homeSub = document.querySelector('.hero-sub');
+var HOME_SUB_DEFAULT = homeSub.textContent;
 HOME_CHIPS.forEach(function(row){
   var r = el('div','home-row');
   row.forEach(function(label){
     var b = el('button','mchip',label);
     b.onclick = function(){ openCategory(label); };
+    b.addEventListener('mouseenter', function(){ var d = HOME_DESC[label]; if(d){ homeSub.textContent = d; homeSub.classList.add('desc'); } moaChipHover = true; clearTimeout(moaChipT); if(!moaHover && !moaTurning && !moaChipOn){ moaChipOn = true; moaShow(moaTeachBlob, moaImg.dataset.teacher); } });
+    b.addEventListener('mouseleave', function(){ homeSub.textContent = HOME_SUB_DEFAULT; homeSub.classList.remove('desc'); moaChipHover = false; clearTimeout(moaChipT); moaChipT = setTimeout(function(){ if(!moaChipHover && moaChipOn){ moaChipOn = false; if(!moaHover && !moaTurning) moaStop(); } }, 120); });
     r.appendChild(b);
   });
   $('homeChips').appendChild(r);
@@ -1910,18 +1926,18 @@ keySave.onclick = function(){
     var why = window.moaKeyErr ? ' (' + window.moaKeyErr + ')' : '';
     if(res !== 'ok') console.warn('[Moa] key check:', res, window.moaKeyErr);
     if(res === 'invalid'){ fail('키가 올바르지 않아요. 다시 확인해 주세요' + why); return; }
-    if(res === 'disabled'){ fail('이 키는 Gemini API 사용 권한이 없어요. AI Studio에서 발급한 키인지 확인해 주세요' + why); return; }
+    if(res === 'disabled'){ fail('이 키는 Gemini API 사용 권한이 없어요. AI Studio에서 발급한 키인지, 키에 웹사이트·IP 제한이 걸려 있지 않은지 확인해 주세요' + why); return; }
     if(res === 'region'){ fail('현재 지역에서는 Gemini API를 사용할 수 없어요'); return; }
-    if(res === 'network'){ fail('키를 확인할 수 없어요. 잠시 후 다시 시도해 주세요' + why); return; }
+    if(res === 'network'){ applyKey(v, true); return; }
     applyKey(v);
   });
 };
-function applyKey(v){
+function applyKey(v, unverified){
   S.key = v; S.hasKey = true; S.failAt = 0; setConnected(true);
   /* 기기별 저장 — 웹: 이 브라우저 / 플러그인: Figma clientStorage */
   try{ localStorage.setItem('moa-gemini-key', v); }catch(e){}
   post({type:'save-key', key:v});
-  toast('API 키를 저장했어요');
+  toast(unverified ? '키를 저장했어요. 지금은 연결을 확인하지 못해 질문할 때 다시 확인해요' : 'API 키를 저장했어요');
   S.history = [];
   show('home');
 }

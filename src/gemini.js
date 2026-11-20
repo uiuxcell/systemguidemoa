@@ -529,11 +529,10 @@ function moaWhy(json){
 
 /* Gemini 연결 확인: 키로 모델 목록을 1건 조회 */
 /* 키 검증: 'ok' | 'invalid' | 'network' */
-function moaVerifyKey(apiKey){
+function moaVerifyKey(apiKey, retried){
   if(!apiKey) return Promise.resolve('invalid');
-  if(typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve('network');
   var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
-  var tm = setTimeout(function(){ if(ctl) ctl.abort(); }, 8000);
+  var tm = setTimeout(function(){ if(ctl) ctl.abort(); }, 15000);
   return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1&key=' + encodeURIComponent(apiKey), ctl ? { signal: ctl.signal } : {})
     .then(function(r){
       clearTimeout(tm);
@@ -544,12 +543,13 @@ function moaVerifyKey(apiKey){
         if(/API_KEY_INVALID|API key not valid|API_KEY_EXPIRED|expired/i.test(body)) return 'invalid';
         if(/SERVICE_DISABLED|has not been used|is disabled|API_KEY_SERVICE_BLOCKED|SERVICE_BLOCKED/i.test(body)) return 'disabled';
         if(/location is not supported|FAILED_PRECONDITION/i.test(body)) return 'region';
+        if(r.status === 429 || /RESOURCE_EXHAUSTED/i.test(body)) return 'ok';
         if(r.status === 400 || r.status === 401) return 'invalid';
         if(r.status === 403) return 'disabled';
         return 'network';
       }).catch(function(){ return r.status === 400 || r.status === 401 ? 'invalid' : 'network'; });
     })
-    .catch(function(e){ clearTimeout(tm); window.moaKeyErr = (e && e.name === 'AbortError') ? '응답 시간 초과' : '요청 차단 또는 네트워크 오류'; return 'network'; });
+    .catch(function(e){ clearTimeout(tm); if(!retried) return moaVerifyKey(apiKey, true); window.moaKeyErr = (e && e.name === 'AbortError') ? '응답 시간 초과' : '요청 차단 또는 네트워크 오류'; return 'network'; });
 }
 /* 붙여넣기 시 섞이는 공백·줄바꿈·보이지 않는 문자·따옴표 제거 */
 function moaCleanKey(v){ return String(v || '').replace(/[\s\u200B-\u200D\u2060\uFEFF\u00A0"'`]/g, ''); }
