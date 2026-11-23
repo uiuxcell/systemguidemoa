@@ -885,16 +885,36 @@ function moaJosa(word, pair){
   return has ? pair[0] : pair[1];
 }
 /* 한글 표기 → 영어 용어: data/db_glossary/ko_en.md + 기본 목록 (파일을 못 읽어도 동작) */
-var MOA_KOEN_BASE = { 'meta':['메타'] };
+var MOA_KOEN_BASE = { 'meta':['메타'], 'color':['색상','컬러','색깔'] };
+/* '무슨 색', '어떤 색'처럼 한 글자 '색'은 앞말과 함께일 때만 color로 */
+var MOA_KOEN_COLOR = /(무슨|어떤|몇\s?번|어느)\s?색(?![가-힣]*(?:상|깔))/g;
 function moaKoEn(q){
   var pairs = [];
   var add = function(term, a){ term = String(term).split('/')[0].trim(); a = String(a).trim(); if(term && a && /[가-힣]/.test(a)) pairs.push([a, term]); };
   Object.keys(MOA_KOEN_BASE).forEach(function(t){ MOA_KOEN_BASE[t].forEach(function(a){ add(t, a); }); });
   (window.MOA_GLOSSARY_DB || []).forEach(function(it){ if(it && it.source === 'ko_en.md') (it.aliases || []).forEach(function(a){ add(it.term, a); }); });
   pairs.sort(function(x, y){ return y[0].length - x[0].length; });
-  var s = String(q);
+  var s = moaSpaceKo(String(q)).replace(MOA_KOEN_COLOR, '$1 color');
   pairs.forEach(function(p){ s = s.split(p[0]).join(' ' + p[1] + ' '); });
   return s === String(q) ? s : s.replace(/ +([은는이가을를의에도과와랑란로])/g, '$1').replace(/\s{2,}/g, ' ').trim();
+}
+/* 붙여 쓴 한글 띄우기: 용어집 한글 표현(컬러, 비활성화…)과 질문 어미(일때, 사용해, 알려줘…)를 기준으로
+   예) 비활성화일때 무슨컬러사용해 → 비활성화 일때 무슨 컬러 사용해 */
+var MOA_KO_SPLIT = ['일때','일 때','할때','할 때','사용해','사용하','사용할','써야','쓰면','알려줘','알려주','뭐야','뭐예요','무슨','어떤','어떻게','어디에','언제'];
+var moaSplitRe = null, moaSplitN = -1;
+function moaSpaceKo(q){
+  var g = window.MOA_GLOSSARY_DB || [];
+  if(!moaSplitRe || moaSplitN !== g.length){
+    var w = MOA_KO_SPLIT.slice();
+    g.forEach(function(it){ (it && it.aliases || []).forEach(function(a){ a = String(a).trim(); if(/^[가-힣]{2,}$/.test(a)) w.push(a); }); });
+    w = w.filter(function(x, i){ return w.indexOf(x) === i; }).sort(function(a, b){ return b.length - a.length; });
+    moaSplitRe = new RegExp('(' + w.map(function(x){ return x.replace(/[.*+?^$()|[\]\\{}]/g, '\\$&'); }).join('|') + ')', 'g'); moaSplitN = g.length;
+  }
+  /* 이미 띄어 쓴 단어는 그대로, 붙어 있는 한글 덩어리(4자 이상)만 나눔 */
+  return String(q).replace(/[가-힣]{3,}/g, function(tok){
+    var t = tok.replace(moaSplitRe, ' $1 ').replace(/\s{2,}/g, ' ').trim();
+    return t.replace(/ +([은는이가을를의에도과와랑란로])(?= |$)/g, '$1');
+  });
 }
 function shownQ(q){ var s = S.showQ; if(s && s.en === q){ S.showQ = null; return s.ko; } return q; }
 /* 가벼운 대화 답변: 문장마다 줄바꿈 · 긴 문장은 '~다면/~으면/~는데…' 뒤에서 한 번 더 */
@@ -1015,6 +1035,37 @@ function loadEgg(force){
   get(LANDING_TEXT_ROOT + 'data/easteregg.md').then(function(t){ var list = moaParseEgg(t); if(list.length || /##/.test(t)) EGG = list; }).catch(function(){});
 }
 loadEgg(true);
+/* FAQ 고정 답변: DB_FAQ.csv에서 {변수}가 없는 질문과 같으면 그 답변을 그대로 (Gemini·토큰 값보다 우선) */
+function faqFixed(q){
+  var list = window.MOA_FAQ || [], t = moaEggNorm(q);
+  if(!t || !list.length) return null;
+  var words = function(s){ return String(s).toLowerCase().replace(/[?!.,~"'“”‘’]/g, ' ').split(/\s+/).map(function(w){ return w.replace(/(이야|인가요|인가|이에요|예요|이|가|은|는|을|를|의|에|야|요)$/, ''); }).filter(function(w){ return w.length > 0 && !/^(수|좀|뭐|어떻게)$/.test(w); }); };
+  var ko = typeof moaKoEn === 'function' ? moaKoEn : function(x){ return x; };
+  var uq = words(ko(q)), best = null, bs = 0;
+  var has = function(a, w){ return a.some(function(u){ return u.indexOf(w) === 0 || w.indexOf(u) === 0; }); };
+  list.forEach(function(f){
+    if(/\{/.test(f.q + f.a)) return;
+    var fq = ko(f.q);
+    if(moaEggNorm(f.q) === t || moaEggNorm(fq) === moaEggNorm(ko(q))){ best = f; bs = 9; return; }
+    var fw = words(fq); if(fw.length < 2 || uq.length < 2) return;
+    /* 질문 단어가 FAQ에 거의 다 있거나, FAQ 단어가 질문에 거의 다 있으면 같은 질문 */
+    var hitF = fw.filter(function(w){ return has(uq, w); }).length / fw.length;
+    var hitU = uq.filter(function(w){ return has(fw, w); }).length / uq.length;
+    var hit = Math.max(hitF, hitU) * fw.length;
+    /* 영어 용어(Opacity 등)는 꼭 맞아야 함 */
+    var en = fw.filter(function(w){ return /[a-z]/.test(w); });
+    if(en.some(function(w){ return !uq.some(function(u){ return u.indexOf(w) === 0; }); })) return;
+    var s = hit / fw.length;
+    if(s >= 0.75 && s > bs){ best = f; bs = s; }
+  });
+  return best;
+}
+function faqKey(f){
+  var en = String(f.q).match(/[A-Za-z][A-Za-z0-9 ]*[A-Za-z0-9]|[A-Za-z]/g);
+  if(en && en.length) return en[0].trim();
+  return f.topic || '디자인 시스템';
+}
+function faqTitle(a){ var m = /^([^.!?\n]+[.!?]?)\s*([\s\S]*)$/.exec(String(a).trim()); return m ? [m[1].trim(), m[2].trim()] : [a, '']; }
 function eggFor(q){
   var t = moaEggNorm(q);
   if(!t) return null;
@@ -1048,7 +1099,7 @@ function renderLanding(body, lp){
         var tq = [];
         b.items.forEach(function(r){ var w = el('div','litem'), x = el('b'), y = el('span'); w.appendChild(x); w.appendChild(y); li.appendChild(w); tq.push([x, r[0]], [y, r[1]]); });
         c.appendChild(li);
-        return (function ty(k){ if(k >= tq.length){ b = Object.assign({}, b, { items:null }); return rest(); } typeText(tq[k][0], tq[k][1], function(){ ty(k + 1); }); })(0);
+        return (function ty(k){ if(k >= tq.length){ b = Object.assign({}, b, { items:null }); return rest(); } typeText(tq[k][0], tq[k][1], function(){ ty(k + 1); }, false, true); })(0);
       }
       /* 컬러칩: 값이 #HEX인 행은 색 견본(2열)로 */
       var HEX = /^#[0-9A-F]{6}$/i, sw = (b.rows || []).filter(function(r){ return HEX.test(r[1]); });
@@ -1063,7 +1114,7 @@ function renderLanding(body, lp){
           nm.appendChild(x); nm.appendChild(y); it.appendChild(ch); it.appendChild(nm);
           it.style.animation = 'stepIn .25s cubic-bezier(.22,1,.36,1)';
           g.appendChild(it); scrollDown();
-          typeText(x, r[0], function(){ typeText(y, r[1].toUpperCase(), function(){ sty(k + 1); }, true); }, true);
+          typeText(x, r[0], function(){ typeText(y, r[1].toUpperCase(), function(){ sty(k + 1); }, true, true); }, true, true);
         })(0);
       }
       var plain = (b.rows || []).filter(function(r){ return !HEX.test(r[1]); });
@@ -1083,8 +1134,9 @@ function renderLanding(body, lp){
       scrollDown();
       setTimeout(function(){ next(i + 1); }, parts.length ? 350 : 200);
     };
-    var body2 = function(){ if(b.text){ var sp = el('span'); lt.appendChild(sp); typeText(sp, b.text, rest); } else rest(); };
-    if(tb) typeText(tb, b.title, body2); else body2();
+    var body2 = function(){ if(b.text){ var sp = el('span'); lt.appendChild(sp); typeText(sp, b.text, rest, false, true); } else rest(); };
+    /* 고정 데이터(랜딩)는 컬러 견본이 따로 있어서 텍스트 속 HEX 자동 칩은 안 띄움 */
+    if(tb) typeText(tb, b.title, body2, false, true); else body2();
   })(0);
 }
 
@@ -1444,12 +1496,18 @@ function generalAmbiguity(q, wide){
 }
 function askWhich(q, it){
   var con = $('chatCon');
+  /* 바로 이전 대화의 카테고리가 후보에 있으면 묻지 않고 그 카테고리로 바로 이동해 답변 */
+  var last = (S.convo || [])[(S.convo || []).length - 1];
+  var lt = last && (last.topics || []).filter(function(t){ return it.topics.indexOf(t) > -1; })[0];
+  if(lt){ openCategory(lt, lt, 'quiet'); ask(q); return; }
   if(!S.noUserRow){ var ur = el('div','row-user'); ur.appendChild(el('div','bub-user', shownQ(q))); con.appendChild(ur); if(S.pinNext){ S.pin = ur; S.hold = false; S.userScroll = false; } }
   S.pinNext = false;
   S.noUserRow = false;
   var br = el('div','row-bot'), av = el('div','avatar'); av.innerHTML = AVATAR_HTML;
   var bb = el('div','bot-body'); br.appendChild(av); br.appendChild(bb); con.appendChild(br);
   var note = el('div','bub-note'); note.style.whiteSpace = 'pre-line';
+  /* 영문 용어는 첫 글자 대문자 (meta → Meta) */
+  if(it.name && /^[a-z]/.test(it.name)) it = Object.assign({}, it, { name: it.name.charAt(0).toUpperCase() + it.name.slice(1) });
   note.textContent = !it.name ? '질문에 ' + it.topics.join(', ') + ' 내용이 함께 있어요.\n어떤 카테고리로 이동해서 답변할까요?'
     : it.plain ? '‘' + it.name + '’' + moaJosa(it.name, ['은','는']) + ' ' + it.topics.join(', ') + '에 모두 있어요.\n어떤 카테고리로 이동해서 답변할까요?'
     : '‘' + it.name + '’ 타입은 ' + it.topics.join(', ') + '에 모두 있어요.\n어떤 항목의 ' + it.name + '에 대해 알려드릴까요?';
@@ -1486,7 +1544,7 @@ function ask(q, typed){
   /* 카테고리 창에서 직접 입력한 질문은 홈처럼 전체 DB 검색 (겹치면 카테고리 선택 질문) */
   var wide = inCat && !!typed && !fixed;
   var cmp = ((inCat && !wide) || fixed) ? null : compareTopics(q);
-  var amb = (!inCat || wide) && !fixed && !cmp && S.cat !== '기타 문의' && !eggFor(q) && (typed && (S.cat === GENERAL || wide) ? generalAmbiguity(q, wide) : ambiguousType(q));
+  var amb = (!inCat || wide) && !fixed && !cmp && S.cat !== '기타 문의' && !eggFor(q) && !faqFixed(q) && (typed && (S.cat === GENERAL || wide) ? generalAmbiguity(q, wide) : ambiguousType(q));
   if(amb){ S.pinNext = pinMe; askWhich(q, amb); return; }
   /* 다른 카테고리 이름(한글·영문)을 물으면 같은 화면에서 주제만 전환 */
   if(typed && !cmp && !fixed){
@@ -1515,6 +1573,9 @@ function ask(q, typed){
   /* Easter egg: 정해진 질문이면 어느 카테고리에서든 바로 답변 (키 불필요) */
   loadEgg();
   var egg = eggFor(q);
+  var fq = !egg && faqFixed(q);
+  /* FAQ 고정 답변도 기본 형식: 제목 "~가 궁금하시군요!"(볼드 블랙) + 답변 문단 */
+  if(fq){ egg = { title: moaLeadTitle(faqKey(fq)) || faqTitle(fq.a)[0], text: fq.a }; }
   if(egg){ scrollDown(); setIng(true); setTimeout(function(){ renderAnswer(body, E(egg.title, egg.text, '')); }, LANDING_DELAY_MS); return; }
   /* 랜딩메뉴(정해진 답변)는 진행 과정 없이 바로 답변 */
   var lp = landingFor(S.cat, q);
@@ -1772,7 +1833,11 @@ function moaSpecLine(html){
   var t = html.replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, ' ').trim();
   var i = t.indexOf(':'), v = i > -1 ? t.slice(i + 1).trim() : t;
   if(!v) return false;
-  if(/#[0-9A-Fa-f]{3,8}\b/.test(v) || /[A-Za-z][\w\-]*[\/_][\w\-]+/.test(v)) return true;
+  /* 문장(설명)은 토큰 아님: 값이 길거나 한글 문장이면 블랙 처리 안 함 */
+  if(v.length > 48 || /[가-힣]{2,}[^:]*[가-힣]{2,}\s+[가-힣]/.test(v)) return false;
+  if(/#[0-9A-Fa-f]{3,8}\b/.test(v)) return true;
+  /* 토큰 경로: colors/primary, font_size_14 처럼 소문자·숫자 경로 (Light/Dark, PC/MO 같은 단어 묶음은 제외) */
+  if(/(?:^|\s)[a-z][\w\-]*(?:[\/_][\w\-]+){1,}/.test(v) && !/^[A-Z][a-z]*\/[A-Z][a-z]*$/.test(v)) return true;
   if(/^[~\-–]?\s*\d/.test(v) || /\d\s?(px|pt|dp|sp|%|ms)\b/.test(v)) return true;
   return i < 0 ? /^[\w\/_\-]+$/.test(v) : false;
 }
@@ -1788,7 +1853,9 @@ function moaLines(html){
   var out = '';
   L.forEach(function(ln, k){
     var blk = false, m;
-    if(ln.charAt(0) === '\u2063'){ ln = '<span class="ah' + (k === 0 ? ' f' : '') + '" role="heading" aria-level="4">' + ln.slice(1) + '</span>'; blk = true; }
+    /* 토큰 첫 번째 분류명: 블랙 */
+    if(ln.charAt(0) === '\u2064'){ ln = '<span class="tk" style="display:block">' + ln.slice(1) + '</span>'; blk = true; }
+    else if(ln.charAt(0) === '\u2063'){ ln = '<span class="ah' + (k === 0 ? ' f' : '') + '" role="heading" aria-level="4">' + ln.slice(1) + '</span>'; blk = true; }
     else if((m = ln.match(/^\s*(•|\d+\.|<span class="tk">\d+<\/span>\.|-|<span class="tk">-<\/span>)\s+(.*)$/))){ var sp = moaSpec && moaSpecLine(m[2]);
       ln = '<span class="li' + (sp ? ' tk' : '') + '"><i>' + m[1].replace(/<[^>]+>/g, '') + '</i><span>' + (sp ? moaBulletVal(moaLower(m[2])) : m[2]) + '</span></span>'; blk = true; }
     out += ln; if(k < L.length - 1 && !blk) out += '\n';
@@ -1806,11 +1873,11 @@ function moaTokGroups(t){
     if(isSub(ln)){ out.push('• ' + b.replace(/^\//, '')); continue; } /* 불릿 뒤 맨 앞 '/' 삭제 */
     if(isHead(ln) && isSub(L[k + 1])){
       if(out.length && out[out.length - 1].trim()) out.push('');
-      out.push(b.replace(/:$/, '')); prev = null; continue;
+      out.push('\u2064' + b.replace(/:$/, '')); prev = null; continue;
     }
     /* 'label/color: 값'처럼 한 줄에 붙은 경로 → 첫 분류명으로 묶기 */
     if(B.test(ln) && (m = b.match(/^([A-Za-z][\w\-]*)(\/[A-Za-z0-9].*)$/))){
-      if(m[1] !== prev){ if(out.length && out[out.length - 1].trim()) out.push(''); out.push(m[1]); prev = m[1]; }
+      if(m[1] !== prev){ if(out.length && out[out.length - 1].trim()) out.push(''); out.push('\u2064' + m[1]); prev = m[1]; }
       out.push('• ' + m[2].replace(/^\//, '')); continue;
     }
     prev = null; out.push(ln);
@@ -1847,16 +1914,18 @@ document.addEventListener('click', function(e){
 });
 
 /* 소제목 마커(\u2063)가 있으면 타이핑 중에도 블랙 소제목으로 */
-function moaRich(node, s){ node.innerHTML = moaFormat(s, false); moaFitVals(node); }
-function typeText(node, text, done, noCaret){
+function moaRich(node, s, hex){ node.innerHTML = moaFormat(s, !!hex); moaFitVals(node); }
+function typeText(node, text, done, noCaret, noHex){
   var i = 0;
   text = moaTagless(text);
   var caret = el('span','caret','▍');
   if(!noCaret) node.parentNode.appendChild(caret);
+  /* HEX 코드는 컬러칩과 함께 한 번에 표시 (텍스트가 끝난 뒤 칩이 붙지 않게) */
+  var hx = new RegExp(HEX_RE.source, 'y');
   (function step(){
-    moaRich(node, text.slice(0, i));
+    moaRich(node, text.slice(0, i), !noHex);
     scrollDown();
-    if(i++ < text.length){ setTimeout(step, 16); }
+    if(i++ < text.length){ hx.lastIndex = i - 1; var m = text.charAt(i - 1) === '#' && hx.exec(text); if(m) i = i - 1 + m[0].length; setTimeout(step, 16); }
     else { if(caret.parentNode) caret.parentNode.removeChild(caret); if(done) done(); }
   })();
 }

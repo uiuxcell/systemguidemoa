@@ -29,7 +29,7 @@ data/db_glossary/        용어·한글 표기 매핑
 data/landingmenu/        카테고리별 랜딩 화면 (정해진 답변·이미지)
 data/prompts/            Gemini 지시문 (역할 · 예외 · 출력 규칙)
 data/easteregg.md        정해진 질문 → 정해진 답변
-data/faq/DB_FAQ.csv      (선택) 답변 형식 예시
+data/faq/DB_FAQ.csv      답변 형식 예시 · {변수} 없는 질문은 고정 답변
 ```
 
 `index.html`, `preview/ui.preview.html`은 생성 파일입니다. `src/`를 수정한 뒤 `node build.js`로 다시 만드세요.
