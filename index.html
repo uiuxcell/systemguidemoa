@@ -3037,7 +3037,9 @@ function openCategory(cat, topic, how){
   if(keep && how === 'quiet'){ show('chat'); return; }
   if(!keep) con.innerHTML = '';
   /* 이어 붙일 때: 새 카테고리 소개를 화면 맨 위에 두고, 이전 대화는 위로 스크롤해야 보이게 */
-  var put = function(){ S.pin = null; con.appendChild(intro); S.anchor = keep ? intro : null; show('chat'); if(keep){ S.userScroll = false; S.hold = false; requestAnimationFrame(scrollDown); } };
+  var put = function(){ S.pin = null; con.appendChild(intro);
+    /* 실제 대화가 없으면 히스토리 여백 숨김 (소개 위 여백이 24px보다 커지는 문제) */
+    var ht = con.querySelector('.hist-top'); if(ht) ht.style.display = con.querySelector('.row-user, .row-bot') ? '' : 'none'; S.anchor = keep ? intro : null; show('chat'); if(keep){ S.userScroll = false; S.hold = false; requestAnimationFrame(scrollDown); } };
   var intro = el('div','intro');
   var title = el('div','title');
   /* 그라데이션 id를 소개마다 다르게 (숨긴 이전 소개의 id를 참조해 로고가 안 보이는 문제 방지) */
