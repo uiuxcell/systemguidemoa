@@ -69,6 +69,18 @@ body.web{background:#1E1E1E}
 
 /* ── top bar (2:330) ── */
 .topbar{position:absolute;left:0;top:40px;width:360px;height:41px;background:#fff;border:1px solid rgba(0,0,0,.1);display:flex;padding:8px 16px;justify-content:space-between;align-items:center;z-index:30}
+.fbar{position:absolute;left:0;top:81px;width:360px;height:44px;box-sizing:border-box;background:#fff;border-bottom:1px solid rgba(0,0,0,.1);display:flex;align-items:center;gap:4px;padding:0 12px 0 16px;z-index:29;transform:translateY(-100%);opacity:0;pointer-events:none;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .26s ease .04s}
+.fbar.on{transition:transform .26s cubic-bezier(.22,1,.36,1),opacity .18s ease}
+.fbar.on{transform:none;opacity:1;pointer-events:auto}
+.fbar input{flex:1;min-width:0;height:28px;border:0;outline:0;border-radius:6px;background:#F4F6F9;padding:0 10px;font:inherit;font-size:12px;font-weight:500;color:#000}
+.fbar input:focus{box-shadow:inset 0 0 0 1px #2063FF}
+.fbar .fcnt{min-width:36px;text-align:right;font-size:11px;font-weight:500;color:#707070;margin-right:2px}
+.fbar button{width:24px;height:24px;border-radius:4px;display:flex;justify-content:center;align-items:center;flex-shrink:0}
+.fbar button:hover{background:rgba(0,0,0,.05)}
+.fbar button:disabled{opacity:.3;pointer-events:none}
+[data-old] .acts,[data-old] .backlink,[data-old] .qchips{display:none}
+mark.fhit{background:#FFE58A;color:#000;border-radius:2px}
+mark.fhit.cur{background:#FFB938}
 .topbar .lead{display:flex;align-items:center;align-self:stretch;width:260px}
 .topbar .back{width:24px;align-self:stretch;display:flex;align-items:center;justify-content:center}
 .topbar .title{width:248px;font-size:12px;font-weight:600;line-height:15.96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -133,12 +145,14 @@ body.web{background:#1E1E1E}
 .home-info .qi svg{position:absolute;left:2.25px;top:2.25px}
 .home-info span{font-size:14px;font-weight:700;line-height:20px;color:rgba(0,0,0,.6);white-space:nowrap}
 .hero-sub.desc{color:rgba(0,0,0,.6)}
+.hero-sub{transition:opacity .16s ease,transform .16s ease,color .16s ease}
+.hero-sub.fade{opacity:0;transform:translateY(3px)}
 
 /* ── chat (2:726) ── */
 .chat-con{position:absolute;left:0;top:80px;width:360px;bottom:0;overflow-y:auto;overflow-x:hidden;padding-bottom:104px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;z-index:5;scrollbar-width:none}
 .chat-con::-webkit-scrollbar{display:none}
 .light{position:absolute;left:0;top:550px;width:360px;height:90px;background:linear-gradient(0deg,#F5F6FA 54.4%,rgba(245,246,250,0) 100%);z-index:20;pointer-events:none}
-.intro{padding:32px 24px 0;display:flex;flex-direction:column;gap:20px;align-self:stretch}
+.intro{padding:24px 24px 0;display:flex;flex-direction:column;gap:20px;align-self:stretch}
 .intro .title{display:flex;flex-direction:column;gap:4px;align-self:stretch}
 .intro h1{font-size:24px;font-weight:600;line-height:32px;color:#424751;white-space:pre-line}
 .intro h1.sweep{color:transparent;background-image:linear-gradient(90deg,#424751 0%,#2063FF 22%,#00C8FF 42%,#D98DFF 62%,#424751 84%);background-size:280% 100%;background-position:100% 0;background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:titleSweep 2s ease-out forwards}
@@ -173,7 +187,7 @@ body.web{background:#1E1E1E}
 .hx i.lite{box-shadow:none;background-image:none}
 .hx i.lite b{box-shadow:inset 0 0 0 1px rgba(112,112,112,.4)}
 .hx i:hover{box-shadow:inset 0 0 0 1px rgba(0,0,0,.14),0 0 0 2px #D6E4FF}
-.bub-note{align-self:flex-start;max-width:100%;border-radius:2px 20px 20px 20px;background:#fff;box-shadow:0 0 2px 0 rgba(0,0,0,.04);padding:10px 14px;font-size:13px;font-weight:500;line-height:19px;letter-spacing:-0.02em;color:#424751;animation:stepIn .25s cubic-bezier(.22,1,.36,1)}
+.bub-note{align-self:flex-start;max-width:276px;box-sizing:border-box;border-radius:8px;background:#fff;box-shadow:0 0 2px 0 rgba(0,0,0,.04);padding:10px 14px;font-size:13px;font-weight:500;line-height:19px;letter-spacing:-0.02em;color:#424751;animation:stepIn .25s cubic-bezier(.22,1,.36,1)}
 .steps{align-self:stretch;border-radius:2px 20px 20px 20px;background:#fff;box-shadow:0 0 2px 0 rgba(0,0,0,.04);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .step{display:flex;flex-direction:row;gap:8px;align-items:flex-start;animation:stepIn .25s cubic-bezier(.22,1,.36,1)}
 .step .ic{position:relative;width:14px;height:14px;margin-top:1px;flex-shrink:0;border-radius:50%}
@@ -520,6 +534,13 @@ Gemini API 키가 필요해요</h1>
       </button>
     </div>
   </div>
+  <div class="fbar" id="fbar" role="search">
+    <input id="fInput" type="text" placeholder="대화 내용 검색" autocomplete="off" spellcheck="false">
+    <span class="fcnt" id="fCnt"></span>
+    <button id="fPrev" aria-label="이전 결과"><svg width="10" height="6" viewBox="0 0 10 6"><path d="M1 5 L5 1 L9 5" fill="none" stroke="#000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button id="fNext" aria-label="다음 결과"><svg width="10" height="6" viewBox="0 0 10 6"><path d="M1 1 L5 5 L9 1" fill="none" stroke="#000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button id="fClose" aria-label="검색 닫기"><svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1 L9 9 M9 1 L1 9" fill="none" stroke="#000" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+  </div>
 
   <div class="bar" id="bar">
     <div class="shell">
@@ -556,6 +577,20 @@ Gemini API 키가 필요해요</h1>
     </div>
   </div>
 
+  <!-- 대화 초기화 확인 -->
+  <div class="overlay hide" id="resetOverlay">
+    <div class="modal" style="top:220px">
+      <div class="modal-body" style="padding-top:28px">
+        <div class="modal-txt">
+          <h2>대화를 초기화할까요?</h2>
+          <p>지금까지의 대화 기록이 모두 삭제되며
+복구할 수 없어요.</p>
+        </div>
+        <div class="modal-bottom" style="gap:8px"><button class="cta" id="resetNo" style="background:#F0F2F5;color:#424751">취소</button><button class="cta" id="resetYes">초기화</button></div>
+      </div>
+    </div>
+  </div>
+
   <!-- 연결 끊김 -->
   <div class="overlay hide" id="discOverlay">
     <div class="modal">
@@ -586,7 +621,7 @@ Gemini API 키가 필요해요</h1>
 <script>window.MOA_FAQ = __FAQ_JSON__;</script>
 <script>window.MOA_EGG_MD = __EASTEREGG_JSON__;</script>
 <script>__GEMINI_JS__</script>
-<script>window.MOA_LANDING = {"Color":{"title":"Color의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Primary Color","Secondary Color","Grayscale","Neutral Color","Theme","Accent"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Primary Color","rows":[["Black","#000000"],["White","#FFFFFF"],["Skyblue","#2189FF"],["Skyblue Dark","#006BEA"],["Skyblue Light","#68AEFF"]],"text":"브랜드 아이덴티티를 표현하는 대표 색상"},{"title":"Secondary Color","rows":[["Coral","#EF3434"],["Coral Dark","#D62E2E"],["Coral Light","#F36E6E"],["Orange","#F66700"],["Orange Dark","#C74700"],["Sea Blue","#00B3E3"],["Teal","#00838F"],["Teal Dark","#007D89"]],"text":"브랜드 아이덴티티를 보강하는 경우 선택"},{"title":"Grayscale Color","rows":[["0_F7","#F7F7F7"],["1_EE","#EEEEEE"],["2_DD","#DDDDDD"],["3_BB","#BBBBBB"],["4_AA","#AAAAAA"],["5_8F","#8F8F8F"],["6_75","#757575"],["7_55","#555555"],["8_31","#313131"],["9_1C","#1C1C1C"]],"text":"텍스트·배경·구분선 등의 시각적 위계를 설정"},{"title":"Neutral Color","rows":[["Neutral Blue","#F5F7FE"],["Neutral Beige","#F7F5F2"],["Neutral Orange","#FEF6F3"],["Neutral Pink","#F6F0F5"]],"text":"배경·카드 표면에 은은한 톤이 필요한 경우 선택"},{"title":"Theme","imgs":["img_color_theme_01"],"text":"배경 밝기에 따라 텍스트 명도 대비 조정"},{"title":"Accent","rows":[["Rating_star","#FFAA4E"]],"imgs":["img_color_theme_02"],"text":"Accent는 상품평 별점에만 사용하는 전용 색상"}]},"Primary Color":{"bubbles":[{"title":"Primary Color는 브랜드의 핵심\n아이덴티티를 표현하거나 주요 액션을\n강조해요.","items":[["Black & White","디자인 시스템의 기본 컬러입니다."],["Skyblue 계열","활성화 상태를 나타내며, 확인·성공 등 긍정적인 상태와 메시지를 전달하는 데 사용합니다."]],"rows":[["Black","#000000"],["White","#FFFFFF"],["Skyblue","#2189FF"],["Skyblue Dark","#006BEA"],["Skyblue Light","#68AEFF"]]}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]},"Secondary Color":{"bubbles":[{"title":"Secondary Color는 보조 강조나 정보성\n요소를 표현해야 하는 경우에 사용해요.","items":[["Coral 계열","경고·오류 등 부정적인 상태를 표현하는 용도로 사용합니다."],["Orange 계열","Skyblue와 조합하여 브랜드 아이덴티티를 표현할 때 보조적으로 사용합니다."],["Teal 계열","할인율(%)이나 추천 등 정보성 태그의 텍스트 컬러로 사용할 수 있습니다."]],"rows":[["Coral","#EF3434"],["Coral Dark","#D62E2E"],["Coral Light","#F36E6E"],["Orange","#F66700"],["Orange Dark","#C74700"],["Sea Blue","#00B3E3"],["Teal","#00838F"],["Teal Dark","#007D89"]]}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]},"Grayscale":{"bubbles":[{"title":"Grayscale은 텍스트·배경·구분선 등의 시각적 위계를 설정해야 하는 경우 사용해요.","rows":[["0_F7","#F7F7F7"],["1_EE","#EEEEEE"],["2_DD","#DDDDDD"],["3_BB","#BBBBBB"],["4_AA","#AAAAAA"],["5_8F","#8F8F8F"],["6_75","#757575"],["7_55","#555555"],["8_31","#313131"],["9_1C","#1C1C1C"]],"text":"텍스트·배경·구분선의 시각적 위계는 정의된 Grayscale 10단계를 기준으로 관리합니다."}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]},"Neutral Color":{"bubbles":[{"title":"Neutral Color는 배경이나 카드 표면에\n은은한 컬러를 적용해야 하는 경우 사용해요.","rows":[["Neutral Blue","#F5F7FE"],["Neutral Beige","#F7F5F2"],["Neutral Orange","#FEF6F3"],["Neutral Pink","#F6F0F5"]],"text":"텍스트 컬러로는 사용을 권장하지 않습니다."}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]},"Theme":{"bubbles":[{"title":"Theme는 배경의 밝기에 따라 텍스트 컬러의 명도 대비를 조정해야 해요.","note":"배경과 충분한 대비가 없는 텍스트 색상은 사용하지 마세요","imgs":["img_color_theme_01"],"text":"KR은 전체 다크모드 대신 어두운 특정 영역을 기준으로 적용합니다.\n\n라이트 배경에는 Dark 계열, 다크 배경에는 Light 계열을 사용하며, 텍스트와 배경의 명도 대비는 최소 4.5:1 이상을 유지합니다."}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]},"Accent":{"bubbles":[{"title":"Accent는 상품평 별점에만 사용하는 전용 색상이에요.","imgs":["img_color_theme_02"],"text":"#FFAA4E는 기존 상품평 별점 컴포넌트에 적용된 색상입니다.\n\n컬러 가이드에서 사용 용도를 확인할 수 있도록 별도로 정의한 색상입니다."}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]}}},"Typeface":{"title":"Typeface의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Display","Heading","Title","Body","Caption"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Display","rows":[["large","size: 56px / line height: 67px"],["medium","size: 48px / line height: 58px"],["small","size: 40px / line height: 48px"]],"text":"시각적 강조를 위한 최상위 대형 텍스트"},{"title":"Heading","rows":[["large","size: 48px / line height: 58px"],["medium","size: 40px / line height: 48px"],["small","size: 32px / line height: 39px"]],"text":"페이지 및 섹션의 정보 위계를 나타내는 제목"},{"title":"Title","rows":[["XLarge","size: 36px / line height: 44px"],["large","size: 32px / line height: 39px"],["medium","size: 28px / line height: 38px"],["small","size: 24px / line height: 32px"],["XSmall","size: 20px / line height: 27px"],["XXSmall","size: 16px / line height: 21px"]],"text":"카드, 리스트, 배너 등 개별 콘텐츠와 컴포넌트의 제목"},{"title":"Body","rows":[["XLarge","size: 20px / line height: 27px"],["large","size: 18px / line height: 24px"],["medium","size: 16px / line height: 21px"],["small","size: 14px / line height: 19px"],["XSmall","size: 13px / line height: 19px"],["XXSmall","size: 12px / line height: 16px"]],"text":"본문, 주요 설명 및 인터랙션 요소의 레이블에 사용하는 텍스트"},{"title":"Caption","rows":[["large","size: 14px / line height: 19px"],["medium","size: 12px / line height: 16px"],["small","size: 10px / line height: 13px"]],"text":"디스크립션, 유의사항 및 보조 정보에 사용하는 텍스트"}]},"Display":{"bubbles":[{"title":"Display는 시각적 임팩트가 중요한 최상위 대형 텍스트 영역에 사용해요.","text":"메인 히어로, 브랜드 캠페인, 프로모션 등 시각적 임팩트가 중요한 영역에 사용해요. 화면에서 가장 강조해야 하는 메시지를 전달하고, 콘텐츠의 주목도를 높이는 역할을 해요.\n\n일반적인 본문이나 버튼의 기능성 텍스트에는 사용하지 않아요."}],"followups":["스펙 및 토큰"]},"Heading":{"bubbles":[{"title":"Heading은 화면의 핵심 타이틀과 콘텐츠 섹션의 헤드카피 영역에 사용해요.","text":"페이지의 대표 타이틀과 주요 콘텐츠 영역의 섹션 제목에 사용해요. 콘텐츠의 시작과 영역별 구조를 명확하게 구분하여 정보의 위계를 형성해요.\n\n일반적인 본문이나 버튼의 기능성 텍스트에는 사용하지 않아요."}],"followups":["스펙 및 토큰"]},"Title":{"bubbles":[{"title":"Title은 카드, 컴포넌트 등 중·소단위 요소의 제목에 사용해요.","text":"배너, 상품 카드, 콘텐츠 리스트 등 개별 콘텐츠의 제목에 사용해요. 각 콘텐츠의 핵심 정보를 강조하고, 반복되는 컴포넌트 간의 정보 구조를 명확하게 구분해요.\n\n일반적인 본문이나 버튼의 기능성 텍스트에는 사용하지 않아요."}],"followups":["스펙 및 토큰"]},"Body":{"bubbles":[{"title":"Body는 본문 텍스트 및 서술형 정보에 사용해요.","text":"본문, 상품 설명, 이용 방법 등 주요 정보를 전달하는 서술형 텍스트에 사용해요. 버튼, 탭, 입력 요소 등 인터랙션 컴포넌트의 기능과 선택 항목을 안내하는 레이블에도 적용해요.\n\n페이지나 콘텐츠의 제목보다는 정보 전달과 가독성을 중심으로 사용해요."}],"followups":["스펙 및 토큰"]},"Caption":{"bubbles":[{"title":"Caption은 면책 조항, 보조 수치 등 낮은 정보 위계 영역에 사용해요.","text":"유의사항, 디스크립션, 면책 조항 등 주요 콘텐츠를 보완하는 텍스트에 사용해요. 테이블 텍스트, 입력 필드 항목명, 보조 수치 등 상대적으로 정보 위계가 낮은 영역에도 적용해요.\n\n주요 정보와 구분되는 시각적 위계를 형성하여 부가 정보를 명확하게 전달해요."}],"followups":["스펙 및 토큰"]}}},"Spacing":{"title":"Spacing의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Inset","Gap","Grid"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Inset","rows":[["Element Inset","요소의 내부 여백"],["Component Inset","컴포넌트의 내부 여백"],["Section Inset","섹션 영역의 내부 여백"]],"imgs":["img_spacing_all_01"],"text":"컴포넌트 및 요소 내부의 여백 기준"},{"title":"Gap","rows":[["Element Gap","요소 간 간격"],["Component Gap","컴포넌트 간 간격"],["Section Gap","섹션 간 간격"]],"imgs":["img_spacing_all_02"],"text":"요소와 요소 사이의 간격 기준"},{"title":"Grid","rows":[["Section Grid","섹션 내부 균일한 간격"]],"imgs":["img_spacing_all_03"],"text":"섹션 내 그리드 기반 반복 요소의 간격 기준"}]},"Inset":{"bubbles":[{"title":"Inset은 요소 내부 여백에 사용해요.","note":"요소 간 외부 간격에는 Inset을 사용하지 않습니다.","imgs":["img_spacing_all_01"],"text":"버튼, 카드, 모달, 입력 필드처럼 컨테이너 내부\n요소와 경계 사이의 간격을 설정할 때 사용합니다.\n\n필요한 경우 상·하 Padding을 다르게 적용할 수 있지만, 정의된 Spacing Token 내에서만 사용해요."}],"followups":["스펙 및 토큰"]},"Gap":{"bubbles":[{"title":"Gap은 요소와 요소 사이의 간격에 사용해요.","imgs":["img_spacing_all_02"],"text":"버튼 그룹, 칩, 아이콘과 텍스트처럼 여러 요소가 나란히 배치되거나 반복될 때 간격을 설정합니다.\n\n가로·세로 방향에 따라 Gap을 다르게 적용할 수 있지만, 정의된 Spacing Token 내에서만 사용해요."}],"followups":["스펙 및 토큰"]},"Grid":{"bubbles":[{"title":"Grid는 섹션 내 그리드 기반 반복 요소의 간격에 사용해요.","note":"요소 내부 여백이나 섹션 간 구분에는 Gap을 사용하지 않습니다.","imgs":["img_spacing_all_03"],"text":"버튼 그룹, 칩, 아이콘과 텍스트처럼 여러 요소가 나란히 배치되거나 반복될 때 간격을 설정합니다.\n\n가로·세로 방향에 따라 Gap을 다르게 적용할 수 있지만, 정의된 Spacing Token 내에서만 사용해요."}],"followups":["스펙 및 토큰"]}}},"CTA Button":{"title":"CTA Button의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Primary Action Button","Secondary Action Button","Tertiary Action Button","Icon Trailing Number Button","Icon Contained Button"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Primary Action Button","imgs":["img_CTA Button_all_01","img_CTA Button_all_02"],"text":"주요 액션에 사용"},{"title":"Secondary Action Button","imgs":["img_CTA Button_all_03"],"text":"보조 액션에 사용"},{"title":"Tertiary Action Button","imgs":["img_CTA Button_all_04","img_CTA Button_all_05"],"text":"강조 없이 가볍게 제공할 때 사용"},{"title":"Icon Trailing Number Button","imgs":["img_CTA Button_all_06"],"text":"잔여 목록의 개수를 직관적으로 확인할 수 있는 버튼"},{"title":"Icon Contained Button","imgs":["img_CTA Button_all_07"],"text":"특정 기능을 바로 실행해야 할 때 사용"}]},"Primary Action Button":{"bubbles":[{"title":"Primary Action Button은 주요 액션에\n사용해요.","text":"페이지의 핵심 액션이나, 강하게 강조해야 하는 액션에 사용해요. 사용 용도에 따라서 Filled, Emphasis 이렇게 두가지 타입이 있어요."},{"title":"Filled (Primary)는 우선순위가 높은\n주요 액션에 적용해요.","rows":[["Large","48px"],["Default","40px"],["Small","32px"]],"imgs":["img_CTA Button_all_01"],"text":"페이지의 핵심 액션이나, 주요 액션에 사용해요.\n(예: Buy now, Add to cart)"},{"title":"Filled (Emphasis)는 즉각적인 주목이\n필요한 최우선 액션에 사용해요.","rows":[["Large","48px"],["Default","40px"],["Small","32px"]],"note":"리뷰 보기처럼 보조 액션에는 쓰지 않아요.","imgs":["img_CTA Button_all_02"],"text":"즉각적인 주목이 필요한 최우선 액션에만 사용하며,\n페이지당 1개, 오른쪽 상단 배치를 권장해요."}],"followups":["스펙 및 토큰","CTA Button Icon"]},"Secondary Action Button":{"bubbles":[{"title":"Secondary Action Button은 보조 액션에\n사용해요.","text":"핵심 액션을 보조하는 중간 강조의 액션에 써요.\nOutlined / Standard이 있어요."},{"title":"Outlined (Standard)는 중간 수준의 강조에 사용하는 테두리 버튼이에요.","rows":[["Large","48px"],["Default","40px"],["Small","32px"]],"imgs":["img_CTA Button_all_03"],"text":"Primary 버튼 오른쪽에 함께 배치하며, 추가 정보,\n더보기 등에 사용해요. 앞이나 뒤에 아이콘을 붙일 수 있어요. (예: ∨ 펼치기, ↗ 새 창)"}],"followups":["스펙 및 토큰","CTA Button Icon"]},"Tertiary Action Button":{"bubbles":[{"title":"Tertiary Action Button은 강조 없이 가볍게 제공할 때 사용해요.","text":"Primary, Secondary보다 가볍게 제공하는 선택적\n액션에 써요."},{"title":"Underlined (Standard)는 강조를 최소화한 3순위 액션에 사용해요.","rows":[["Large","16px"],["Default","14px"],["Small (MO only)","12px"]],"imgs":["img_CTA Button_all_04"],"text":"강조를 최소화한 텍스트 액션이며, 밑줄이 가운데에서 양옆으로 늘어나요. 모바일은 Pressed상태에 밑줄이 노출되요."},{"title":"Label (Standard)는 시각적 강조 없이\n3순위 액션에 사용하는 텍스트에 적용해요.","rows":[["Default","14px"]],"imgs":["img_CTA Button_all_05"],"text":"강조 없이 덧붙이는 보조 액션이며,\n앞이나 뒤에 16px 아이콘을 붙일 수 있어요."}],"followups":["스펙 및 토큰","CTA Button Icon"]},"Icon Trailing Number Button":{"bubbles":[{"title":"Icon Trailing Number Button는 잔여 목록의 개수를 직관적으로 확인할 수 있는 버튼","imgs":["img_CTA Button_all_06"],"text":"높이 40px 버튼 안에 24px × 24px 아이콘을 배치합니다.\n\n사용자가 전체 규모를 가늠 할 수 있도록, 잔여 콘텐츠 수가 노출되는 ‘더보기’ 버튼에 많이 사용되요."}],"followups":["스펙 및 토큰","CTA Button Icon"]},"Icon Contained Button":{"bubbles":[{"title":"Icon Contained Button는 화면 공간을 절약하면서 특정 기능을 바로 실행해야 할 때 사용해요.","imgs":["img_CTA Button_all_07"],"text":"높이 40px 버튼 안에 24px × 24px 아이콘을 배치합니다."}],"followups":["스펙 및 토큰","CTA Button Icon"]}}},"CTA Button Icon":{"title":"CTA Button Icon의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Standard","Toggle","Play","Coupon"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Standard 버튼 아이콘","imgs":["img_CTA Button Icon_all_01"],"text":"누르면 한 번에 실행되는 버튼을 아이콘으로 제공"},{"title":"Toggle 버튼 아이콘","imgs":["img_CTA Button Icon_all_02","img_CTA Button Icon_all_02.5"],"text":"켜고 끄는 버튼을 아이콘으로 제공"},{"title":"Play 버튼 아이콘","imgs":["img_CTA Button Icon_all_03"],"text":"영상을 재생하거나 멈추는 버튼을 아이콘으로 제공"},{"title":"Coupon 버튼","imgs":["img_CTA Button Icon_all_04"],"text":"사용자가 바로 쿠폰을 다운로드 할 수 있게 쿠폰 받기 버튼으로 제공"}]},"Standard":{"bubbles":[{"title":"Standard 버튼은 누르면 한 번에 실행되는\n기능을 아이콘으로 제공해요.","imgs":["img_CTA Button Icon_all_01"],"text":"장바구니·비교함에서 항목 삭제할때는 휴지통 아이콘을 사용해요.\n\n제품 페이지 공유, 메뉴얼·자료는 다운로드 아이콘을 사용해요.\n\n안내 문구 옆 정보는 (i) 아이콘으로 툴팁을 열어요."}],"followups":["스펙 및 토큰","CTA Button"]},"Toggle":{"bubbles":[{"title":"Toggle 버튼은 켜고 끄는 버튼을 아이콘으로 제공해요.","imgs":["img_CTA Button Icon_all_02"],"text":"제품 목록 카드의 이미지 모서리에 둔 위시리스트 및 제품 상세 페이지의 위시리스트 담기·빼기는 하트 아이콘을 사용해요.\n\n품절 제품의 재입고 알림 받기·끄기는 벨 아이콘을 사용해요.\n\n실제 사용 크기는 Icon 24x24, Container 40x40로 구성됩니다."},{"title":"Toggle Arrow 버튼은 텍스트박스를 켜고 끄는 버튼을 아이콘으로 제공해요.","rows":[["Expand","PC 24 x 24, MO 16 x 16"],["Collapse","PC 24 x 24, MO 16 x 16"]],"imgs":["img_CTA Button Icon_all_02.5"],"text":"제품 목록 카드의 이미지 모서리에 둔 위시리스트 및 제품 상세 페이지의 위시리스트 담기·빼기는 하트 아이콘을 사용해요.\n\n품절 제품의 재입고 알림 받기·끄기는 벨 아이콘을 사용해요.\n\n실제 사용 크기는 Icon 24x24, Container 40x40로 구성됩니다."}],"followups":["스펙 및 토큰","CTA Button","Tooltip"]},"Play":{"bubbles":[{"title":"Play 버튼은 영상을 재생하거나 멈추는 기능을 아이콘으로 제공해요.","rows":[["Default","PC 96 x 96, MO 56 x 56"],["Small","PC 36 x 36, MO 24 x 24"]],"imgs":["img_CTA Button Icon_all_03"],"text":"Default 사이즈는 메인 KV·제품 소개 영역의 영상 재생에 사용해요.\n\nSmall 사이즈는 제품 갤러리 썸네일·카드 안의\n영상에 사용해요.\n\n비디오 썸네일 배경에 따라서 Play, Pause 버튼은 line 형태, fill 버튼중에 알맞게 골라 사용하면 되요."}],"followups":["스펙 및 토큰","CTA Button"]},"Coupon":{"bubbles":[{"title":"Coupon 버튼은 사용자가 바로 쿠폰을 다운로드 할 수 있게 쿠폰 받기 버튼으로 제공해요.","rows":[["Default","108 x 40"],["Small","91 x 32"]],"imgs":["img_CTA Button Icon_all_04"],"text":"Default 사이즈는 메인 KV·제품 소개 영역의 영상 재생에 사용해요.\n\nSmall 사이즈는 제품 갤러리 썸네일·카드 안의\n영상에 사용해요."}],"followups":["스펙 및 토큰","CTA Button"]}}},"Popup":{"title":"Popup의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Confirmation","Input Data","Notification","Contents"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Confirmation","imgs":["img_Popup_all_01"],"text":"명확하고 직접적인 사용자 응답을 요청할 때 사용"},{"title":"Input Data","imgs":["img_Popup_all_02"],"text":"복잡한 입력을 받거나 선택 가능한 값을 제공할 때\n사용"},{"title":"Notification","imgs":["img_Popup_all_03"],"text":"사용자 행동에 대한 피드백을 간결한 메시지로\n제공할 때 사용"},{"title":"Contents","imgs":["img_Popup_all_04"],"text":"입력이나 선택 없이 콘텐츠를 전달할 때 사용"}]},"Confirmation":{"bubbles":[{"title":"Confirmation은 명확하고 직접적인 응답을 요청할 때 사용해요.","note":"본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.","imgs":["img_Popup_all_01"],"text":"확인·계속 등 사용자의 의사결정을 요청하며, PC와 모바일 모두 Standard 구성으로 제공합니다.\n\n제목·부제 없는 No Title 구성이 가능하며, 캡션도 생략할 수 있습니다."}],"followups":["스펙 및 토큰","CTA Button","Dimmed & Shadow"]},"Input Data":{"bubbles":[{"title":"Input Data는 복잡한 입력을 받거나\n선택 가능한 값을 제공할 때 사용해요.","note":"본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.","imgs":["img_Popup_all_02"],"text":"리뷰 작성·날짜 선택 등에 사용하며, Input Field와 Selection Control을 포함할 수 있습니다.\n\n제목·부제를 생략한 No Title 구성을 사용할 수 있으며, 캡션도 생략할 수 있습니다."}],"followups":["스펙 및 토큰","CTA Button","Text Field","Selection Control","Dimmed & Shadow"]},"Notification":{"bubbles":[{"title":"Notification은 사용자 행동에 대한 피드백을 간결한 메시지로 제공할 때 사용해요.","note":"본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.","imgs":["img_Popup_all_03"],"text":"경고와 같은 처리 결과나 앱 다운로드를 제공할 때 적용합니다.\n\nDefault는 제목 없이 본문만 사용할 수 있습니다. Alert는 Supporting Visual, App Download는 App Icon을 포함하며, App Download는 모바일 전용입니다."}],"followups":["스펙 및 토큰","CTA Button","Dimmed & Shadow"]},"Contents":{"bubbles":[{"title":"Contents는 입력이나 선택 없이 콘텐츠를\n전달할 때 사용해요.","note":"본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.","imgs":["img_Popup_all_04"],"text":"현재 화면의 맥락을 유지하면서 추가 설명·이미지·동영상을 제공합니다.\n\n단독 이미지·동영상은 Media로 제공하며, 원본 비율을 유지해 중앙 정렬합니다."}],"followups":["스펙 및 토큰","CTA Button","Dimmed & Shadow"]}}},"Dimmed & Shadow":{"title":"Dimmed & Shadow의\n구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Dimmed","Shadow"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Dimmed","rows":[["Dimmed 01","#000000 60%"],["Dimmed 02","#000000 90%"]],"imgs":["img_dimmedshadow_dimmed_01"],"text":"팝업·모달 등의 배경을 어둡게 처리"},{"title":"Shadow","imgs":["img_dimmedshadow_shadow_01"],"text":"UI 요소에 입체감과 깊이감을 부여"}]},"Dimmed":{"bubbles":[{"title":"Dimmed는 팝업·모달 등의 주요 콘텐츠에\n집중시켜야 하는 경우 사용해요.","rows":[["Dimmed 01","#000000 60%"],["Dimmed 02","#000000 90%"]],"imgs":["img_dimmedshadow_dimmed_01"],"text":"대부분의 팝업은 Dimmed 01(60%)를 사용하며,\n영상 재생 화면인 경우에는 Dimmed 02(90%)를 사용합니다."}]},"Shadow":{"bubbles":[{"title":"Shadow는 UI 요소 간 시각적 위계를\n구분해야 하는 경우 사용해요.","imgs":["img_dimmedshadow_shadow_01"],"text":"실제로는 다양한 수치가 사용되고 있으나,\n모든 값을 별도로 정의하지 않습니다.\n\n기존 스타일과 유사한 경우 Shadow 01 또는 Shadow 02 중 가까운 값으로 통일합니다."}]}}},"Iconography":{"title":"Iconography의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Bold","Regular","Light"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Bold","rows":[["Exterior Stroke","8px"],["Interior Stroke","7 / 7.5px"],["Size","12x12 / 16x16 / 24x24"]],"imgs":["img_iconography_bold_01"],"text":"작은 크기에서도 명확한 형태 표현이 필요한 경우 사용"},{"title":"Regular","rows":[["Exterior Stroke","5px"],["Interior Stroke","4 / 4.5px"],["Size","24x24 / 36x36 / 48x48"]],"imgs":["img_iconography_all_01"],"text":"일반적인 UI 요소에 균형 잡힌 굵기가 필요한 경우\n사용"},{"title":"Light","rows":[["Exterior Stroke","3px"],["Interior Stroke","3px"],["Size","64x64 / 72x72 / 96x96"]],"imgs":["img_iconography_all_02"],"text":"큰 크기에서 가벼운 형태 표현이 필요한 경우 사용"}]},"Bold":{"bubbles":[{"title":"Bold Style은 작은 크기에서도 명확한\n형태 표현이 필요한 경우 사용해요.","imgs":["img_iconography_bold_01"],"text":"96×96px 제작 그리드 기준 외곽선은 8px,\n내부선은 7~7.5px로 설정합니다.\n\n실제 사용 크기는 12×12, 16×16, 24×24px로\n구성되며, 24px Bold 타입은 GNB 영역에 한해 사용합니다."}],"followups":["Stroke","Keyline Shapes","Corners","Angle"]},"Regular":{"bubbles":[{"title":"Regular Style은 일반적인 UI 요소에\n균형 잡힌 굵기가 필요한 경우 사용해요.","imgs":["img_iconography_all_01"],"text":"96×96px 제작 그리드 기준 외곽선은 5px,\n내부선은 4~4.5px로 설정합니다,\n\n실제 사용 크기는 24×24, 36×36, 48×48px로 구성됩니다."}],"followups":["Stroke","Keyline Shapes","Corners","Angle"]},"Light":{"bubbles":[{"title":"Light Style은 큰 크기에서 가벼운 형태\n표현이 필요한 경우 사용해요.","imgs":["img_iconography_all_02"],"text":"96×96px 제작 그리드 기준 외곽선과 내부선은 모두 3px로 설정하며,\n\n실제 사용 크기는 64×64, 72×72, 96×96px로 구성됩니다."}],"followups":["Stroke","Keyline Shapes","Corners","Angle"]}}},"Radius":{"title":"Radius의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","4px","6px","8px","20px","24px","Max","None"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"4 px","imgs":["img_radius_all_01"],"text":"작은 UI 요소의 컨테이너에 사용\n적용: Option Chip, Option Selector, Check Box"},{"title":"6 px","imgs":["img_radius_all_02"],"text":"버튼, 툴팁 등 중간 크기 컴포넌트의 컨테이너에 사용\n적용: Snackbar, Text Field, Tooltip"},{"title":"8 px","imgs":["Menu/img_menu_all_01"],"text":"큰 컴포넌트 또는 그룹화된 버튼에 사용\n적용: Menu - Dropdown, Option Selector"},{"title":"20 px","imgs":["img_radius_all_04"],"text":"카드, 배너, 이미지 등 중간 크기 컨테이너에 사용\n적용: Card, Banner, Image"},{"title":"24 px","imgs":["img_radius_all_05"],"text":"여러 UI 요소로 구성된 팝업 등 복합 컴포넌트에 사용\n적용: Popup - PC"},{"title":"Max : 999xp","rows":[["’N’px (50%)","높이 값의 50% 수치로 적용 가능"]],"imgs":["img_radius_all_06"],"text":"버튼(CTA)과 같이 알약 형태의 높이가 고정된 요소에 사용\n적용: Button (CTA), Indicator, Number Counter, Scroll, Search Field"},{"title":"None : 0px","imgs":["img_radius_all_07"],"text":"리스트 또는 전체 화면 팝업 등 화면 너비를 가득 채우는 컨테이너에 사용\n적용: List, Popup - Full Screen"}]},"4px":{"bubbles":[{"title":"4px은 작은 UI 요소의 컨테이너에 사용해요.","imgs":["img_radius_all_01"],"text":"뱃지, 옵션 칩, 체크박스, 옵션 셀렉터 등의 작은 엘리먼트 코너에 적용해요."}],"followups":["스펙 및 토큰","Option Chip","Filter","Tab"]},"6px":{"bubbles":[{"title":"6px은 버튼, 툴팁 등 중간 크기 컴포넌트의 컨테이너에 사용해요.","imgs":["img_radius_all_02"],"text":"스낵바(토스트 알림), 텍스트 필드, 툴팁 등의 코너에 적용해요."}],"followups":["스펙 및 토큰","Snackbar","Text Field","Tooltip"]},"8px":{"bubbles":[{"title":"8px은 큰 컴포넌트 또는 그룹화된 버튼에 사용해요.","imgs":["Menu/img_menu_all_01"],"text":"드롭다운 메뉴, 옵센 셀렉터 등의 코너에 적용해요."}],"followups":["스펙 및 토큰","Menu","Option Selector"]},"20px":{"bubbles":[{"title":"20px은 중간 크기 컨테이너에 사용해요.","imgs":["img_radius_all_04"],"text":"카드, 배너, 이미지 등의 코너에 적용해요."}],"followups":["스펙 및 토큰"]},"24px":{"bubbles":[{"title":"24px은 여러 UI 요소로 구성된 팝업 등 복합 컴포넌트에 사용해요.","imgs":["img_radius_all_05"],"text":"팝업, 또는 대형 컨테이너의 코너에 적용해요."}],"followups":["스펙 및 토큰","Popup"]},"Max":{"bubbles":[{"title":"Max : 999xp은 높이가 고정된 요소에 사용해요.","imgs":["img_radius_all_06"],"text":"버튼(CTA), 인디케이터, 스크롤 등 알약(Pill) 형태 컴포넌트의 코너에 적용해요.\n\n컴포넌트 높이 값의 50% 수치로 적용 가능해요."}],"followups":["Button (CTA)","Indicator","Scroll"]},"None":{"bubbles":[{"title":"None : 0px은 화면 너비를 가득 채우는 컨테이너에 사용해요.","imgs":["img_radius_all_07"],"text":"리스트 또는 전체 화면 팝업 등의 코너에 적용해요."}],"followups":["List","Popup"]}}},"Badge":{"title":"Badge의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Filled","Label","Dot","Number","Icon"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Filled","imgs":["img_badge_all_01"],"text":"핵심 정보를 강조할 때 사용"},{"title":"Label","imgs":["img_badge_all_02"],"text":"배경 없이 텍스트만 노출하여 강조할 때 사용"},{"title":"Dot","imgs":["img_badge_all_03"],"text":"최소형 뱃지로 신규 정보 존재 여부를 알릴 때 사용"},{"title":"Number","imgs":["img_badge_all_04"],"text":"알림, 장바구니 등 수량을 표시할 때 사용"},{"title":"Icon","imgs":["img_badge_all_05"],"text":"오늘보장, 빠른배송 등 정형화된 에셋형으로 사용"}]},"Filled":{"bubbles":[{"title":"Filled 뱃지는 배경과 텍스트로 핵심 세일즈 정보를 강조할 때 사용해요.","note":"프로덕트 카드 내부에서는 사용하지 않습니다. (카드 내부는 Label 타입만 사용)","imgs":["img_badge_all_01"],"text":"혜택, 프로모션, 기획전 등 시각적으로 강조해야 하는 정보를 표현할 때 사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing","Radius"]},"Label":{"bubbles":[{"title":"Label 뱃지는 배경 없이 텍스트만 노출하여 강조할 때 사용해요.","note":"임의의 container나 border를 추가하지 않습니다.","imgs":["img_badge_all_02"],"text":"프로덕트 카드, 텍스트 리스트 등 정보가 밀집된 영역에서 간결한 강조가 필요할 때 사용합니다."}],"followups":["스펙 및 토큰","Typeface"]},"Dot":{"bubbles":[{"title":"Dot 뱃지는 최소형 뱃지로 신규 정보 존재 여부를 알려줄 때 사용해요.","note":"width =4px, height=4px 고정 크기를 사용합니다.","imgs":["img_badge_all_03"],"text":"구체적인 텍스트나 숫자 없이 업데이트, 신규 정보 등의 존재 여부만 전달할 때 사용합니다."}],"followups":["스펙 및 토큰"]},"Number":{"bubbles":[{"title":"Number 뱃지는 확인해야 할 정보의 수량을 표시할 때 사용해요.","note":"수량이 99 이상일 경우 99+로 표기하며, 숫자 외 특수 기호 등을 단독으로 사용하지 않습니다.","imgs":["img_badge_all_04"],"text":"알림, 장바구니, 메시지 등 구체적인 수량을 표현해야 할 때 사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing"]},"Icon":{"bubbles":[{"title":"Icon 뱃지는 정형화된 아이콘 에셋으로 상태 정보를 제공할 때 사용해요.","note":"텍스트 가독성 또는 레이아웃 조정을 위해 에셋을 임의 축소하거나 크기를 변경하지 않습니다.","imgs":["img_badge_all_05"],"text":"오늘보장, 빠른배송 등 물류/배송 상태를 파편화 없이 일관된 비주얼로 표현할 때 사용합니다."}],"followups":["스펙 및 토큰"]}}},"Chip":{"title":"Chip의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Action Chip","Select Chip"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Action Chip","imgs":["img_Chip_all_01"],"text":"항목 선택 시 관련 동작을 실행하거나 해당 항목과 연관된 콘텐츠를 표시할 때 사용"},{"title":"Select Chip","imgs":["img_Chip_all_02"],"text":"여러 항목을 선택하거나 선택 해제하고, 선택 결과에 따라 콘텐츠나 조건을 변경할 때 사용"}]},"Action Chip":{"bubbles":[{"title":"Action Chip은 항목 선택 시 관련 동작을 실행하거나 해당 항목과 연관된 콘텐츠를 표시할 때 사용해요.","note":"칩 레이블은 가독성을 위해 최대 22자로 제한하고, 한 줄로 표시합니다.","imgs":["img_Chip_all_01"],"text":"간결한 속성이나 항목을 표시하며, 사용자가 항목을 선택하여 콘텐츠를 필터링하거나 특정 동작을 실행할 때 사용해요.\n\n칩 레이블은 명확하고 쉽게 알아볼 수 있도록 간결하고 일관된 스타일로 작성해요."}],"followups":["스펙 및 토큰","Filter","Tab"]},"Select Chip":{"bubbles":[{"title":"Select Chip은 여러 항목을 선택하거나 선택 해제하고, 선택 결과에 따라 콘텐츠나 조건을 변경할 때 사용해요.","note":"칩 레이블은 가독성을 위해 최대 22자로 제한하고, 한 줄로 표시합니다.","imgs":["img_Chip_all_02"],"text":"Select Chip은 선택 항목을 삭제할 수 있도록 오른쪽에 삭제 아이콘을 배치해요.\n\n칩 레이블은 명확하고 쉽게 알아볼 수 있도록 간결하고 일관된 스타일로 작성해요."}],"followups":["스펙 및 토큰","Selection Control"]}}},"Selection Control":{"title":"Selection Control의\n구성이에요. 어떤게 궁금하신가요?","chips":["한 눈에 보기","Check Box","Radio","Switch"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Check Box","imgs":["img_Selection Control_all_01"],"text":"하나 이상의 옵션을 선택할 때 사용"},{"title":"Radio","imgs":["img_Selection Control_all_02"],"text":"여러 옵션 중 하나만 선택할 때 사용"},{"title":"Switch","imgs":["img_Selection Control_all_03"],"text":"설정을 켜고 끌 때 사용"}]},"Check Box":{"bubbles":[{"title":"Check Box는 하나 이상의 옵션을 선택할 때 사용해요.","note":"정의되지 않은 기능에 사용하지 않아요.","imgs":["img_Selection Control_all_01"],"text":"여러 개를 골라도 되는 선택에 써요.\n(예: 필터의 조건 목록)\n\n상태는 On / Off 두 가지예요. 선택할 수 없을 때는 비활성(Disabled)으로 보여줘요.\n\n상위·하위 구조에서는 상위를 선택하면 하위가\n모두 선택되고, 하위를 하나라도 해제하면 상위도 해제돼요."}],"followups":["스펙 및 토큰","Option Chip"]},"Radio":{"bubbles":[{"title":"Radio는 여러 옵션 중 하나만 선택할 때 사용해요.","note":"여러 개를 동시에 선택하게 하거나, 옵션을 하나만 제공하면 안 돼요.","imgs":["img_Selection Control_all_02"],"text":"반드시 하나만 골라야 하는 선택에 써요.\n\n상태는 On / Off 두 가지예요. 마우스를 올리면 Hover, 선택할 수 없을 때는 비활성(Disabled)으로 보여줘요.\n\n새 옵션을 고르면 이전 선택은 자동으로 해제돼요."}],"followups":["스펙 및 토큰","Option Chip"]},"Switch":{"bubbles":[{"title":"Switch는 설정을 켜고 끌 때 사용해요.","note":"정의되지 않은 기능에 쓰면 안 돼요.","imgs":["img_Selection Control_all_03"],"text":"단독으로 쓰이거나 켜짐·꺼짐 두 가지뿐인 옵션에 써요.\n\n라벨은 Switch 바로 옆에 두어요.\n\n누르는 즉시 상태가 바뀌고 결과가 바로 반영되며, 별도의 저장·확인 버튼을 거치지 않아요."}],"followups":["스펙 및 토큰","Option Chip"]}}},"Indicator":{"title":"Indicator의\n구성이에요. 어떤게 궁금하신가요?","chips":["한 눈에 보기","Dot","Arrow","Number","Scroll","Bar"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Dot 인디게이터","imgs":["img_Indicator_all_01"],"text":"카드형 콘텐츠의 범위와 현재 위치를 보여줄 때"},{"title":"Arrow 인디게이터","imgs":["img_Indicator_all_02"],"text":"이전·다음 콘텐츠로 이동할 때"},{"title":"Number 인디게이터","imgs":["img_Indicator_all_03"],"text":"현재 위치와 전체 개수를 숫자로 보여줄 때"},{"title":"Scroll 인디게이터","imgs":["img_Indicator_all_04"],"text":"보이는 영역 밖 콘텐츠를 가로로 탐색할 때"},{"title":"Bar 인디게이터","imgs":["img_Indicator_all_05","img_Indicator_all_06"],"text":"영상 등 재생 시간이 있는 콘텐츠의 위치·진행을 보여줄 때"}]},"Dot":{"bubbles":[{"title":"Dot 인디게이터는 카드형 콘텐츠의 범위와 현재 위치를 보여줄 때 사용해요.","note":"Medium·Small 크기의 점은 More than 7 타입에서만 써요.","imgs":["img_Indicator_all_01"],"text":"카드 단위로 나뉠 콘텐츠(캐러셀 등)에 써요.\n\n콘텐츠 영역의 하단 중앙에 두어요.\n\n기본은 최대 7개, 컨트롤(Play/Pause) 없이 써요. 7개가 넘으면 끝쪽 점이 작아지는 More than 7 타입을 써요.\n\n자동 재생 콘텐츠에는 Play/Pause 아이콘이 붙은 with icon 타입을 써요."}],"followups":["스펙 및 토큰"]},"Arrow":{"bubbles":[{"title":"Arrow 인디게이터는 이전·다음 콘텐츠로 이동할 때 사용해요.","note":"접근성용 화살표 영역은 이미지 안에 투명하게 두고, 화면에 보이게 노출하면 안 돼요.","imgs":["img_Indicator_all_02"],"text":"이전·다음 콘텐츠로 넘기는 데 쓰고, 맥락에 따라 두 가지 스타일을 써요.\n\n처음에는 다음 화살표만, 중간에는 양쪽, 끝에서는 이전 화살표만 동작해요."}],"followups":["스펙 및 토큰"]},"Number":{"bubbles":[{"title":"Number 인디게이터는 현재 위치와 전체 개수를 숫자로 보여줄 때 사용해요.","note":"최대 99개까지만 표시해요.","imgs":["img_Indicator_all_03"],"text":"현재 / 전체(예: 1 / 5) 형식으로 보여줘요.\n\n콘텐츠 개수가 많아 점으로 보여주기 어려울 때 숫자로 위치를 알려줘요."}],"followups":["스펙 및 토큰"]},"Scroll":{"bubbles":[{"title":"Scroll 인디게이터는 보이는 영역 밖 콘텐츠를 가로로 탐색할 때 사용해요.","note":"카드 단위로 나뉠 콘텐츠에는 Scroll이 아니라 Dot을 써요.","imgs":["img_Indicator_all_04"],"text":"가로로 이어지는 연속 스크롤 콘텐츠에 써요.\n\n처음에는 이전 화살표가, 끝에서는 다음 화살표가 비활성화돼요.\n\n화면 폭과 레이아웃 제약에 맞는 인디케이터를\n선택해요."}],"followups":["스펙 및 토큰"]},"Bar":{"bubbles":[{"title":"Bar 인디게이터는 이전·다음 콘텐츠로 이동할 때 사용해요.","note":"접근성용 화살표 영역은 이미지 안에 투명하게 두고, 화면에 보이게 노출하면 안 돼요.","imgs":["img_Indicator_all_05","img_Indicator_all_06"],"text":"영상처럼 재생 시간이 있는 미디어 콘텐츠의 위치와 진행 상황을 보여줄 때 사용해요.\n\nPC에서만 사용해요."}],"followups":["스펙 및 토큰"]}}},"Divider":{"title":"Divider의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Horizontal","Vertical"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Horizontal","rows":[["Height","1px"],["Style","Solid"],["Light BG","#DDDDDD / #EEEEEE"],["Dark BG","#555555"]],"imgs":["img_Divider_all_01"],"text":"세로로 정렬된 콘텐츠를 구분할 때 사용"},{"title":"Vertical","rows":[["Width","1px"],["Style","Solid"],["Light BG","#DDDDDD"],["Dark BG","#555555"]],"imgs":["img_Divider_all_02"],"text":"가로로 정렬된 콘텐츠를 구분할 때 사용"}]},"Horizontal":{"bubbles":[{"title":"Horizontal은 세로로 정렬된 콘텐츠를\n구분할 때 사용해요.","note":"색상·두께·불투명도는 임의로 변경하지 않습니다.","imgs":["img_Divider_all_01"],"text":"가로 실선을 사용하며, 콘텐츠의 영역이나 그룹 간 경계가 필요한 곳에만 적용합니다."}],"followups":["스펙 및 토큰","List","Menu","Spacing"]},"Vertical":{"bubbles":[{"title":"Vertical은 가로로 정렬된 콘텐츠를\n구분할 때 사용해요.","note":"색상·두께·불투명도는 임의로 변경하지 않습니다.","imgs":["img_Divider_all_02"],"text":"세로 실선을 사용하며, 콘텐츠의 영역이나 그룹 간 경계가 필요한 곳에만 적용합니다."}],"followups":["스펙 및 토큰","List","Menu","Spacing"]}}},"Option Chip":{"title":"Option Chip의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Color","Label"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Color","imgs":["img_option chip_all_01"],"text":"제품 등의 컬러 옵션 선택"},{"title":"Label","imgs":["img_option chip_all_02"],"text":"스펙 등의 텍스트 옵션 선택"}]},"Color":{"bubbles":[{"title":"Color 칩은 제품의 컬러 옵션을 시각적으로 제공할 때 사용해요.","imgs":["img_option chip_all_01"],"text":"색상 자체가 선택 대상인 경우 사용하며, 선택된 컬러의 속성명을 함께 제공합니다."}],"followups":["스펙 및 토큰","Spacing","Typeface"]},"Label":{"bubbles":[{"title":"Label 칩은 텍스트 기반의 옵션을 선택할 때 사용해요.","imgs":["img_option chip_all_02"],"text":"제품의 주요 사양이나 필터 조건을 선택하거나 필터링할 때 사용합니다."}],"followups":["스펙 및 토큰","Spacing","Radius","Typeface"]}}},"Option Selector":{"title":"Option Selector의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Image","Label","Meta","Color"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Image","imgs":["img_Option Selector_all_01"],"text":"이미지·로고를 보고 옵션을 선택할 때 사용"},{"title":"Label","imgs":["img_Option Selector_all_02"],"text":"텍스트 옵션을 선택할 때 사용"},{"title":"Meta","imgs":["img_Option Selector_all_03"],"text":"메인 텍스트와 보조 정보를 확인하며 옵션을 선택할 때 사용"},{"title":"Color","imgs":["img_Option Selector_all_04"],"text":"컬러 옵션을 선택할 때 사용"}]},"Image":{"bubbles":[{"title":"Image는 이미지·로고를 보고 옵션을\n선택할 때 사용해요.","imgs":["img_Option Selector_all_01"],"text":"대표 이미지나 로고로 선택 가능한 옵션을 제공합니다. 각 이미지는 옵션 영역 안에서 중앙 정렬해 일관된 형태로 보여줍니다."}],"followups":["스펙 및 토큰","Option Chip","Selection Control"]},"Label":{"bubbles":[{"title":"Label은 텍스트 옵션을 선택할 때 사용해요.","imgs":["img_Option Selector_all_02"],"text":"짧은 텍스트로 선택 가능한 옵션을 제공합니다.\n이미지나 보조 정보 없이 옵션명만으로 항목을\n확인하고 선택할 때 사용합니다."}],"followups":["스펙 및 토큰","Option Chip","Selection Control"]},"Meta":{"bubbles":[],"followups":["스펙 및 토큰","Option Chip","Selection Control"]},"Color":{"bubbles":[{"title":"Color는 컬러 옵션을 선택할 때 사용해요.","imgs":["img_Option Selector_all_04"],"text":"원형 컬러칩으로 제품의 색상 옵션을 제공합니다. 컬러칩은 Inner Circle과 Inner Circle Border로 구성됩니다."}],"followups":["스펙 및 토큰","Option Chip","Selection Control"]}}},"Tooltip":{"title":"Tooltip의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Standard","Label","Meta","Bubble"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Standard","imgs":["img_Tooltip_all_01"],"text":"제목과 본문을 함께 제공하거나 본문을 항목별로\n나누어 설명할 때 사용"},{"title":"Label","imgs":["img_Tooltip_all_02"],"text":"요소의 의미나 짧은 안내를 간단한 텍스트로 제공할 때 사용"},{"title":"Meta","imgs":["img_Tooltip_all_03"],"text":"항목별 명칭과 금액 등의 데이터를 함께 확인할 때\n사용"},{"title":"Bubble","imgs":["img_Tooltip_all_04"],"text":"관련 요소를 말풍선으로 가리켜 짧은 안내나 보충 설명을 제공할 때 사용"}]},"Standard":{"bubbles":[{"title":"Standard는 제목과 본문을 함께 제공하거나 본문을 항목별로 나누어 설명할 때 사용해요.","note":"버튼 등 주요 UI 요소와 중요한 콘텐츠를 가리지 않도록 배치합니다.","imgs":["img_Tooltip_all_01"],"text":"Standard A와 Standard B로 제공하며, 여러 본문 항목과 글머리 기호로 내용을 나누어 보여줍니다. 콘텐츠에 따라 제목과 닫기 아이콘을 생략할 수 있습니다."}],"followups":["스펙 및 토큰","CTA Button Icon"]},"Label":{"bubbles":[{"title":"Label은 요소의 의미나 짧은 안내를\n간단한 텍스트로 제공할 때 사용해요.","note":"버튼 등 주요 UI 요소와 중요한 콘텐츠를 가리지 않도록 배치합니다.","imgs":["img_Tooltip_all_02"],"text":"별도의 제목 없이 Body Text로 안내 내용을 구성합니다."}],"followups":["스펙 및 토큰","CTA Button Icon","Dimmed & Shadow"]},"Meta":{"bubbles":[{"title":"Meta는 항목별 명칭과 금액 등의 데이터를\n함께 확인할 때 사용해요.","note":"버튼 등 주요 UI 요소와 중요한 콘텐츠를 가리지 않도록 배치합니다.","imgs":["img_Tooltip_all_03"],"text":"항목명은 왼쪽, 대응하는 데이터는 오른쪽에 정렬해 함께 보여줍니다. 필요한 경우 제목·부제·글머리 기호·추가 설명을 포함할 수 있습니다."}],"followups":["스펙 및 토큰","CTA Button Icon","Divider"]},"Bubble":{"bubbles":[{"title":"Bubble은 관련 요소를 말풍선으로 가리켜\n짧은 안내나 보충 설명을 제공할 때 사용해요.","note":"버튼 등 주요 UI 요소와 중요한 콘텐츠를 가리지 않도록 배치합니다.","imgs":["img_Tooltip_all_04"],"text":"안내 문구를 기본으로 제공하며, 필요한 경우 그 아래에 Description Text을 추가합니다.\n\n관련 요소의 위치에 맞춰 말풍선 꼬리를 중앙·오른쪽·왼쪽 중 선택할 수 있습니다."}],"followups":["스펙 및 토큰","CTA Button Icon"]}}},"Tab":{"title":"Tab의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Standard / Anchor","Icon","Outlined","Filled","Toggle","Underlined / Standard / Primary"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Standard / Anchor","imgs":["img_Tab_all_01"],"text":"텍스트로 콘텐츠를 구분하고 전환할 때 사용"},{"title":"Icon","imgs":["img_Tab_all_02"],"text":"아이콘과 텍스트를 함께 제공하는 카드형 탭에 사용"},{"title":"Outlined","imgs":["img_Tab_all_03"],"text":"둥근 테두리로 선택 상태를 구분할 때 사용"},{"title":"Filled","imgs":["img_Tab_all_04"],"text":"배경색을 채워 선택된 항목을 강조할 때 사용"},{"title":"Toggle","imgs":["img_Tab_all_05"],"text":"컨테이너와 테두리로 선택 상태를 강조할 때 사용"},{"title":"Underlined / Standard / Primary","imgs":["img_Tab_all_06"],"text":"PC에서 밑줄로 선택 상태를 구분할 때 사용"}]},"Standard / Anchor":{"bubbles":[{"title":"Standard / Anchor는 텍스트 레이블과 Underline으로 콘텐츠를 구분하고 전환하는 탭이에요.","imgs":["img_Tab_all_01"],"text":"텍스트 중심으로 카테고리를 구분하고, 선택항목을 하단 밑줄로 표시합니다."}],"followups":["스펙 및 토큰","Badge","Chip"]},"Icon":{"bubbles":[{"title":"Icon은 아이콘과 텍스트로 구성된 카드형 탭이에요.","imgs":["img_Tab_all_02"],"text":"아이콘을 통해 항목의 의미를 시각적으로 전달하고 콘텐츠를 전환할 수 있습니다."}],"followups":["스펙 및 토큰","Badge","Chip"]},"Outlined":{"bubbles":[{"title":"Outlined은 둥근 외곽 테두리로 선택 상태를 표현하는 탭이에요.","imgs":["img_Tab_all_03"],"text":"테두리의 색상과 두께로 선택 항목을 구분합니다."}],"followups":["스펙 및 토큰","Badge","Chip"]},"Filled":{"bubbles":[{"title":"Filled는 선택된 항목의 배경색을 채워 강조하는 탭이에요.","imgs":["img_Tab_all_04"],"text":"선택된 항목에 검정색 배경과 흰색 텍스트를 적용해 활성 상태를 명확하게 표현합니다."}],"followups":["스펙 및 토큰","Badge","Chip"]},"Toggle":{"bubbles":[{"title":"Toggle은 선택된 항목의 컨테이너와 테두리를 강조하는 탭이에요.","imgs":["img_Tab_all_05"],"text":"선택 시 흰색 컨테이너와 검정색 테두리로 구분합니다."}],"followups":["스펙 및 토큰","Badge","Chip"]},"Underlined / Standard / Primary":{"bubbles":[{"title":"Underlined / Standard / Primary는 PC에서 사용하는 하단 밑줄 탭이에요.","imgs":["img_Tab_all_06"],"text":"텍스트 레이블 하단에 하단 밑줄을 표시해 선택된 항목을 구분합니다."}],"followups":["스펙 및 토큰","Badge","Chip"]}}},"List":{"title":"List의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Header","Item Default","Item Indent","Item Selection"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Header","imgs":["img_List_all_01"],"text":"클릭이나 탭으로 리스트를 펼치거나 접는 제목 영역"},{"title":"Item Default","imgs":["img_List_all_02"],"text":"아래의 하위 항목으로, 각 항목을 대표하는 제목 영역"},{"title":"Item Indent","imgs":["img_List_all_03"],"text":"아이콘과 텍스트를 함께 제공하는 카드형 탭에 사용"},{"title":"Item Selection","imgs":["img_List_all_04"],"text":"아이콘과 텍스트를 함께 제공하는 카드형 탭에 사용"}]},"Header":{"bubbles":[{"title":"Header은 하위 항목 그룹을 대표하며,\n클릭이나 탭으로 리스트를 펼치거나 접는\n제목 영역이에요.","note":"기본적으로 상위 세 개의 Header만 펼치고 나머지는 접어 둡니다.\nHeader 사이에는 구분선을 두어 그룹 간 경계를 구분합니다.","imgs":["img_List_all_01"],"text":"리스트 헤더, 아코디언, 펼치기 접기, 그룹 제목,\n카테고리 제목에 사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing","Option Chip"]},"Item Default":{"bubbles":[{"title":"Item Default은 아래의 하위 항목으로,\n각 항목을 대표하는 제목 영역 이에요.","imgs":["img_List_all_02"],"text":"리스트 아이템, 하위 항목, 목록 항목에\n사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing","Option Chip"]},"Item Indent":{"bubbles":[{"title":"Item Indent는 단일 선택이 필요한 항목을\n나열하는 들여쓰기 항목 입니다.","note":"여러 항목을 동시에 선택해야 하는 경우에는 Item / Indent를 사용하지 않고 Item / Selection을 사용합니다.","imgs":["img_List_all_02"],"text":"들여쓰기 항목, 단일 선택 목록, 하위 목록에\n사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing","Option Chip"]},"Item Selection":{"bubbles":[{"title":"Item Selection는 여러 항목을 보면서\n복수 선택할 수 있는 선택형 항목입니다.","note":"하나만 선택해야 하는 경우에는 Item / Selection을 사용하지 않고 Item / Indent를 사용합니다.","imgs":["img_List_all_02"],"text":"체크박스 리스트, 다중 선택 목록, 선택 리스트,\n필터 목록에 사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing","Option Chip"]}}},"Menu":{"title":"Menu의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Drop down Menu","Icon Leading Menu","Select Field"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Drop down Menu","imgs":["img_menu_all_01"],"text":"콘텐츠 카테고리 등 여러 선택지 중 하나의 항목을 선택할 때 사용"},{"title":"Icon Leading Menu","imgs":["img_menu_all_02"],"text":"아이콘이나 버튼을 통해 옵션 목록을 일시적으로 표시할 때 사용"},{"title":"Select Field","imgs":["img_menu_all_03"],"text":"콘텐츠를 정렬하거나 정보를 선택하기 위해 여러 옵션 중 하나를 선택할 때 사용"}]},"Drop down Menu":{"bubbles":[{"title":"Dropdown Menu는 여러 선택지 중 하나를 선택할 수 있도록 옵션 목록을 표시하는 메뉴예요.","imgs":["img_menu_all_01"],"text":"콘텐츠의 카테고리나 항목을 선택할 때 사용해요.\n\nSelect Field 등 정의된 요소의 사용자 인터랙션을 통해 메뉴가 열리도록 구성하고, 독립적으로 사용하지 않아요.\n\n메뉴의 Item(리스트)은 현재 선택된 항목을 명확하게 확인할 수 있도록 선택 상태를 구분해 표시해요."}],"followups":["스펙 및 토큰","Filter","List","Chip"]},"Icon Leading Menu":{"bubbles":[{"title":"Icon Leading Menu는 아이콘이나 버튼을 선택했을 때 관련 옵션 목록을 표시하는 메뉴예요.","imgs":["img_menu_all_02"],"text":"특정 요소와 관련된 기능이나 추가 옵션을 제공할 때 사용해요.\n\n아이콘이나 버튼을 통해 메뉴를 호출하고, 사용자 인터랙션에 따라 옵션 목록을 일시적으로 표시해요."}],"followups":["스펙 및 토큰","Filter","List","Chip"]},"Select Field":{"bubbles":[{"title":"Select Field는 여러 선택지 중 하나를 선택하여 정보를 지정하거나 변경하는 컴포넌트예요.","imgs":["img_menu_all_03"],"text":"콘텐츠의 정렬 기준을 선택하거나 특정 정보를 설정할 때 사용해요.\n\n현재 선택된 값을 기본으로 표시하여 설정 상태를 확인할 수 있도록 하며, Select Field를 선택하면 연결된 Dropdown Menu가 표시되어 옵션을 선택할 수 있어요."}],"followups":["스펙 및 토큰","Option Selector","Filter","Tab"]}}},"Filter":{"title":"Filter의 구성이에요.\n어떤게 궁금하신가요?","chips":["Standard"],"answers":{"Standard":{"bubbles":[{"title":"Filter는 여러 옵션이나 상세 조건을 선택하여 원하는 콘텐츠를 탐색할 때 사용해요.","items":[["PC","PC에서는 여러 필터를 가로 방향으로 배치하고, Dropdown 아이콘을 사용합니다."],["MO","모바일에서는 컴팩트한 Button 형태로 제공하며, 클릭 시 Bottom Sheet Popup을 사용합니다."]],"imgs":["img_filter_standard_01","img_filter_standard_02"],"text":"PC·모바일 등 디바이스 환경에 따라 필터의 배치와 메뉴 노출 방식을 구분할 때 적용합니다."}],"followups":["스펙 및 토큰","Popup","Menu"]}}},"Text Field":{"title":"Text Field의 구성이에요.\n어떤게 궁금하신가요?","chips":["한 눈에 보기","Single Line","Multi Line","Single Entry","Single Line(SEC)"],"answers":{"한 눈에 보기":{"bubbles":[{"title":"Single Line","imgs":["img_Text Field_all_01"],"text":"한 줄에 들어가는 짧은 텍스트 입력에 사용"},{"title":"Multi Line","imgs":["img_Text Field_all_02"],"text":"여러 줄이 필요한 긴 텍스트 입력에 사용"},{"title":"Single Entry","imgs":["img_Text Field_all_03"],"text":"필터 패널에서 가격을 조정할 때 사용"},{"title":"Single Line(SEC)","imgs":["img_Text Field_all_04"],"text":"한총에서 한 줄의 텍스트를 입력할 때 사용"}]},"Single Line":{"bubbles":[{"title":"Single Line은 한 줄에 들어가는 짧은 텍스트를 입력할 때 사용해요.","imgs":["img_Text Field_all_01"],"text":"이메일, 검색어, 이름 등 간단한 정보를 입력할 때 사용하며, 하단 Input Line으로 입력 영역을 구분합니다."}],"followups":["스펙 및 토큰","Typeface","Color"]},"Multi Line":{"bubbles":[{"title":"Multi Line은 여러 줄이 필요한 긴 텍스트를 입력할 때 사용해요.","imgs":["img_Text Field_all_02"],"text":"문의 내용, 의견, 상세 설명 등 긴 메시지를 입력할 때 사용합니다."}],"followups":["스펙 및 토큰","Typeface","Color"]},"Single Entry":{"bubbles":[{"title":"Single Entry는 필터 패널에서 가격을 조정할 때 사용해요.","imgs":["img_Text Field_all_03"],"text":"최소-최대 값 범위를 입력하여 원하는 가격대의 결과를 필터링할 때 사용합니다. PC에서만 지원합니다."}],"followups":["스펙 및 토큰","Typeface","Color"]},"Single Line(SEC)":{"bubbles":[{"title":"Single Line(SEC)는 한총 환경에서 사용하는 박스형 한 줄 입력 필드예요.","imgs":["img_Text Field_all_04"],"text":"Container와 Border로 입력 영역을 구분하며, PC와 Mobile에 공통으로 적용합니다."}],"followups":["스펙 및 토큰","Typeface","Color"]}}}};</script>
+<script>window.MOA_LANDING = {"Color":{"title":"Color의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Primary Color","Secondary Color","Grayscale","Neutral Color","Theme","Accent"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Primary Color","rows":[["Black","#000000"],["White","#FFFFFF"],["Skyblue","#2189FF"],["Skyblue Dark","#006BEA"],["Skyblue Light","#68AEFF"]],"text":"브랜드 아이덴티티를 표현하는 대표 색상"},{"title":"Secondary Color","rows":[["Coral","#EF3434"],["Coral Dark","#D62E2E"],["Coral Light","#F36E6E"],["Orange","#F66700"],["Orange Dark","#C74700"],["Sea Blue","#00B3E3"],["Teal","#00838F"],["Teal Dark","#007D89"]],"text":"브랜드 아이덴티티를 보강하는 경우 선택"},{"title":"Grayscale Color","rows":[["0_F7","#F7F7F7"],["1_EE","#EEEEEE"],["2_DD","#DDDDDD"],["3_BB","#BBBBBB"],["4_AA","#AAAAAA"],["5_8F","#8F8F8F"],["6_75","#757575"],["7_55","#555555"],["8_31","#313131"],["9_1C","#1C1C1C"]],"text":"텍스트·배경·구분선 등의 시각적 위계를 설정"},{"title":"Neutral Color","rows":[["Neutral Blue","#F5F7FE"],["Neutral Beige","#F7F5F2"],["Neutral Orange","#FEF6F3"],["Neutral Pink","#F6F0F5"]],"text":"배경·카드 표면에 은은한 톤이 필요한 경우 선택"},{"title":"Theme","imgs":["img_color_theme_01"],"text":"배경 밝기에 따라 텍스트 명도 대비 조정"},{"title":"Accent","rows":[["Rating_star","#FFAA4E"]],"imgs":["img_color_theme_02"],"text":"Accent는 상품평 별점에만 사용하는 전용 색상"}]},"Primary Color":{"bubbles":[{"title":"Primary Color는 브랜드의 핵심\n아이덴티티를 표현하거나 주요 액션을\n강조해요.","items":[["Black & White","디자인 시스템의 기본 컬러입니다."],["Skyblue 계열","활성화 상태를 나타내며, 확인·성공 등 긍정적인 상태와 메시지를 전달하는 데 사용합니다."]],"rows":[["Black","#000000"],["White","#FFFFFF"],["Skyblue","#2189FF"],["Skyblue Dark","#006BEA"],["Skyblue Light","#68AEFF"]]}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]},"Secondary Color":{"bubbles":[{"title":"Secondary Color는 보조 강조나 정보성\n요소를 표현해야 하는 경우에 사용해요.","items":[["Coral 계열","경고·오류 등 부정적인 상태를 표현하는 용도로 사용합니다."],["Orange 계열","Skyblue와 조합하여 브랜드 아이덴티티를 표현할 때 보조적으로 사용합니다."],["Teal 계열","할인율(%)이나 추천 등 정보성 태그의 텍스트 컬러로 사용할 수 있습니다."]],"rows":[["Coral","#EF3434"],["Coral Dark","#D62E2E"],["Coral Light","#F36E6E"],["Orange","#F66700"],["Orange Dark","#C74700"],["Sea Blue","#00B3E3"],["Teal","#00838F"],["Teal Dark","#007D89"]]}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]},"Grayscale":{"bubbles":[{"title":"Grayscale은 텍스트·배경·구분선 등의 시각적 위계를 설정해야 하는 경우 사용해요.","rows":[["0_F7","#F7F7F7"],["1_EE","#EEEEEE"],["2_DD","#DDDDDD"],["3_BB","#BBBBBB"],["4_AA","#AAAAAA"],["5_8F","#8F8F8F"],["6_75","#757575"],["7_55","#555555"],["8_31","#313131"],["9_1C","#1C1C1C"]],"text":"텍스트·배경·구분선의 시각적 위계는 정의된 Grayscale 10단계를 기준으로 관리합니다."}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]},"Neutral Color":{"bubbles":[{"title":"Neutral Color는 배경이나 카드 표면에\n은은한 컬러를 적용해야 하는 경우 사용해요.","rows":[["Neutral Blue","#F5F7FE"],["Neutral Beige","#F7F5F2"],["Neutral Orange","#FEF6F3"],["Neutral Pink","#F6F0F5"]],"text":"텍스트 컬러로는 사용을 권장하지 않습니다."}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]},"Theme":{"bubbles":[{"title":"Theme는 배경의 밝기에 따라 텍스트 컬러의 명도 대비를 조정해야 해요.","note":"배경과 충분한 대비가 없는 텍스트 색상은 사용하지 마세요","imgs":["img_color_theme_01"],"text":"KR은 전체 다크모드 대신 어두운 특정 영역을 기준으로 적용합니다.\n\n라이트 배경에는 Dark 계열, 다크 배경에는 Light 계열을 사용하며, 텍스트와 배경의 명도 대비는 최소 4.5:1 이상을 유지합니다."}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]},"Accent":{"bubbles":[{"title":"Accent는 상품평 별점에만 사용하는 전용 색상이에요.","imgs":["img_color_theme_02"],"text":"#FFAA4E는 기존 상품평 별점 컴포넌트에 적용된 색상입니다.\n\n컬러 가이드에서 사용 용도를 확인할 수 있도록 별도로 정의한 색상입니다."}],"followups":["투명도 적용 규칙","컬러 확장 규칙"]}}},"Typeface":{"title":"Typeface의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Display","Heading","Title","Body","Caption"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Display","rows":[["large","size: 56px / line height: 67px"],["medium","size: 48px / line height: 58px"],["small","size: 40px / line height: 48px"]],"text":"시각적 강조를 위한 최상위 대형 텍스트"},{"title":"Heading","rows":[["large","size: 48px / line height: 58px"],["medium","size: 40px / line height: 48px"],["small","size: 32px / line height: 39px"]],"text":"페이지 및 섹션의 정보 위계를 나타내는 제목"},{"title":"Title","rows":[["XLarge","size: 36px / line height: 44px"],["large","size: 32px / line height: 39px"],["medium","size: 28px / line height: 38px"],["small","size: 24px / line height: 32px"],["XSmall","size: 20px / line height: 27px"],["XXSmall","size: 16px / line height: 21px"]],"text":"카드, 리스트, 배너 등 개별 콘텐츠와 컴포넌트의 제목"},{"title":"Body","rows":[["XLarge","size: 20px / line height: 27px"],["large","size: 18px / line height: 24px"],["medium","size: 16px / line height: 21px"],["small","size: 14px / line height: 19px"],["XSmall","size: 13px / line height: 19px"],["XXSmall","size: 12px / line height: 16px"]],"text":"본문, 주요 설명 및 인터랙션 요소의 레이블에 사용하는 텍스트"},{"title":"Caption","rows":[["large","size: 14px / line height: 19px"],["medium","size: 12px / line height: 16px"],["small","size: 10px / line height: 13px"]],"text":"디스크립션, 유의사항 및 보조 정보에 사용하는 텍스트"}]},"Display":{"bubbles":[{"title":"Display는 시각적 임팩트가 중요한 최상위 대형 텍스트 영역에 사용해요.","text":"메인 히어로, 브랜드 캠페인, 프로모션 등 시각적 임팩트가 중요한 영역에 사용해요. 화면에서 가장 강조해야 하는 메시지를 전달하고, 콘텐츠의 주목도를 높이는 역할을 해요.\n\n일반적인 본문이나 버튼의 기능성 텍스트에는 사용하지 않아요."}],"followups":["스펙 및 토큰"]},"Heading":{"bubbles":[{"title":"Heading은 화면의 핵심 타이틀과 콘텐츠 섹션의 헤드카피 영역에 사용해요.","text":"페이지의 대표 타이틀과 주요 콘텐츠 영역의 섹션 제목에 사용해요. 콘텐츠의 시작과 영역별 구조를 명확하게 구분하여 정보의 위계를 형성해요.\n\n일반적인 본문이나 버튼의 기능성 텍스트에는 사용하지 않아요."}],"followups":["스펙 및 토큰"]},"Title":{"bubbles":[{"title":"Title은 카드, 컴포넌트 등 중·소단위 요소의 제목에 사용해요.","text":"배너, 상품 카드, 콘텐츠 리스트 등 개별 콘텐츠의 제목에 사용해요. 각 콘텐츠의 핵심 정보를 강조하고, 반복되는 컴포넌트 간의 정보 구조를 명확하게 구분해요.\n\n일반적인 본문이나 버튼의 기능성 텍스트에는 사용하지 않아요."}],"followups":["스펙 및 토큰"]},"Body":{"bubbles":[{"title":"Body는 본문 텍스트 및 서술형 정보에 사용해요.","text":"본문, 상품 설명, 이용 방법 등 주요 정보를 전달하는 서술형 텍스트에 사용해요. 버튼, 탭, 입력 요소 등 인터랙션 컴포넌트의 기능과 선택 항목을 안내하는 레이블에도 적용해요.\n\n페이지나 콘텐츠의 제목보다는 정보 전달과 가독성을 중심으로 사용해요."}],"followups":["스펙 및 토큰"]},"Caption":{"bubbles":[{"title":"Caption은 면책 조항, 보조 수치 등 낮은 정보 위계 영역에 사용해요.","text":"유의사항, 디스크립션, 면책 조항 등 주요 콘텐츠를 보완하는 텍스트에 사용해요. 테이블 텍스트, 입력 필드 항목명, 보조 수치 등 상대적으로 정보 위계가 낮은 영역에도 적용해요.\n\n주요 정보와 구분되는 시각적 위계를 형성하여 부가 정보를 명확하게 전달해요."}],"followups":["스펙 및 토큰"]}}},"Spacing":{"title":"Spacing의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Inset","Gap","Grid"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Inset","rows":[["Element Inset","요소의 내부 여백"],["Component Inset","컴포넌트의 내부 여백"],["Section Inset","섹션 영역의 내부 여백"]],"imgs":["img_spacing_all_01"],"text":"컴포넌트 및 요소 내부의 여백 기준"},{"title":"Gap","rows":[["Element Gap","요소 간 간격"],["Component Gap","컴포넌트 간 간격"],["Section Gap","섹션 간 간격"]],"imgs":["img_spacing_all_02"],"text":"요소와 요소 사이의 간격 기준"},{"title":"Grid","rows":[["Section Grid","섹션 내부 균일한 간격"]],"imgs":["img_spacing_all_03"],"text":"섹션 내 그리드 기반 반복 요소의 간격 기준"}]},"Inset":{"bubbles":[{"title":"Inset은 요소 내부 여백에 사용해요.","note":"요소 간 외부 간격에는 Inset을 사용하지 않습니다.","imgs":["img_spacing_all_01"],"text":"버튼, 카드, 모달, 입력 필드처럼 컨테이너 내부\n요소와 경계 사이의 간격을 설정할 때 사용합니다.\n\n필요한 경우 상·하 Padding을 다르게 적용할 수 있지만, 정의된 Spacing Token 내에서만 사용해요."}],"followups":["스펙 및 토큰"]},"Gap":{"bubbles":[{"title":"Gap은 요소와 요소 사이의 간격에 사용해요.","imgs":["img_spacing_all_02"],"text":"버튼 그룹, 칩, 아이콘과 텍스트처럼 여러 요소가 나란히 배치되거나 반복될 때 간격을 설정합니다.\n\n가로·세로 방향에 따라 Gap을 다르게 적용할 수 있지만, 정의된 Spacing Token 내에서만 사용해요."}],"followups":["스펙 및 토큰"]},"Grid":{"bubbles":[{"title":"Grid는 섹션 내 그리드 기반 반복 요소의 간격에 사용해요.","note":"요소 내부 여백이나 섹션 간 구분에는 Gap을 사용하지 않습니다.","imgs":["img_spacing_all_03"],"text":"버튼 그룹, 칩, 아이콘과 텍스트처럼 여러 요소가 나란히 배치되거나 반복될 때 간격을 설정합니다.\n\n가로·세로 방향에 따라 Gap을 다르게 적용할 수 있지만, 정의된 Spacing Token 내에서만 사용해요."}],"followups":["스펙 및 토큰"]}}},"CTA Button":{"title":"CTA Button의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Primary Action Button","Secondary Action Button","Tertiary Action Button","Icon Trailing Number Button","Icon Contained Button"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Primary Action Button","imgs":["img_CTA Button_all_01","img_CTA Button_all_02"],"text":"주요 액션에 사용"},{"title":"Secondary Action Button","imgs":["img_CTA Button_all_03"],"text":"보조 액션에 사용"},{"title":"Tertiary Action Button","imgs":["img_CTA Button_all_04","img_CTA Button_all_05"],"text":"강조 없이 가볍게 제공할 때 사용"},{"title":"Icon Trailing Number Button","imgs":["img_CTA Button_all_06"],"text":"잔여 목록의 개수를 직관적으로 확인할 수 있는 버튼"},{"title":"Icon Contained Button","imgs":["img_CTA Button_all_07"],"text":"특정 기능을 바로 실행해야 할 때 사용"}]},"Primary Action Button":{"bubbles":[{"title":"Primary Action Button은 주요 액션에\n사용해요.","text":"페이지의 핵심 액션이나, 강하게 강조해야 하는 액션에 사용해요. 사용 용도에 따라서 Filled, Emphasis 이렇게 두가지 타입이 있어요."},{"title":"Filled (Primary)는 우선순위가 높은\n주요 액션에 적용해요.","rows":[["Large","48px"],["Default","40px"],["Small","32px"]],"imgs":["img_CTA Button_all_01"],"text":"페이지의 핵심 액션이나, 주요 액션에 사용해요.\n(예: Buy now, Add to cart)"},{"title":"Filled (Emphasis)는 즉각적인 주목이\n필요한 최우선 액션에 사용해요.","rows":[["Large","48px"],["Default","40px"],["Small","32px"]],"note":"리뷰 보기처럼 보조 액션에는 쓰지 않아요.","imgs":["img_CTA Button_all_02"],"text":"즉각적인 주목이 필요한 최우선 액션에만 사용하며,\n페이지당 1개, 오른쪽 상단 배치를 권장해요."}],"followups":["스펙 및 토큰","CTA Button Icon"]},"Secondary Action Button":{"bubbles":[{"title":"Secondary Action Button은 보조 액션에\n사용해요.","text":"핵심 액션을 보조하는 중간 강조의 액션에 써요.\nOutlined / Standard이 있어요."},{"title":"Outlined (Standard)는 중간 수준의 강조에 사용하는 테두리 버튼이에요.","rows":[["Large","48px"],["Default","40px"],["Small","32px"]],"imgs":["img_CTA Button_all_03"],"text":"Primary 버튼 오른쪽에 함께 배치하며, 추가 정보,\n더보기 등에 사용해요. 앞이나 뒤에 아이콘을 붙일 수 있어요. (예: ∨ 펼치기, ↗ 새 창)"}],"followups":["스펙 및 토큰","CTA Button Icon"]},"Tertiary Action Button":{"bubbles":[{"title":"Tertiary Action Button은 강조 없이 가볍게 제공할 때 사용해요.","text":"Primary, Secondary보다 가볍게 제공하는 선택적\n액션에 써요."},{"title":"Underlined (Standard)는 강조를 최소화한 3순위 액션에 사용해요.","rows":[["Large","16px"],["Default","14px"],["Small (MO only)","12px"]],"imgs":["img_CTA Button_all_04"],"text":"강조를 최소화한 텍스트 액션이며, 밑줄이 가운데에서 양옆으로 늘어나요. 모바일은 Pressed상태에 밑줄이 노출되요."},{"title":"Label (Standard)는 시각적 강조 없이\n3순위 액션에 사용하는 텍스트에 적용해요.","rows":[["Default","14px"]],"imgs":["img_CTA Button_all_05"],"text":"강조 없이 덧붙이는 보조 액션이며,\n앞이나 뒤에 16px 아이콘을 붙일 수 있어요."}],"followups":["스펙 및 토큰","CTA Button Icon"]},"Icon Trailing Number Button":{"bubbles":[{"title":"Icon Trailing Number Button는 잔여 목록의 개수를 직관적으로 확인할 수 있는 버튼","imgs":["img_CTA Button_all_06"],"text":"높이 40px 버튼 안에 24px × 24px 아이콘을 배치합니다.\n\n사용자가 전체 규모를 가늠 할 수 있도록, 잔여 콘텐츠 수가 노출되는 ‘더보기’ 버튼에 많이 사용되요."}],"followups":["스펙 및 토큰","CTA Button Icon"]},"Icon Contained Button":{"bubbles":[{"title":"Icon Contained Button는 화면 공간을 절약하면서 특정 기능을 바로 실행해야 할 때 사용해요.","imgs":["img_CTA Button_all_07"],"text":"높이 40px 버튼 안에 24px × 24px 아이콘을 배치합니다."}],"followups":["스펙 및 토큰","CTA Button Icon"]}}},"CTA Button Icon":{"title":"CTA Button Icon의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Standard","Toggle","Play","Coupon"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Standard 버튼 아이콘","imgs":["img_CTA Button Icon_all_01"],"text":"누르면 한 번에 실행되는 버튼을 아이콘으로 제공"},{"title":"Toggle 버튼 아이콘","imgs":["img_CTA Button Icon_all_02","img_CTA Button Icon_all_02.5"],"text":"켜고 끄는 버튼을 아이콘으로 제공"},{"title":"Play 버튼 아이콘","imgs":["img_CTA Button Icon_all_03"],"text":"영상을 재생하거나 멈추는 버튼을 아이콘으로 제공"},{"title":"Coupon 버튼","imgs":["img_CTA Button Icon_all_04"],"text":"사용자가 바로 쿠폰을 다운로드 할 수 있게 쿠폰 받기 버튼으로 제공"}]},"Standard":{"bubbles":[{"title":"Standard 버튼은 누르면 한 번에 실행되는\n기능을 아이콘으로 제공해요.","imgs":["img_CTA Button Icon_all_01"],"text":"장바구니·비교함에서 항목 삭제할때는 휴지통 아이콘을 사용해요.\n\n제품 페이지 공유, 메뉴얼·자료는 다운로드 아이콘을 사용해요.\n\n안내 문구 옆 정보는 (i) 아이콘으로 툴팁을 열어요."}],"followups":["스펙 및 토큰","CTA Button"]},"Toggle":{"bubbles":[{"title":"Toggle 버튼은 켜고 끄는 버튼을 아이콘으로 제공해요.","imgs":["img_CTA Button Icon_all_02"],"text":"제품 목록 카드의 이미지 모서리에 둔 위시리스트 및 제품 상세 페이지의 위시리스트 담기·빼기는 하트 아이콘을 사용해요.\n\n품절 제품의 재입고 알림 받기·끄기는 벨 아이콘을 사용해요.\n\n실제 사용 크기는 Icon 24x24, Container 40x40로 구성됩니다."},{"title":"Toggle Arrow 버튼은 텍스트박스를 켜고 끄는 버튼을 아이콘으로 제공해요.","rows":[["Expand","PC 24 x 24, MO 16 x 16"],["Collapse","PC 24 x 24, MO 16 x 16"]],"imgs":["img_CTA Button Icon_all_02.5"],"text":"제품 목록 카드의 이미지 모서리에 둔 위시리스트 및 제품 상세 페이지의 위시리스트 담기·빼기는 하트 아이콘을 사용해요.\n\n품절 제품의 재입고 알림 받기·끄기는 벨 아이콘을 사용해요.\n\n실제 사용 크기는 Icon 24x24, Container 40x40로 구성됩니다."}],"followups":["스펙 및 토큰","CTA Button","Tooltip"]},"Play":{"bubbles":[{"title":"Play 버튼은 영상을 재생하거나 멈추는 기능을 아이콘으로 제공해요.","rows":[["Default","PC 96 x 96, MO 56 x 56"],["Small","PC 36 x 36, MO 24 x 24"]],"imgs":["img_CTA Button Icon_all_03"],"text":"Default 사이즈는 메인 KV·제품 소개 영역의 영상 재생에 사용해요.\n\nSmall 사이즈는 제품 갤러리 썸네일·카드 안의\n영상에 사용해요.\n\n비디오 썸네일 배경에 따라서 Play, Pause 버튼은 line 형태, fill 버튼중에 알맞게 골라 사용하면 되요."}],"followups":["스펙 및 토큰","CTA Button"]},"Coupon":{"bubbles":[{"title":"Coupon 버튼은 사용자가 바로 쿠폰을 다운로드 할 수 있게 쿠폰 받기 버튼으로 제공해요.","rows":[["Default","108 x 40"],["Small","91 x 32"]],"imgs":["img_CTA Button Icon_all_04"],"text":"Default 사이즈는 메인 KV·제품 소개 영역의 영상 재생에 사용해요.\n\nSmall 사이즈는 제품 갤러리 썸네일·카드 안의\n영상에 사용해요."}],"followups":["스펙 및 토큰","CTA Button"]}}},"Popup":{"title":"Popup의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Confirmation","Input Data","Notification","Contents"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Confirmation","imgs":["img_Popup_all_01"],"text":"명확하고 직접적인 사용자 응답을 요청할 때 사용"},{"title":"Input Data","imgs":["img_Popup_all_02"],"text":"복잡한 입력을 받거나 선택 가능한 값을 제공할 때\n사용"},{"title":"Notification","imgs":["img_Popup_all_03"],"text":"사용자 행동에 대한 피드백을 간결한 메시지로\n제공할 때 사용"},{"title":"Contents","imgs":["img_Popup_all_04"],"text":"입력이나 선택 없이 콘텐츠를 전달할 때 사용"}]},"Confirmation":{"bubbles":[{"title":"Confirmation은 명확하고 직접적인 응답을 요청할 때 사용해요.","note":"본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.","imgs":["img_Popup_all_01"],"text":"확인·계속 등 사용자의 의사결정을 요청하며, PC와 모바일 모두 Standard 구성으로 제공합니다.\n\n제목·부제 없는 No Title 구성이 가능하며, 캡션도 생략할 수 있습니다."}],"followups":["스펙 및 토큰","CTA Button","Dimmed & Shadow"]},"Input Data":{"bubbles":[{"title":"Input Data는 복잡한 입력을 받거나\n선택 가능한 값을 제공할 때 사용해요.","note":"본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.","imgs":["img_Popup_all_02"],"text":"리뷰 작성·날짜 선택 등에 사용하며, Input Field와 Selection Control을 포함할 수 있습니다.\n\n제목·부제를 생략한 No Title 구성을 사용할 수 있으며, 캡션도 생략할 수 있습니다."}],"followups":["스펙 및 토큰","CTA Button","Text Field","Selection Control","Dimmed & Shadow"]},"Notification":{"bubbles":[{"title":"Notification은 사용자 행동에 대한 피드백을 간결한 메시지로 제공할 때 사용해요.","note":"본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.","imgs":["img_Popup_all_03"],"text":"경고와 같은 처리 결과나 앱 다운로드를 제공할 때 적용합니다.\n\nDefault는 제목 없이 본문만 사용할 수 있습니다. Alert는 Supporting Visual, App Download는 App Icon을 포함하며, App Download는 모바일 전용입니다."}],"followups":["스펙 및 토큰","CTA Button","Dimmed & Shadow"]},"Contents":{"bubbles":[{"title":"Contents는 입력이나 선택 없이 콘텐츠를\n전달할 때 사용해요.","note":"본문에 이미 제공한 설명이나 정보를 Popup에 그대로 반복하지 않습니다.","imgs":["img_Popup_all_04"],"text":"현재 화면의 맥락을 유지하면서 추가 설명·이미지·동영상을 제공합니다.\n\n단독 이미지·동영상은 Media로 제공하며, 원본 비율을 유지해 중앙 정렬합니다."}],"followups":["스펙 및 토큰","CTA Button","Dimmed & Shadow"]}}},"Dimmed & Shadow":{"title":"Dimmed & Shadow의\n구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Dimmed","Shadow"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Dimmed","rows":[["Dimmed 01","#000000 60%"],["Dimmed 02","#000000 90%"]],"imgs":["img_dimmedshadow_dimmed_01"],"text":"팝업·모달 등의 배경을 어둡게 처리"},{"title":"Shadow","imgs":["img_dimmedshadow_shadow_01"],"text":"UI 요소에 입체감과 깊이감을 부여"}]},"Dimmed":{"bubbles":[{"title":"Dimmed는 팝업·모달 등의 주요 콘텐츠에\n집중시켜야 하는 경우 사용해요.","rows":[["Dimmed 01","#000000 60%"],["Dimmed 02","#000000 90%"]],"imgs":["img_dimmedshadow_dimmed_01"],"text":"대부분의 팝업은 Dimmed 01(60%)를 사용하며,\n영상 재생 화면인 경우에는 Dimmed 02(90%)를 사용합니다."}]},"Shadow":{"bubbles":[{"title":"Shadow는 UI 요소 간 시각적 위계를\n구분해야 하는 경우 사용해요.","imgs":["img_dimmedshadow_shadow_01"],"text":"실제로는 다양한 수치가 사용되고 있으나,\n모든 값을 별도로 정의하지 않습니다.\n\n기존 스타일과 유사한 경우 Shadow 01 또는 Shadow 02 중 가까운 값으로 통일합니다."}]}}},"Iconography":{"title":"Iconography의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Bold","Regular","Light"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Bold","rows":[["Exterior Stroke","8px"],["Interior Stroke","7 / 7.5px"],["Size","12x12 / 16x16 / 24x24"]],"imgs":["img_iconography_bold_01"],"text":"작은 크기에서도 명확한 형태 표현이 필요한 경우 사용"},{"title":"Regular","rows":[["Exterior Stroke","5px"],["Interior Stroke","4 / 4.5px"],["Size","24x24 / 36x36 / 48x48"]],"imgs":["img_iconography_all_01"],"text":"일반적인 UI 요소에 균형 잡힌 굵기가 필요한 경우\n사용"},{"title":"Light","rows":[["Exterior Stroke","3px"],["Interior Stroke","3px"],["Size","64x64 / 72x72 / 96x96"]],"imgs":["img_iconography_all_02"],"text":"큰 크기에서 가벼운 형태 표현이 필요한 경우 사용"}]},"Bold":{"bubbles":[{"title":"Bold Style은 작은 크기에서도 명확한\n형태 표현이 필요한 경우 사용해요.","imgs":["img_iconography_bold_01"],"text":"96×96px 제작 그리드 기준 외곽선은 8px,\n내부선은 7~7.5px로 설정합니다.\n\n실제 사용 크기는 12×12, 16×16, 24×24px로\n구성되며, 24px Bold 타입은 GNB 영역에 한해 사용합니다."}],"followups":["Stroke","Keyline Shapes","Corners","Angle"]},"Regular":{"bubbles":[{"title":"Regular Style은 일반적인 UI 요소에\n균형 잡힌 굵기가 필요한 경우 사용해요.","imgs":["img_iconography_all_01"],"text":"96×96px 제작 그리드 기준 외곽선은 5px,\n내부선은 4~4.5px로 설정합니다,\n\n실제 사용 크기는 24×24, 36×36, 48×48px로 구성됩니다."}],"followups":["Stroke","Keyline Shapes","Corners","Angle"]},"Light":{"bubbles":[{"title":"Light Style은 큰 크기에서 가벼운 형태\n표현이 필요한 경우 사용해요.","imgs":["img_iconography_all_02"],"text":"96×96px 제작 그리드 기준 외곽선과 내부선은 모두 3px로 설정하며,\n\n실제 사용 크기는 64×64, 72×72, 96×96px로 구성됩니다."}],"followups":["Stroke","Keyline Shapes","Corners","Angle"]}}},"Radius":{"title":"Radius의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","4px","6px","8px","20px","24px","Max","None"],"answers":{"핵심만 보기":{"bubbles":[{"title":"4 px","imgs":["img_radius_all_01"],"text":"작은 UI 요소의 컨테이너에 사용\n적용: Option Chip, Option Selector, Check Box"},{"title":"6 px","imgs":["img_radius_all_02"],"text":"버튼, 툴팁 등 중간 크기 컴포넌트의 컨테이너에 사용\n적용: Snackbar, Text Field, Tooltip"},{"title":"8 px","imgs":["Menu/img_menu_all_01"],"text":"큰 컴포넌트 또는 그룹화된 버튼에 사용\n적용: Menu - Dropdown, Option Selector"},{"title":"20 px","imgs":["img_radius_all_04"],"text":"카드, 배너, 이미지 등 중간 크기 컨테이너에 사용\n적용: Card, Banner, Image"},{"title":"24 px","imgs":["img_radius_all_05"],"text":"여러 UI 요소로 구성된 팝업 등 복합 컴포넌트에 사용\n적용: Popup - PC"},{"title":"Max : 999xp","rows":[["’N’px (50%)","높이 값의 50% 수치로 적용 가능"]],"imgs":["img_radius_all_06"],"text":"버튼(CTA)과 같이 알약 형태의 높이가 고정된 요소에 사용\n적용: Button (CTA), Indicator, Number Counter, Scroll, Search Field"},{"title":"None : 0px","imgs":["img_radius_all_07"],"text":"리스트 또는 전체 화면 팝업 등 화면 너비를 가득 채우는 컨테이너에 사용\n적용: List, Popup - Full Screen"}]},"4px":{"bubbles":[{"title":"4px은 작은 UI 요소의 컨테이너에 사용해요.","imgs":["img_radius_all_01"],"text":"뱃지, 옵션 칩, 체크박스, 옵션 셀렉터 등의 작은 엘리먼트 코너에 적용해요."}],"followups":["스펙 및 토큰","Option Chip","Filter","Tab"]},"6px":{"bubbles":[{"title":"6px은 버튼, 툴팁 등 중간 크기 컴포넌트의 컨테이너에 사용해요.","imgs":["img_radius_all_02"],"text":"스낵바(토스트 알림), 텍스트 필드, 툴팁 등의 코너에 적용해요."}],"followups":["스펙 및 토큰","Snackbar","Text Field","Tooltip"]},"8px":{"bubbles":[{"title":"8px은 큰 컴포넌트 또는 그룹화된 버튼에 사용해요.","imgs":["Menu/img_menu_all_01"],"text":"드롭다운 메뉴, 옵센 셀렉터 등의 코너에 적용해요."}],"followups":["스펙 및 토큰","Menu","Option Selector"]},"20px":{"bubbles":[{"title":"20px은 중간 크기 컨테이너에 사용해요.","imgs":["img_radius_all_04"],"text":"카드, 배너, 이미지 등의 코너에 적용해요."}],"followups":["스펙 및 토큰"]},"24px":{"bubbles":[{"title":"24px은 여러 UI 요소로 구성된 팝업 등 복합 컴포넌트에 사용해요.","imgs":["img_radius_all_05"],"text":"팝업, 또는 대형 컨테이너의 코너에 적용해요."}],"followups":["스펙 및 토큰","Popup"]},"Max":{"bubbles":[{"title":"Max : 999xp은 높이가 고정된 요소에 사용해요.","imgs":["img_radius_all_06"],"text":"버튼(CTA), 인디케이터, 스크롤 등 알약(Pill) 형태 컴포넌트의 코너에 적용해요.\n\n컴포넌트 높이 값의 50% 수치로 적용 가능해요."}],"followups":["Button (CTA)","Indicator","Scroll"]},"None":{"bubbles":[{"title":"None : 0px은 화면 너비를 가득 채우는 컨테이너에 사용해요.","imgs":["img_radius_all_07"],"text":"리스트 또는 전체 화면 팝업 등의 코너에 적용해요."}],"followups":["List","Popup"]}}},"Badge":{"title":"Badge의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Filled","Label","Dot","Number","Icon"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Filled","imgs":["img_badge_all_01"],"text":"핵심 정보를 강조할 때 사용"},{"title":"Label","imgs":["img_badge_all_02"],"text":"배경 없이 텍스트만 노출하여 강조할 때 사용"},{"title":"Dot","imgs":["img_badge_all_03"],"text":"최소형 뱃지로 신규 정보 존재 여부를 알릴 때 사용"},{"title":"Number","imgs":["img_badge_all_04"],"text":"알림, 장바구니 등 수량을 표시할 때 사용"},{"title":"Icon","imgs":["img_badge_all_05"],"text":"오늘보장, 빠른배송 등 정형화된 에셋형으로 사용"}]},"Filled":{"bubbles":[{"title":"Filled 뱃지는 배경과 텍스트로 핵심 세일즈 정보를 강조할 때 사용해요.","note":"프로덕트 카드 내부에서는 사용하지 않습니다. (카드 내부는 Label 타입만 사용)","imgs":["img_badge_all_01"],"text":"혜택, 프로모션, 기획전 등 시각적으로 강조해야 하는 정보를 표현할 때 사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing","Radius"]},"Label":{"bubbles":[{"title":"Label 뱃지는 배경 없이 텍스트만 노출하여 강조할 때 사용해요.","note":"임의의 container나 border를 추가하지 않습니다.","imgs":["img_badge_all_02"],"text":"프로덕트 카드, 텍스트 리스트 등 정보가 밀집된 영역에서 간결한 강조가 필요할 때 사용합니다."}],"followups":["스펙 및 토큰","Typeface"]},"Dot":{"bubbles":[{"title":"Dot 뱃지는 최소형 뱃지로 신규 정보 존재 여부를 알려줄 때 사용해요.","note":"width =4px, height=4px 고정 크기를 사용합니다.","imgs":["img_badge_all_03"],"text":"구체적인 텍스트나 숫자 없이 업데이트, 신규 정보 등의 존재 여부만 전달할 때 사용합니다."}],"followups":["스펙 및 토큰"]},"Number":{"bubbles":[{"title":"Number 뱃지는 확인해야 할 정보의 수량을 표시할 때 사용해요.","note":"수량이 99 이상일 경우 99+로 표기하며, 숫자 외 특수 기호 등을 단독으로 사용하지 않습니다.","imgs":["img_badge_all_04"],"text":"알림, 장바구니, 메시지 등 구체적인 수량을 표현해야 할 때 사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing"]},"Icon":{"bubbles":[{"title":"Icon 뱃지는 정형화된 아이콘 에셋으로 상태 정보를 제공할 때 사용해요.","note":"텍스트 가독성 또는 레이아웃 조정을 위해 에셋을 임의 축소하거나 크기를 변경하지 않습니다.","imgs":["img_badge_all_05"],"text":"오늘보장, 빠른배송 등 물류/배송 상태를 파편화 없이 일관된 비주얼로 표현할 때 사용합니다."}],"followups":["스펙 및 토큰"]}}},"Chip":{"title":"Chip의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Action Chip","Select Chip"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Action Chip","imgs":["img_Chip_all_01"],"text":"항목 선택 시 관련 동작을 실행하거나 해당 항목과 연관된 콘텐츠를 표시할 때 사용"},{"title":"Select Chip","imgs":["img_Chip_all_02"],"text":"여러 항목을 선택하거나 선택 해제하고, 선택 결과에 따라 콘텐츠나 조건을 변경할 때 사용"}]},"Action Chip":{"bubbles":[{"title":"Action Chip은 항목 선택 시 관련 동작을 실행하거나 해당 항목과 연관된 콘텐츠를 표시할 때 사용해요.","note":"칩 레이블은 가독성을 위해 최대 22자로 제한하고, 한 줄로 표시합니다.","imgs":["img_Chip_all_01"],"text":"간결한 속성이나 항목을 표시하며, 사용자가 항목을 선택하여 콘텐츠를 필터링하거나 특정 동작을 실행할 때 사용해요.\n\n칩 레이블은 명확하고 쉽게 알아볼 수 있도록 간결하고 일관된 스타일로 작성해요."}],"followups":["스펙 및 토큰","Filter","Tab"]},"Select Chip":{"bubbles":[{"title":"Select Chip은 여러 항목을 선택하거나 선택 해제하고, 선택 결과에 따라 콘텐츠나 조건을 변경할 때 사용해요.","note":"칩 레이블은 가독성을 위해 최대 22자로 제한하고, 한 줄로 표시합니다.","imgs":["img_Chip_all_02"],"text":"Select Chip은 선택 항목을 삭제할 수 있도록 오른쪽에 삭제 아이콘을 배치해요.\n\n칩 레이블은 명확하고 쉽게 알아볼 수 있도록 간결하고 일관된 스타일로 작성해요."}],"followups":["스펙 및 토큰","Selection Control"]}}},"Selection Control":{"title":"Selection Control의\n구성이에요. 어떤게 궁금하신가요?","chips":["핵심만 보기","Check Box","Radio","Switch"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Check Box","imgs":["img_Selection Control_all_01"],"text":"하나 이상의 옵션을 선택할 때 사용"},{"title":"Radio","imgs":["img_Selection Control_all_02"],"text":"여러 옵션 중 하나만 선택할 때 사용"},{"title":"Switch","imgs":["img_Selection Control_all_03"],"text":"설정을 켜고 끌 때 사용"}]},"Check Box":{"bubbles":[{"title":"Check Box는 하나 이상의 옵션을 선택할 때 사용해요.","note":"정의되지 않은 기능에 사용하지 않아요.","imgs":["img_Selection Control_all_01"],"text":"여러 개를 골라도 되는 선택에 써요.\n(예: 필터의 조건 목록)\n\n상태는 On / Off 두 가지예요. 선택할 수 없을 때는 비활성(Disabled)으로 보여줘요.\n\n상위·하위 구조에서는 상위를 선택하면 하위가\n모두 선택되고, 하위를 하나라도 해제하면 상위도 해제돼요."}],"followups":["스펙 및 토큰","Option Chip"]},"Radio":{"bubbles":[{"title":"Radio는 여러 옵션 중 하나만 선택할 때 사용해요.","note":"여러 개를 동시에 선택하게 하거나, 옵션을 하나만 제공하면 안 돼요.","imgs":["img_Selection Control_all_02"],"text":"반드시 하나만 골라야 하는 선택에 써요.\n\n상태는 On / Off 두 가지예요. 마우스를 올리면 Hover, 선택할 수 없을 때는 비활성(Disabled)으로 보여줘요.\n\n새 옵션을 고르면 이전 선택은 자동으로 해제돼요."}],"followups":["스펙 및 토큰","Option Chip"]},"Switch":{"bubbles":[{"title":"Switch는 설정을 켜고 끌 때 사용해요.","note":"정의되지 않은 기능에 쓰면 안 돼요.","imgs":["img_Selection Control_all_03"],"text":"단독으로 쓰이거나 켜짐·꺼짐 두 가지뿐인 옵션에 써요.\n\n라벨은 Switch 바로 옆에 두어요.\n\n누르는 즉시 상태가 바뀌고 결과가 바로 반영되며, 별도의 저장·확인 버튼을 거치지 않아요."}],"followups":["스펙 및 토큰","Option Chip"]}}},"Indicator":{"title":"Indicator의\n구성이에요. 어떤게 궁금하신가요?","chips":["핵심만 보기","Dot","Arrow","Number","Scroll","Bar"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Dot 인디게이터","imgs":["img_Indicator_all_01"],"text":"카드형 콘텐츠의 범위와 현재 위치를 보여줄 때"},{"title":"Arrow 인디게이터","imgs":["img_Indicator_all_02"],"text":"이전·다음 콘텐츠로 이동할 때"},{"title":"Number 인디게이터","imgs":["img_Indicator_all_03"],"text":"현재 위치와 전체 개수를 숫자로 보여줄 때"},{"title":"Scroll 인디게이터","imgs":["img_Indicator_all_04"],"text":"보이는 영역 밖 콘텐츠를 가로로 탐색할 때"},{"title":"Bar 인디게이터","imgs":["img_Indicator_all_05","img_Indicator_all_06"],"text":"영상 등 재생 시간이 있는 콘텐츠의 위치·진행을 보여줄 때"}]},"Dot":{"bubbles":[{"title":"Dot 인디게이터는 카드형 콘텐츠의 범위와 현재 위치를 보여줄 때 사용해요.","note":"Medium·Small 크기의 점은 More than 7 타입에서만 써요.","imgs":["img_Indicator_all_01"],"text":"카드 단위로 나뉠 콘텐츠(캐러셀 등)에 써요.\n\n콘텐츠 영역의 하단 중앙에 두어요.\n\n기본은 최대 7개, 컨트롤(Play/Pause) 없이 써요. 7개가 넘으면 끝쪽 점이 작아지는 More than 7 타입을 써요.\n\n자동 재생 콘텐츠에는 Play/Pause 아이콘이 붙은 with icon 타입을 써요."}],"followups":["스펙 및 토큰"]},"Arrow":{"bubbles":[{"title":"Arrow 인디게이터는 이전·다음 콘텐츠로 이동할 때 사용해요.","note":"접근성용 화살표 영역은 이미지 안에 투명하게 두고, 화면에 보이게 노출하면 안 돼요.","imgs":["img_Indicator_all_02"],"text":"이전·다음 콘텐츠로 넘기는 데 쓰고, 맥락에 따라 두 가지 스타일을 써요.\n\n처음에는 다음 화살표만, 중간에는 양쪽, 끝에서는 이전 화살표만 동작해요."}],"followups":["스펙 및 토큰"]},"Number":{"bubbles":[{"title":"Number 인디게이터는 현재 위치와 전체 개수를 숫자로 보여줄 때 사용해요.","note":"최대 99개까지만 표시해요.","imgs":["img_Indicator_all_03"],"text":"현재 / 전체(예: 1 / 5) 형식으로 보여줘요.\n\n콘텐츠 개수가 많아 점으로 보여주기 어려울 때 숫자로 위치를 알려줘요."}],"followups":["스펙 및 토큰"]},"Scroll":{"bubbles":[{"title":"Scroll 인디게이터는 보이는 영역 밖 콘텐츠를 가로로 탐색할 때 사용해요.","note":"카드 단위로 나뉠 콘텐츠에는 Scroll이 아니라 Dot을 써요.","imgs":["img_Indicator_all_04"],"text":"가로로 이어지는 연속 스크롤 콘텐츠에 써요.\n\n처음에는 이전 화살표가, 끝에서는 다음 화살표가 비활성화돼요.\n\n화면 폭과 레이아웃 제약에 맞는 인디케이터를\n선택해요."}],"followups":["스펙 및 토큰"]},"Bar":{"bubbles":[{"title":"Bar 인디게이터는 이전·다음 콘텐츠로 이동할 때 사용해요.","note":"접근성용 화살표 영역은 이미지 안에 투명하게 두고, 화면에 보이게 노출하면 안 돼요.","imgs":["img_Indicator_all_05","img_Indicator_all_06"],"text":"영상처럼 재생 시간이 있는 미디어 콘텐츠의 위치와 진행 상황을 보여줄 때 사용해요.\n\nPC에서만 사용해요."}],"followups":["스펙 및 토큰"]}}},"Divider":{"title":"Divider의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Horizontal","Vertical"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Horizontal","rows":[["Height","1px"],["Style","Solid"],["Light BG","#DDDDDD / #EEEEEE"],["Dark BG","#555555"]],"imgs":["img_Divider_all_01"],"text":"세로로 정렬된 콘텐츠를 구분할 때 사용"},{"title":"Vertical","rows":[["Width","1px"],["Style","Solid"],["Light BG","#DDDDDD"],["Dark BG","#555555"]],"imgs":["img_Divider_all_02"],"text":"가로로 정렬된 콘텐츠를 구분할 때 사용"}]},"Horizontal":{"bubbles":[{"title":"Horizontal은 세로로 정렬된 콘텐츠를\n구분할 때 사용해요.","note":"색상·두께·불투명도는 임의로 변경하지 않습니다.","imgs":["img_Divider_all_01"],"text":"가로 실선을 사용하며, 콘텐츠의 영역이나 그룹 간 경계가 필요한 곳에만 적용합니다."}],"followups":["스펙 및 토큰","List","Menu","Spacing"]},"Vertical":{"bubbles":[{"title":"Vertical은 가로로 정렬된 콘텐츠를\n구분할 때 사용해요.","note":"색상·두께·불투명도는 임의로 변경하지 않습니다.","imgs":["img_Divider_all_02"],"text":"세로 실선을 사용하며, 콘텐츠의 영역이나 그룹 간 경계가 필요한 곳에만 적용합니다."}],"followups":["스펙 및 토큰","List","Menu","Spacing"]}}},"Option Chip":{"title":"Option Chip의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Color","Label"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Color","imgs":["img_option chip_all_01"],"text":"제품 등의 컬러 옵션 선택"},{"title":"Label","imgs":["img_option chip_all_02"],"text":"스펙 등의 텍스트 옵션 선택"}]},"Color":{"bubbles":[{"title":"Color 칩은 제품의 컬러 옵션을 시각적으로 제공할 때 사용해요.","imgs":["img_option chip_all_01"],"text":"색상 자체가 선택 대상인 경우 사용하며, 선택된 컬러의 속성명을 함께 제공합니다."}],"followups":["스펙 및 토큰","Spacing","Typeface"]},"Label":{"bubbles":[{"title":"Label 칩은 텍스트 기반의 옵션을 선택할 때 사용해요.","imgs":["img_option chip_all_02"],"text":"제품의 주요 사양이나 필터 조건을 선택하거나 필터링할 때 사용합니다."}],"followups":["스펙 및 토큰","Spacing","Radius","Typeface"]}}},"Option Selector":{"title":"Option Selector의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Image","Label","Meta","Color"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Image","imgs":["img_Option Selector_all_01"],"text":"이미지·로고를 보고 옵션을 선택할 때 사용"},{"title":"Label","imgs":["img_Option Selector_all_02"],"text":"텍스트 옵션을 선택할 때 사용"},{"title":"Meta","imgs":["img_Option Selector_all_03"],"text":"메인 텍스트와 보조 정보를 확인하며 옵션을 선택할 때 사용"},{"title":"Color","imgs":["img_Option Selector_all_04"],"text":"컬러 옵션을 선택할 때 사용"}]},"Image":{"bubbles":[{"title":"Image는 이미지·로고를 보고 옵션을\n선택할 때 사용해요.","imgs":["img_Option Selector_all_01"],"text":"대표 이미지나 로고로 선택 가능한 옵션을 제공합니다. 각 이미지는 옵션 영역 안에서 중앙 정렬해 일관된 형태로 보여줍니다."}],"followups":["스펙 및 토큰","Option Chip","Selection Control"]},"Label":{"bubbles":[{"title":"Label은 텍스트 옵션을 선택할 때 사용해요.","imgs":["img_Option Selector_all_02"],"text":"짧은 텍스트로 선택 가능한 옵션을 제공합니다.\n이미지나 보조 정보 없이 옵션명만으로 항목을\n확인하고 선택할 때 사용합니다."}],"followups":["스펙 및 토큰","Option Chip","Selection Control"]},"Meta":{"bubbles":[],"followups":["스펙 및 토큰","Option Chip","Selection Control"]},"Color":{"bubbles":[{"title":"Color는 컬러 옵션을 선택할 때 사용해요.","imgs":["img_Option Selector_all_04"],"text":"원형 컬러칩으로 제품의 색상 옵션을 제공합니다. 컬러칩은 Inner Circle과 Inner Circle Border로 구성됩니다."}],"followups":["스펙 및 토큰","Option Chip","Selection Control"]}}},"Tooltip":{"title":"Tooltip의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Standard","Label","Meta","Bubble"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Standard","imgs":["img_Tooltip_all_01"],"text":"제목과 본문을 함께 제공하거나 본문을 항목별로\n나누어 설명할 때 사용"},{"title":"Label","imgs":["img_Tooltip_all_02"],"text":"요소의 의미나 짧은 안내를 간단한 텍스트로 제공할 때 사용"},{"title":"Meta","imgs":["img_Tooltip_all_03"],"text":"항목별 명칭과 금액 등의 데이터를 함께 확인할 때\n사용"},{"title":"Bubble","imgs":["img_Tooltip_all_04"],"text":"관련 요소를 말풍선으로 가리켜 짧은 안내나 보충 설명을 제공할 때 사용"}]},"Standard":{"bubbles":[{"title":"Standard는 제목과 본문을 함께 제공하거나 본문을 항목별로 나누어 설명할 때 사용해요.","note":"버튼 등 주요 UI 요소와 중요한 콘텐츠를 가리지 않도록 배치합니다.","imgs":["img_Tooltip_all_01"],"text":"Standard A와 Standard B로 제공하며, 여러 본문 항목과 글머리 기호로 내용을 나누어 보여줍니다. 콘텐츠에 따라 제목과 닫기 아이콘을 생략할 수 있습니다."}],"followups":["스펙 및 토큰","CTA Button Icon"]},"Label":{"bubbles":[{"title":"Label은 요소의 의미나 짧은 안내를\n간단한 텍스트로 제공할 때 사용해요.","note":"버튼 등 주요 UI 요소와 중요한 콘텐츠를 가리지 않도록 배치합니다.","imgs":["img_Tooltip_all_02"],"text":"별도의 제목 없이 Body Text로 안내 내용을 구성합니다."}],"followups":["스펙 및 토큰","CTA Button Icon","Dimmed & Shadow"]},"Meta":{"bubbles":[{"title":"Meta는 항목별 명칭과 금액 등의 데이터를\n함께 확인할 때 사용해요.","note":"버튼 등 주요 UI 요소와 중요한 콘텐츠를 가리지 않도록 배치합니다.","imgs":["img_Tooltip_all_03"],"text":"항목명은 왼쪽, 대응하는 데이터는 오른쪽에 정렬해 함께 보여줍니다. 필요한 경우 제목·부제·글머리 기호·추가 설명을 포함할 수 있습니다."}],"followups":["스펙 및 토큰","CTA Button Icon","Divider"]},"Bubble":{"bubbles":[{"title":"Bubble은 관련 요소를 말풍선으로 가리켜\n짧은 안내나 보충 설명을 제공할 때 사용해요.","note":"버튼 등 주요 UI 요소와 중요한 콘텐츠를 가리지 않도록 배치합니다.","imgs":["img_Tooltip_all_04"],"text":"안내 문구를 기본으로 제공하며, 필요한 경우 그 아래에 Description Text을 추가합니다.\n\n관련 요소의 위치에 맞춰 말풍선 꼬리를 중앙·오른쪽·왼쪽 중 선택할 수 있습니다."}],"followups":["스펙 및 토큰","CTA Button Icon"]}}},"Tab":{"title":"Tab의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Standard / Anchor","Icon","Outlined","Filled","Toggle","Underlined / Standard / Primary"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Standard / Anchor","imgs":["img_Tab_all_01"],"text":"텍스트로 콘텐츠를 구분하고 전환할 때 사용"},{"title":"Icon","imgs":["img_Tab_all_02"],"text":"아이콘과 텍스트를 함께 제공하는 카드형 탭에 사용"},{"title":"Outlined","imgs":["img_Tab_all_03"],"text":"둥근 테두리로 선택 상태를 구분할 때 사용"},{"title":"Filled","imgs":["img_Tab_all_04"],"text":"배경색을 채워 선택된 항목을 강조할 때 사용"},{"title":"Toggle","imgs":["img_Tab_all_05"],"text":"컨테이너와 테두리로 선택 상태를 강조할 때 사용"},{"title":"Underlined / Standard / Primary","imgs":["img_Tab_all_06"],"text":"PC에서 밑줄로 선택 상태를 구분할 때 사용"}]},"Standard / Anchor":{"bubbles":[{"title":"Standard / Anchor는 텍스트 레이블과 Underline으로 콘텐츠를 구분하고 전환하는 탭이에요.","imgs":["img_Tab_all_01"],"text":"텍스트 중심으로 카테고리를 구분하고, 선택항목을 하단 밑줄로 표시합니다."}],"followups":["스펙 및 토큰","Badge","Chip"]},"Icon":{"bubbles":[{"title":"Icon은 아이콘과 텍스트로 구성된 카드형 탭이에요.","imgs":["img_Tab_all_02"],"text":"아이콘을 통해 항목의 의미를 시각적으로 전달하고 콘텐츠를 전환할 수 있습니다."}],"followups":["스펙 및 토큰","Badge","Chip"]},"Outlined":{"bubbles":[{"title":"Outlined은 둥근 외곽 테두리로 선택 상태를 표현하는 탭이에요.","imgs":["img_Tab_all_03"],"text":"테두리의 색상과 두께로 선택 항목을 구분합니다."}],"followups":["스펙 및 토큰","Badge","Chip"]},"Filled":{"bubbles":[{"title":"Filled는 선택된 항목의 배경색을 채워 강조하는 탭이에요.","imgs":["img_Tab_all_04"],"text":"선택된 항목에 검정색 배경과 흰색 텍스트를 적용해 활성 상태를 명확하게 표현합니다."}],"followups":["스펙 및 토큰","Badge","Chip"]},"Toggle":{"bubbles":[{"title":"Toggle은 선택된 항목의 컨테이너와 테두리를 강조하는 탭이에요.","imgs":["img_Tab_all_05"],"text":"선택 시 흰색 컨테이너와 검정색 테두리로 구분합니다."}],"followups":["스펙 및 토큰","Badge","Chip"]},"Underlined / Standard / Primary":{"bubbles":[{"title":"Underlined / Standard / Primary는 PC에서 사용하는 하단 밑줄 탭이에요.","imgs":["img_Tab_all_06"],"text":"텍스트 레이블 하단에 하단 밑줄을 표시해 선택된 항목을 구분합니다."}],"followups":["스펙 및 토큰","Badge","Chip"]}}},"List":{"title":"List의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Header","Item Default","Item Indent","Item Selection"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Header","imgs":["img_List_all_01"],"text":"클릭이나 탭으로 리스트를 펼치거나 접는 제목 영역"},{"title":"Item Default","imgs":["img_List_all_02"],"text":"아래의 하위 항목으로, 각 항목을 대표하는 제목 영역"},{"title":"Item Indent","imgs":["img_List_all_03"],"text":"아이콘과 텍스트를 함께 제공하는 카드형 탭에 사용"},{"title":"Item Selection","imgs":["img_List_all_04"],"text":"아이콘과 텍스트를 함께 제공하는 카드형 탭에 사용"}]},"Header":{"bubbles":[{"title":"Header은 하위 항목 그룹을 대표하며,\n클릭이나 탭으로 리스트를 펼치거나 접는\n제목 영역이에요.","note":"기본적으로 상위 세 개의 Header만 펼치고 나머지는 접어 둡니다.\nHeader 사이에는 구분선을 두어 그룹 간 경계를 구분합니다.","imgs":["img_List_all_01"],"text":"리스트 헤더, 아코디언, 펼치기 접기, 그룹 제목,\n카테고리 제목에 사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing","Option Chip"]},"Item Default":{"bubbles":[{"title":"Item Default은 아래의 하위 항목으로,\n각 항목을 대표하는 제목 영역 이에요.","imgs":["img_List_all_02"],"text":"리스트 아이템, 하위 항목, 목록 항목에\n사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing","Option Chip"]},"Item Indent":{"bubbles":[{"title":"Item Indent는 단일 선택이 필요한 항목을\n나열하는 들여쓰기 항목 입니다.","note":"여러 항목을 동시에 선택해야 하는 경우에는 Item / Indent를 사용하지 않고 Item / Selection을 사용합니다.","imgs":["img_List_all_02"],"text":"들여쓰기 항목, 단일 선택 목록, 하위 목록에\n사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing","Option Chip"]},"Item Selection":{"bubbles":[{"title":"Item Selection는 여러 항목을 보면서\n복수 선택할 수 있는 선택형 항목입니다.","note":"하나만 선택해야 하는 경우에는 Item / Selection을 사용하지 않고 Item / Indent를 사용합니다.","imgs":["img_List_all_02"],"text":"체크박스 리스트, 다중 선택 목록, 선택 리스트,\n필터 목록에 사용합니다."}],"followups":["스펙 및 토큰","Typeface","Spacing","Option Chip"]}}},"Menu":{"title":"Menu의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Drop down Menu","Icon Leading Menu","Select Field"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Drop down Menu","imgs":["img_menu_all_01"],"text":"콘텐츠 카테고리 등 여러 선택지 중 하나의 항목을 선택할 때 사용"},{"title":"Icon Leading Menu","imgs":["img_menu_all_02"],"text":"아이콘이나 버튼을 통해 옵션 목록을 일시적으로 표시할 때 사용"},{"title":"Select Field","imgs":["img_menu_all_03"],"text":"콘텐츠를 정렬하거나 정보를 선택하기 위해 여러 옵션 중 하나를 선택할 때 사용"}]},"Drop down Menu":{"bubbles":[{"title":"Dropdown Menu는 여러 선택지 중 하나를 선택할 수 있도록 옵션 목록을 표시하는 메뉴예요.","imgs":["img_menu_all_01"],"text":"콘텐츠의 카테고리나 항목을 선택할 때 사용해요.\n\nSelect Field 등 정의된 요소의 사용자 인터랙션을 통해 메뉴가 열리도록 구성하고, 독립적으로 사용하지 않아요.\n\n메뉴의 Item(리스트)은 현재 선택된 항목을 명확하게 확인할 수 있도록 선택 상태를 구분해 표시해요."}],"followups":["스펙 및 토큰","Filter","List","Chip"]},"Icon Leading Menu":{"bubbles":[{"title":"Icon Leading Menu는 아이콘이나 버튼을 선택했을 때 관련 옵션 목록을 표시하는 메뉴예요.","imgs":["img_menu_all_02"],"text":"특정 요소와 관련된 기능이나 추가 옵션을 제공할 때 사용해요.\n\n아이콘이나 버튼을 통해 메뉴를 호출하고, 사용자 인터랙션에 따라 옵션 목록을 일시적으로 표시해요."}],"followups":["스펙 및 토큰","Filter","List","Chip"]},"Select Field":{"bubbles":[{"title":"Select Field는 여러 선택지 중 하나를 선택하여 정보를 지정하거나 변경하는 컴포넌트예요.","imgs":["img_menu_all_03"],"text":"콘텐츠의 정렬 기준을 선택하거나 특정 정보를 설정할 때 사용해요.\n\n현재 선택된 값을 기본으로 표시하여 설정 상태를 확인할 수 있도록 하며, Select Field를 선택하면 연결된 Dropdown Menu가 표시되어 옵션을 선택할 수 있어요."}],"followups":["스펙 및 토큰","Option Selector","Filter","Tab"]}}},"Filter":{"title":"Filter의 구성이에요.\n어떤게 궁금하신가요?","chips":["Standard"],"answers":{"Standard":{"bubbles":[{"title":"Filter는 여러 옵션이나 상세 조건을 선택하여 원하는 콘텐츠를 탐색할 때 사용해요.","items":[["PC","PC에서는 여러 필터를 가로 방향으로 배치하고, Dropdown 아이콘을 사용합니다."],["MO","모바일에서는 컴팩트한 Button 형태로 제공하며, 클릭 시 Bottom Sheet Popup을 사용합니다."]],"imgs":["img_filter_standard_01","img_filter_standard_02"],"text":"PC·모바일 등 디바이스 환경에 따라 필터의 배치와 메뉴 노출 방식을 구분할 때 적용합니다."}],"followups":["스펙 및 토큰","Popup","Menu"]}}},"Text Field":{"title":"Text Field의 구성이에요.\n어떤게 궁금하신가요?","chips":["핵심만 보기","Single Line","Multi Line","Single Entry","Single Line(SEC)"],"answers":{"핵심만 보기":{"bubbles":[{"title":"Single Line","imgs":["img_Text Field_all_01"],"text":"한 줄에 들어가는 짧은 텍스트 입력에 사용"},{"title":"Multi Line","imgs":["img_Text Field_all_02"],"text":"여러 줄이 필요한 긴 텍스트 입력에 사용"},{"title":"Single Entry","imgs":["img_Text Field_all_03"],"text":"필터 패널에서 가격을 조정할 때 사용"},{"title":"Single Line(SEC)","imgs":["img_Text Field_all_04"],"text":"한총에서 한 줄의 텍스트를 입력할 때 사용"}]},"Single Line":{"bubbles":[{"title":"Single Line은 한 줄에 들어가는 짧은 텍스트를 입력할 때 사용해요.","imgs":["img_Text Field_all_01"],"text":"이메일, 검색어, 이름 등 간단한 정보를 입력할 때 사용하며, 하단 Input Line으로 입력 영역을 구분합니다."}],"followups":["스펙 및 토큰","Typeface","Color"]},"Multi Line":{"bubbles":[{"title":"Multi Line은 여러 줄이 필요한 긴 텍스트를 입력할 때 사용해요.","imgs":["img_Text Field_all_02"],"text":"문의 내용, 의견, 상세 설명 등 긴 메시지를 입력할 때 사용합니다."}],"followups":["스펙 및 토큰","Typeface","Color"]},"Single Entry":{"bubbles":[{"title":"Single Entry는 필터 패널에서 가격을 조정할 때 사용해요.","imgs":["img_Text Field_all_03"],"text":"최소-최대 값 범위를 입력하여 원하는 가격대의 결과를 필터링할 때 사용합니다. PC에서만 지원합니다."}],"followups":["스펙 및 토큰","Typeface","Color"]},"Single Line(SEC)":{"bubbles":[{"title":"Single Line(SEC)는 한총 환경에서 사용하는 박스형 한 줄 입력 필드예요.","imgs":["img_Text Field_all_04"],"text":"Container와 Border로 입력 영역을 구분하며, PC와 Mobile에 공통으로 적용합니다."}],"followups":["스펙 및 토큰","Typeface","Color"]}}}};</script>
 <script>
 /* ── 기본 데이터: 기타 문의 고정 답변 (가이드 데이터는 data/ 폴더에서) ── */
 var MENU = []; /* data/DB_guide 기준으로 아래에서 구성 */
@@ -720,6 +755,7 @@ function show(screen){
   var prevScreen = S.screen || (S.backFrom ? 'x' : null); S.backFrom = false;
   if(S.screen !== screen && S.screen) S.history.push(S.screen);
   S.screen = screen;
+  if(screen !== 'chat' && window.moaFindClose) moaFindClose();
   $('pgIntro').classList.toggle('hide', screen!=='intro');
   $('pgHome').classList.toggle('hide', screen!=='home');
   $('pgChat').classList.toggle('hide', screen!=='chat');
@@ -733,7 +769,7 @@ function show(screen){
   $('bar').classList.toggle('hide', screen!=='chat' && screen!=='home');
   $('head').classList.toggle('transparent', screen==='key');
   document.querySelector('#topbar .tools').classList.toggle('hide', screen==='key');
-  if(screen==='chat') $('topTitle').textContent = (S.topic && S.topic !== S.cat ? S.topic + ' · ' : '') + (S.cat || 'Chat');
+  if(screen==='chat') $('topTitle').textContent = GENERAL;
   if(screen==='key') $('topTitle').textContent = '설정';
   if(prevScreen && prevScreen !== screen) slideIn(screen, S.navDir || 'fwd');
   S.navDir = null;
@@ -820,25 +856,54 @@ var HOME_DESC = {
 };
 var homeSub = document.querySelector('.hero-sub');
 var HOME_SUB_DEFAULT = homeSub.textContent;
+/* 칩 설명: 페이드 전환 */
+var homeSubT = 0, homeSubSwap = 0;
+function homeSubSet(t, isDesc){
+  clearTimeout(homeSubSwap);
+  if(homeSub.textContent === t){ homeSub.classList.toggle('desc', isDesc); homeSub.classList.remove('fade'); return; }
+  homeSub.classList.add('fade');
+  homeSubSwap = setTimeout(function(){ homeSub.textContent = t; homeSub.classList.toggle('desc', isDesc); homeSub.classList.remove('fade'); }, 160);
+}
 HOME_CHIPS.forEach(function(row){
   var r = el('div','home-row');
   row.forEach(function(label){
     var b = el('button','mchip',label);
     b.onclick = function(){ openCategory(label); };
-    b.addEventListener('mouseenter', function(){ var d = HOME_DESC[label]; if(d){ homeSub.textContent = d; homeSub.classList.add('desc'); } moaChipHover = true; clearTimeout(moaChipT); if(!moaHover && !moaTurning && !moaChipOn){ moaChipOn = true; moaShow(moaTeachBlob, moaImg.dataset.teacher); } });
-    b.addEventListener('mouseleave', function(){ homeSub.textContent = HOME_SUB_DEFAULT; homeSub.classList.remove('desc'); moaChipHover = false; clearTimeout(moaChipT); moaChipT = setTimeout(function(){ if(!moaChipHover && moaChipOn){ moaChipOn = false; if(!moaHover && !moaTurning) moaStop(); } }, 120); });
+    b.addEventListener('mouseenter', function(){ var d = HOME_DESC[label]; clearTimeout(homeSubT); if(d) homeSubSet(d, true); moaChipHover = true; clearTimeout(moaChipT); if(!moaHover && !moaTurning && !moaChipOn){ moaChipOn = true; moaShow(moaTeachBlob, moaImg.dataset.teacher); } });
+    b.addEventListener('mouseleave', function(){ clearTimeout(homeSubT); homeSubSet(HOME_SUB_DEFAULT, false); moaChipHover = false; clearTimeout(moaChipT); moaChipT = setTimeout(function(){ if(!moaChipHover && moaChipOn){ moaChipOn = false; if(!moaHover && !moaTurning) moaStop(); } }, 120); });
     r.appendChild(b);
   });
   $('homeChips').appendChild(r);
 });
 
-var OVERVIEW = '한 눈에 보기';
+var OVERVIEW = '핵심만 보기';
 /* DB에서 바로 찾은 답변(하위 칩 등)도 타이틀을 "키워드 + 마무리 문구"로 */
 function moaJosa(word, pair){
   var s = String(word).trim(), ch = s.charCodeAt(s.length - 1), has;
   if(ch >= 0xAC00 && ch <= 0xD7A3) has = (ch - 0xAC00) % 28 > 0;
   else has = /[lmnkpbt]$/i.test(s);
   return has ? pair[0] : pair[1];
+}
+/* 한글 표기 → 영어 용어: data/db_glossary/ko_en.md + 기본 목록 (파일을 못 읽어도 동작) */
+var MOA_KOEN_BASE = { 'meta':['메타'] };
+function moaKoEn(q){
+  var pairs = [];
+  var add = function(term, a){ term = String(term).split('/')[0].trim(); a = String(a).trim(); if(term && a && /[가-힣]/.test(a)) pairs.push([a, term]); };
+  Object.keys(MOA_KOEN_BASE).forEach(function(t){ MOA_KOEN_BASE[t].forEach(function(a){ add(t, a); }); });
+  (window.MOA_GLOSSARY_DB || []).forEach(function(it){ if(it && it.source === 'ko_en.md') (it.aliases || []).forEach(function(a){ add(it.term, a); }); });
+  pairs.sort(function(x, y){ return y[0].length - x[0].length; });
+  var s = String(q);
+  pairs.forEach(function(p){ s = s.split(p[0]).join(' ' + p[1] + ' '); });
+  return s === String(q) ? s : s.replace(/ +([은는이가을를의에도과와랑란로])/g, '$1').replace(/\s{2,}/g, ' ').trim();
+}
+function shownQ(q){ var s = S.showQ; if(s && s.en === q){ S.showQ = null; return s.ko; } return q; }
+/* 가벼운 대화 답변: 문장마다 줄바꿈 · 긴 문장은 '~다면/~으면/~는데…' 뒤에서 한 번 더 */
+function moaBreak(t){
+  return String(t || '').replace(/([.!?])\s+(?=\S)/g, '$1\n').split('\n').map(function(l){
+    if(l.length <= 20) return l;
+    var m = /^(.{6,}?(?:다면|으면|려면|는데|지만|어서|해서|니까|거나))\s+(.{6,})$/.exec(l);
+    return m ? m[1] + '\n' + m[2] : l;
+  }).join('\n');
 }
 function moaLeadTitle(key){
   if(typeof moaPickLead !== 'function') return null;
@@ -965,7 +1030,7 @@ function renderLanding(body, lp){
   (function next(i){
     if(i >= lp.bubbles.length){
       if(q != null) remember(q, memo.join('\n\n'));
-      addActions(body, memo.join('\n\n'), '', (q === OVERVIEW || !fromIntro) ? [] : lp.followups); /* 관련 칩: 카테고리 하위칩(한 눈에 보기 제외) 답변에만 */
+      addActions(body, memo.join('\n\n'), '', (q === OVERVIEW || !fromIntro) ? [] : lp.followups); /* 관련 칩: 카테고리 하위칩(핵심만 보기 제외) 답변에만 */
       scrollDown();
       return;
     }
@@ -1089,7 +1154,7 @@ var STAR = '<svg width="20" height="20" viewBox="0 0 20 20"><defs><linearGradien
 
 /* 카테고리가 정해지지 않은 창 (첫 화면에서 오타·의도 불명 질문 등) */
 var GENERAL = 'Moa';
-function openCategory(cat, topic){
+function openCategory(cat, topic, how){
   if(window.moaLoadDb) moaLoadDb();
   loadLanding();
   S.cat = cat;
@@ -1097,10 +1162,23 @@ function openCategory(cat, topic){
   S.convo = S.convo || []; /* 카테고리를 옮겨도 최근 5개 대화는 유지 */
   var g = GUIDE[cat];
   var con = $('chatCon');
-  con.innerHTML = '';
+  /* 한 화면에서 대화 이어가기: 초기화(fresh)일 때만 비우고, 그 외엔 아래에 이어 붙임 · quiet = 화면 변화 없이 주제만 전환 */
+  var keep = how !== 'fresh' && con.children.length > 0;
+  /* 홈·다른 화면에 나갔다 들어오면: 대화는 두고, 이전 소개 문구(~구성이에요)와 칩은 숨김 */
+  if(keep && S.screen !== 'chat'){
+    Array.prototype.forEach.call(con.querySelectorAll('.intro'), function(n){ n.style.display = 'none'; });
+    /* 히스토리 맨 위 여백 (12px + gap 12px = 24px) */
+    if(!con.querySelector('.hist-top')){ var sp = el('div','hist-top'); sp.style.cssText = 'flex:none;height:12px;align-self:stretch'; con.insertBefore(sp, con.firstChild); }
+  }
+  if(keep && how === 'quiet'){ show('chat'); return; }
+  if(!keep) con.innerHTML = '';
+  /* 이어 붙일 때: 새 카테고리 소개를 화면 맨 위에 두고, 이전 대화는 위로 스크롤해야 보이게 */
+  var put = function(){ S.pin = null; con.appendChild(intro); S.anchor = keep ? intro : null; show('chat'); if(keep){ S.userScroll = false; S.hold = false; requestAnimationFrame(scrollDown); } };
   var intro = el('div','intro');
   var title = el('div','title');
-  title.innerHTML = STAR;
+  /* 그라데이션 id를 소개마다 다르게 (숨긴 이전 소개의 id를 참조해 로고가 안 보이는 문제 방지) */
+  var sid = 's' + (++S.starN || (S.starN = 1));
+  title.innerHTML = STAR.replace(/ti(\d)/g, 'ti$1' + sid);
   if(cat !== GENERAL && title.firstElementChild) title.firstElementChild.classList.add('spin'); /* 카테고리 진입: 로고 한 바퀴 */
   var h1 = el('h1');
   h1.textContent = cat === GENERAL ? 'Moa에게 질문하세요.\n어떤게 궁금하신가요?' : (LANDING[cat] && LANDING[cat].title) ? LANDING[cat].title : (cat === '기타 문의')
@@ -1116,12 +1194,12 @@ function openCategory(cat, topic){
   title.appendChild(h1);
   intro.appendChild(title);
   var qs = el('div','qchips');
-  if(cat === GENERAL){ con.appendChild(intro); show('chat'); return; }
+  if(cat === GENERAL){ put(); return; }
   /* 전체 메뉴(햄버거)에 없는 DB_tokens 카테고리: 칩 없이 질문에만 답변 */
   var inMenu = MENU.some(function(sec){ return sec.rows.some(function(r){ return r.indexOf(cat) > -1; }); });
   if(!inMenu && cat !== '기타 문의' && !LANDING[cat]){
     if(USE_DB && !S.topic) S.topic = isTopic(cat) ? cat : (TOPICS.filter(function(t){ return SECTIONS[t].indexOf(cat) > -1; })[0] || null);
-    con.appendChild(intro); show('chat'); return;
+    put(); return;
   }
   var fromDb = USE_DB && inDb(cat);
   var qlist = (!fromDb && g) ? g.q : null;
@@ -1130,19 +1208,28 @@ function openCategory(cat, topic){
     S.topic = owner || null;
     qlist = owner ? chipsFor(owner) : [cat];
   }
+  var ownTopic = S.topic;
   (LANDING[cat] && LANDING[cat].chips ? LANDING[cat].chips : (qlist || [OVERVIEW])).forEach(function(q){
     var b = el('button','chip',q);
     b.onclick = function(){
       Array.prototype.forEach.call(qs.children, function(c){c.classList.remove('sel');});
       b.classList.add('sel');
       S.introChip = q;
+      S.cat = cat; S.topic = ownTopic; /* 위쪽 이전 칩을 눌러도 그 칩의 주제로 답변 */
       ask(q);
     };
     qs.appendChild(b);
   });
   intro.appendChild(qs);
-  con.appendChild(intro);
-  show('chat');
+  /* 칩 하단 이전으로: 이 소개 위의 이전 대화(마지막 챗봇 답변)로 스크롤 · 없으면 알림 */
+  var ib = el('button','backlink');
+  ib.style.marginTop = '-8px';
+  ib.innerHTML = BACK_HTML;
+  ib.onclick = function(){
+    prevQ(intro);
+  };
+  intro.appendChild(ib);
+  put();
 }
 
 function setIng(on){ $('bgIng').classList.toggle('on', !!on); }
@@ -1176,12 +1263,47 @@ function mdPlain(text){
     .trim();
 }
 
-function scrollDown(){ if(S.hold || S.userScroll) return; var c=$('chatCon'); c.style.paddingBottom = ''; c.scrollTop = c.scrollHeight; }
+/* 스크롤 위치 계산: 상단바 아래 24px 여백 */
+function rowTop(n){ var c = $('chatCon'); return c.scrollTop + n.getBoundingClientRect().top - c.getBoundingClientRect().top; }
+function pinGap(){ var c = $('chatCon'), t = document.querySelector('.topbar'); var o = t ? t.getBoundingClientRect().bottom - c.getBoundingClientRect().top : 0; return 10 + Math.max(0, o); }
+function padFor(c, top){ c.style.paddingBottom = ''; var lack = top + c.clientHeight - c.scrollHeight; if(lack > 0) c.style.paddingBottom = (parseFloat(getComputedStyle(c).paddingBottom) || 0) + lack + 'px'; }
+/* 챗봇 답변 → 그 답변의 사용자 질문 (없으면 답변 자체) */
+function userAbove(n){ var p = n && n.previousElementSibling; while(p && !p.classList.contains('row-user')){ if(p.classList.contains('row-bot') || p.classList.contains('intro')) return n; p = p.previousElementSibling; } return p || n; }
+/* 이전으로: 이전 대화의 사용자 질문이 상단바 아래 24px에 오도록 */
+/* from 위쪽의 가장 가까운 사용자 질문(없으면 챗봇 답변)으로 · 없으면 알림 */
+function prevQ(from){
+  var n = from && from.previousElementSibling, bot = null;
+  while(n){
+    if(n.classList.contains('row-user')) return scrollToQ(n, true);
+    if(!bot && n.classList.contains('row-bot')) bot = n;
+    n = n.previousElementSibling;
+  }
+  if(bot) return scrollToQ(bot);
+  toast('이전대화가 없습니다');
+}
+function scrollToQ(bot, exact){
+  var c = $('chatCon'), u = exact ? bot : userAbove(bot), top = Math.max(0, rowTop(u) - pinGap());
+  S.hold = true; padFor(c, top); S.userScroll = false;
+  c.scrollTo({ top: top, behavior: 'smooth' });
+}
+function scrollDown(){ if(S.hold || S.userScroll) return; var c=$('chatCon'); c.style.paddingBottom = '';
+  /* 홈에서 서치바로 이어서 질문: 질문이 상단바 아래 24px에 고정 */
+  if(S.pin && S.pin.isConnected){ var pt = Math.max(0, rowTop(S.pin) - pinGap()); padFor(c, pt); c.scrollTop = pt; return; }
+  /* 이어 붙인 새 소개는 아래 내용이 화면을 넘기 전까지 맨 위에 고정 (칩 눌러도 화면이 안 내려감) */
+  var a = S.anchor;
+  if(a && a.isConnected && a.style.display !== 'none'){
+    var top = c.scrollTop + a.getBoundingClientRect().top - c.getBoundingClientRect().top;
+    var need = top + c.clientHeight - c.scrollHeight;
+    if(need > 0) c.style.paddingBottom = (parseFloat(getComputedStyle(c).paddingBottom) || 0) + need + 'px';
+  }
+  c.scrollTop = c.scrollHeight; }
 /* 답변 중 사용자가 직접 스크롤하면 자동 스크롤 멈춤 (새 질문을 보내면 다시 켬) */
 (function(){
   var c = $('chatCon'); if(!c) return;
   var mark = function(){ S.userScroll = true; };
   c.addEventListener('wheel', mark, {passive:true});
+  /* 맨 아래까지 다시 내리면 자동 스크롤(대화 따라가기) 재개 */
+  c.addEventListener('scroll', function(){ if(S.userScroll && c.scrollHeight - c.scrollTop - c.clientHeight < 8) S.userScroll = false; }, {passive:true});
   c.addEventListener('touchmove', mark, {passive:true});
   c.addEventListener('pointerdown', function(e){ if(e.offsetX > c.clientWidth) mark(); });
   c.addEventListener('keydown', function(e){ if(/^(ArrowUp|ArrowDown|PageUp|PageDown|Home|End| )$/.test(e.key)) mark(); });
@@ -1267,28 +1389,11 @@ function compareTopics(q){
   if(!list.length){ if(cur) list.push(cur); found.forEach(function(t){ if(list.indexOf(t) < 0) list.push(t); }); }
   return list.length > 1 ? list : null;
 }
-/* 다른 카테고리로 넘어가기 전 동의 받기: 넘어가기 / 여기서 답변 */
-/* 현재 카테고리에 남아서 새 질문 받기 */
-function stayHere(){ var m = $('msgInput'); if(m){ m.value = ''; if($('bar')) $('bar').classList.remove('typing'); if(typeof autoGrow === 'function') autoGrow(); try{ m.focus(); }catch(e){} } }
-function confirmMove(body, text, mv, onGo, onStay){
-  var here = S.topic || S.cat;
-  var note = el('div','bub-note'), tx = el('div'); tx.textContent = text;
-  var cs = el('div'); cs.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:10px';
-  var mk = function(label){ var b = el('button', '', label); b.style.cssText = 'all:unset;cursor:pointer;font-size:13px;font-weight:600;line-height:19px;color:#2063FF;text-decoration:underline;text-underline-offset:3px'; return b; };
-  var go = mk(mv + ' 질문창으로 넘어가기');
-  go.style.color = '#4185FF';
-  var hint = el('div'); hint.style.cssText = 'margin-top:8px'; hint.textContent = here + '에 대해 더 질문하고 싶으시면 하단 검색창에 질문을 남겨주세요.';
-  var done = function(){ go.style.pointerEvents = 'none'; };
-  go.onclick = function(){ done(); setTimeout(onGo, 250); };
-  cs.appendChild(go);
-  note.appendChild(tx); note.appendChild(cs); note.appendChild(hint);
-  body.appendChild(note); scrollDown();
-}
 /* 답변 불가 안내 (제목 없이 바디 텍스트만) */
 function moaQShort(q){ q = String(q || '').replace(/\s+/g, ' ').trim(); return q.length > 20 ? q.slice(0, 20) + '…' : q; }
 function moaNote(body, text){ setIng(false); var n = el('div','bub-note'); n.style.whiteSpace = 'pre-line'; n.textContent = text; body.appendChild(n); scrollDown(); }
 /* 질문 속 타입 이름이 여러 카테고리에 있고, 질문·현재 창으로 어느 쪽인지 정할 수 없으면 → 후보 목록 */
-function ambiguousType(q){
+function ambiguousType(q, wide){
   if(!USE_DB) return null;
   var s = ' ' + String(q).toLowerCase().replace(/[^a-z0-9가-힣]+/g, ' ') + ' ';
   var named = detectTopics(q, true);
@@ -1297,7 +1402,7 @@ function ambiguousType(q){
     var it = TYPE_INDEX[keys[i]];
     if(it.topics.length < 2) continue;
     if(!new RegExp('[ ]' + keys[i].replace(/[^a-z0-9가-힣]+/g, ' ').trim().replace(/ /g, '\\s?') + '(?=[ 가-힣])').test(s)) continue;
-    if(S.topic && it.topics.indexOf(S.topic) > -1) return null;          /* 지금 창이 후보 중 하나 */
+    if(!wide && S.topic && it.topics.indexOf(S.topic) > -1) return null;          /* 지금 창이 후보 중 하나 */
     if(named.some(function(t){ return it.topics.indexOf(t) > -1; })) return null; /* 질문에 카테고리 명시 */
     if(isTopic(it.name) || named.some(function(t){ return t.toLowerCase() === keys[i]; })) return null; /* 'Color'처럼 카테고리 이름과 같은 단어 */
     return it;
@@ -1316,14 +1421,14 @@ function topicsForWord(w){
   });
   return out.filter(function(t){ return isTopic(t) || t === 'Tab'; });
 }
-function generalAmbiguity(q){
-  if(!USE_DB || (S.cat !== GENERAL && S.screen === 'chat')) return null;
+function generalAmbiguity(q, wide){
+  if(!USE_DB || (!wide && S.cat !== GENERAL && S.screen === 'chat')) return null;
   if(compareTopics(q)) return null;
   var named = detectTopics(q), base = named.filter(function(t){ return MOA_FOUNDATION.indexOf(t) > -1; });
   named = named.filter(function(t){ return MOA_FOUNDATION.indexOf(t) < 0; }); /* 공통 스타일(Color·Radius 등)은 속성으로 보고 컴포넌트 우선 */
   if(named.length > 1) return { name: '', topics: named.slice(0, 8) };
   if(named.length === 1) return null;
-  var ty = ambiguousType(q); if(ty) return ty;
+  var ty = ambiguousType(q, wide); if(ty) return ty;
   var cand = null, word = '';
   moaTokenize(q).filter(function(w){ return /^[a-z][a-z0-9_]{2,}$/.test(w) && MOA_AMBI_STOP.indexOf(w) < 0; }).forEach(function(w){
     var ts = topicsForWord(w);
@@ -1337,57 +1442,62 @@ function generalAmbiguity(q){
 }
 function askWhich(q, it){
   var con = $('chatCon');
-  if(!S.noUserRow){ var ur = el('div','row-user'); ur.appendChild(el('div','bub-user', q)); con.appendChild(ur); }
+  if(!S.noUserRow){ var ur = el('div','row-user'); ur.appendChild(el('div','bub-user', shownQ(q))); con.appendChild(ur); if(S.pinNext){ S.pin = ur; S.hold = false; S.userScroll = false; } }
+  S.pinNext = false;
   S.noUserRow = false;
   var br = el('div','row-bot'), av = el('div','avatar'); av.innerHTML = AVATAR_HTML;
   var bb = el('div','bot-body'); br.appendChild(av); br.appendChild(bb); con.appendChild(br);
   var note = el('div','bub-note'); note.style.whiteSpace = 'pre-line';
   note.textContent = !it.name ? '질문에 ' + it.topics.join(', ') + ' 내용이 함께 있어요.\n어떤 카테고리로 이동해서 답변할까요?'
-    : it.plain ? '‘' + it.name + '’은(는) ' + it.topics.join(', ') + '에 모두 있어요.\n어떤 카테고리로 이동해서 답변할까요?'
+    : it.plain ? '‘' + it.name + '’' + moaJosa(it.name, ['은','는']) + ' ' + it.topics.join(', ') + '에 모두 있어요.\n어떤 카테고리로 이동해서 답변할까요?'
     : '‘' + it.name + '’ 타입은 ' + it.topics.join(', ') + '에 모두 있어요.\n어떤 항목의 ' + it.name + '에 대해 알려드릴까요?';
   bb.appendChild(note);
   var chips = el('div','qchips'); /* 버블과 8px (bot-body gap) */
   it.topics.forEach(function(t){
     var b = el('button','chip', it.name && !it.plain ? t + ' ' + it.name : t);
+    /* 답변 후에도 위로 올라가 다른 카테고리를 다시 고를 수 있음 (첫 선택은 질문 바로 아래라 질문 버블 생략) */
     b.onclick = function(){
-      Array.prototype.forEach.call(chips.children, function(x){ x.disabled = true; x.style.pointerEvents = 'none'; });
-      openCategory(t, t); ask(q);
+      var first = !chips.querySelector('.sel');
+      Array.prototype.forEach.call(chips.children, function(x){ x.classList.remove('sel'); });
+      b.classList.add('sel');
+      openCategory(t, t, 'quiet'); S.noUserRow = first; ask(q);
     };
     chips.appendChild(b);
   });
   bb.appendChild(chips);
   scrollDown();
 }
+/* 가벼운 대화 후보: 카테고리·용어집 용어·디자인 단어·토큰/수치가 하나도 없을 때만 (최종 판단은 Gemini) */
+function moaChatCand(q){
+  if(!window.moaChat || detectTopics(q).length || compareTopics(q)) return false;
+  var gm = typeof moaGlossaryMatch === 'function' ? moaGlossaryMatch(q, moaTokenize(q)) : { terms: [], topics: [] };
+  if(gm.terms.length || gm.topics.length) return false;
+  if(/#[0-9a-f]{3,8}|\d\s?(px|pt|dp|%)|[a-z]+[\/_][a-z]/i.test(q)) return false;
+  return !/디자인|컬러|색상|색깔|버튼|폰트|글꼴|서체|타이포|간격|여백|토큰|스펙|규격|라운드|모서리|그림자|아이콘|컴포넌트|레이아웃|팝업|칩|탭|가이드|피그마|figma|ui|ux|color|button|font|spacing|radius|token|shadow|icon/i.test(q);
+}
 function ask(q, typed){
   S.hold = false; S.userScroll = false; /* 새 질문이면 자동 스크롤 다시 켬 */
+  var pinMe = S.pinNext; S.pinNext = false; S.pin = null;
   /* 카테고리 안: 고정답변(랜딩메뉴)이 있으면 무조건 그걸 보여주고, 겹치는 워딩이 있어도 다른 카테고리로 넘기지 않음 */
   var inCat = !!S.cat && S.cat !== GENERAL && S.cat !== '기타 문의';
   var fixed = !!landingFor(S.cat, q);
-  var cmp = (inCat || fixed) ? null : compareTopics(q);
-  var amb = !inCat && !fixed && !cmp && S.cat !== '기타 문의' && !eggFor(q) && (typed && S.cat === GENERAL ? generalAmbiguity(q) : ambiguousType(q));
-  if(amb){ askWhich(q, amb); return; }
-  /* 카테고리 안에서도 다른 카테고리 이름(한글·영문)을 물으면 이동 여부를 물어봄 */
-  if(typed && !cmp && !fixed && S.stayQ !== q){
+  /* 카테고리 창에서 직접 입력한 질문은 홈처럼 전체 DB 검색 (겹치면 카테고리 선택 질문) */
+  var wide = inCat && !!typed && !fixed;
+  var cmp = ((inCat && !wide) || fixed) ? null : compareTopics(q);
+  var amb = (!inCat || wide) && !fixed && !cmp && S.cat !== '기타 문의' && !eggFor(q) && (typed && (S.cat === GENERAL || wide) ? generalAmbiguity(q, wide) : ambiguousType(q));
+  if(amb){ S.pinNext = pinMe; askWhich(q, amb); return; }
+  /* 다른 카테고리 이름(한글·영문)을 물으면 같은 화면에서 주제만 전환 */
+  if(typed && !cmp && !fixed){
     var mv = (inCat && foundationRedirect(q)) || redirectTopic(q);
-    if(mv){
-      var con0 = $('chatCon');
-      var ur = el('div','row-user'); ur.appendChild(el('div','bub-user', q)); con0.appendChild(ur);
-      var br = el('div','row-bot'), av0 = el('div','avatar');
-      av0.innerHTML = AVATAR_HTML;
-      var bb = el('div','bot-body');
-      br.appendChild(av0); br.appendChild(bb); con0.appendChild(br);
-      confirmMove(bb, mv + ' 관련 질문이에요. ' + mv + ' 질문창으로 넘어가서 답변할까요?', mv,
-        function(){ openCategory(mv, mv); ask(q); },
-        function(){ stayHere(); });
-      return;
-    }
+    if(mv){ openCategory(mv, mv, 'quiet'); S.pinNext = pinMe; ask(q); return; } /* 이동 안내 없이 같은 화면에서 주제만 전환 */
   }
   S.curQ = q;
   var con = $('chatCon');
   if(!S.noUserRow){
     var r = el('div','row-user');
-    r.appendChild(el('div','bub-user',q));
+    r.appendChild(el('div','bub-user',shownQ(q)));
     con.appendChild(r);
+    if(pinMe) S.pin = r;
   }
   S.noUserRow = false; scrollDown();
 
@@ -1452,9 +1562,9 @@ function ask(q, typed){
     }
     if(USE_DB){
       if(q === OVERVIEW && S.topic && isTopic(S.topic)){ renderAnswer(body, withLead(overviewFor(S.topic), S.topic)); return; }
-      var exact = dbFor(S.topic, q);
+      var exact = dbFor(wide ? null : S.topic, q);
       if(exact.length){ renderAnswer(body, withLead(dbAnswer(q, exact), q)); return; }
-      var typed = S.topic ? typeChunks(S.topic, q) : [];
+      var typed = S.topic && !wide ? typeChunks(S.topic, q) : [];
       if(typed.length){ renderAnswer(body, withLead(dbAnswer(q, typed), q)); return; }
       var onStep = function(){};
       var live = null, liveP = null;
@@ -1481,21 +1591,17 @@ function ask(q, typed){
         scrollDown();
       };
       var pre = S.preRes && S.preRes.q === q ? S.preRes.res : null; S.preRes = null;
-      (pre ? Promise.resolve(pre) : window.moaAsk(q, S.key, { onStep:onStep, onDelta:null, topic:S.topic, compareTopics:cmp, history:(S.convo || []).slice() })).then(function(res){
-        setIng(false);
-        /* 지금 카테고리에 답이 없어 다른 카테고리에서 찾았으면 그 카테고리로 이동해서 답변 */
-        var stay = S.stayQ === q; S.stayQ = null;
-        if(!pre && !stay && !inCat && res.movedTo && isTopic(res.movedTo) && res.movedTo !== S.topic){
-          var mv = res.movedTo;
-          if(live && live.parentNode) live.parentNode.removeChild(live);
+      (pre ? Promise.resolve(pre) : (moaChatCand(q) ? window.moaChat(q, S.key) : Promise.resolve(null)).then(function(c){ return c ? { chat: c } : window.moaAsk(q, S.key, { onStep:onStep, onDelta:null, topic:wide ? null : S.topic, compareTopics:cmp, history:(S.convo || []).slice() }); })).then(function(res){
+        if(res && res.chat){ /* 가벼운 대화: 짧은 텍스트만 */
+          setIng(false); S.curQ = null; S.failAt = 0; setApiStatus(true);
           Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
-          S.curQ = null;
-          var here = S.topic || S.cat;
-          confirmMove(body, S.cat === GENERAL ? mv + ' 관련 질문이에요. ' + mv + ' 질문창으로 넘어가서 답변할까요?' : here + '에는 관련 내용이 없고, ' + mv + '에서 찾았어요. ' + mv + ' 질문창으로 넘어가서 답변할까요?', mv,
-            function(){ S.preRes = { q:q, res:res }; openCategory(mv, mv); ask(q); },
-            function(){ stayHere(); });
+          var cn = el('div','bub-note'); cn.style.whiteSpace = 'pre-line'; body.appendChild(cn);
+          typeText(cn, moaBreak(res.chat.text), scrollDown); scrollDown();
           return;
         }
+        setIng(false);
+        /* 다른 카테고리에서 찾았으면 주제만 전환 */
+        if(!pre && res.movedTo && isTopic(res.movedTo) && res.movedTo !== S.topic && !wide){ S.cat = res.movedTo; S.topic = res.movedTo; } /* 이동 안내 없이 같은 화면에서 이어서 답변 */
         if(res.model){ S.failAt = 0; setApiStatus(true); }
         /* 용어 식별 불가: 제목 없이 바디 텍스트 한 줄만 */
         /* 1) 의도 파악 불가일 때만 (2) 데이터 없음은 기존 '내용 없음' 답변 유지) */
@@ -1575,6 +1681,7 @@ function renderAnswer(body, a){
         meta.appendChild(el('div','h', it[1]));
         s.appendChild(box); s.appendChild(meta);
         s.title = '클릭하면 선택한 요소에 적용';
+        s.setAttribute('data-hex', it[1]); s.setAttribute('data-name', it[0]);
         s.onclick = function(){ post({type:'apply-fill', hex:it[1], name:it[0]}); };
         r.appendChild(s);
       });
@@ -1591,6 +1698,7 @@ function renderAnswer(body, a){
       r.appendChild(el('span','a', it[0]));
       r.appendChild(el('span','b', it[1]));
       r.title = '클릭하면 선택한 텍스트에 적용';
+      r.setAttribute('data-size', parseInt(it[0],10)); r.setAttribute('data-label', it[0]);
       r.onclick = function(){ post({type:'apply-fontsize', size:parseInt(it[0],10), label:it[0]}); };
       wrap.appendChild(r);
     });
@@ -1685,8 +1793,31 @@ function moaLines(html){
   });
   return out;
 }
+/* 토큰 그룹: 첫 번째 분류명(label)은 불릿·들여쓰기 없이 한 줄, 두 번째부터(/color: …)만 불릿 */
+function moaTokGroups(t){
+  var B = /^\s*(?:[•\-*]|\d+\.)\s+/, L = String(t).split('\n'), out = [], prev = null;
+  var body = function(ln){ return ln.replace(B, '').trim(); };
+  var isSub = function(ln){ return /^\/[A-Za-z0-9]/.test(body(ln || '')); };
+  var isHead = function(ln){ return /^[A-Za-z][\w\-]*:?$/.test(body(ln || '')); };
+  for(var k = 0; k < L.length; k++){
+    var ln = L[k], b = body(ln), m;
+    if(isSub(ln)){ out.push('• ' + b.replace(/^\//, '')); continue; } /* 불릿 뒤 맨 앞 '/' 삭제 */
+    if(isHead(ln) && isSub(L[k + 1])){
+      if(out.length && out[out.length - 1].trim()) out.push('');
+      out.push(b.replace(/:$/, '')); prev = null; continue;
+    }
+    /* 'label/color: 값'처럼 한 줄에 붙은 경로 → 첫 분류명으로 묶기 */
+    if(B.test(ln) && (m = b.match(/^([A-Za-z][\w\-]*)(\/[A-Za-z0-9].*)$/))){
+      if(m[1] !== prev){ if(out.length && out[out.length - 1].trim()) out.push(''); out.push(m[1]); prev = m[1]; }
+      out.push('• ' + m[2].replace(/^\//, '')); continue;
+    }
+    prev = null; out.push(ln);
+  }
+  return out.join('\n');
+}
 function moaFormat(text, chips){
   text = moaParas(text);
+  text = moaTokGroups(text);
   TK_RE.lastIndex = 0; HEX_RE.lastIndex = 0;
   /* 스펙 답변: 토큰·단위값·HEX가 있거나, '항목: 값' 목록이거나, 스펙/토큰/규격 안내 */
   moaSpec = TK_RE.test(text) || HEX_RE.test(text) || /스펙|토큰|규격/.test(text) || /^\s*(•|-|\d+\.)\s+[^:\n]+:\s*\S/m.test(text);
@@ -1729,10 +1860,11 @@ function typeText(node, text, done, noCaret){
 }
 
 
+var BACK_HTML = '<span style="position:relative;width:16px;height:16px;flex-shrink:0;display:block"><svg width="11.738" height="11.2" viewBox="0 0 11.738 11.2" style="position:absolute;left:2.369px;top:2.13px"><path d="M 5.184 0.174 C 5.416 -0.058 5.793 -0.058 6.026 0.174 C 6.258 0.406 6.258 0.782 6.026 1.015 L 2.036 5 L 11.139 5 C 11.47 5 11.738 5.269 11.738 5.6 C 11.738 5.931 11.47 6.199 11.139 6.199 L 2.037 6.199 L 6.026 10.185 C 6.258 10.417 6.258 10.793 6.026 11.026 C 5.793 11.258 5.416 11.258 5.184 11.026 L 0.174 6.021 C -0.058 5.788 -0.058 5.412 0.174 5.18 L 5.184 0.174 Z" fill-rule="nonzero"/></svg></span><span>이전대화</span>';
 function addActions(body, copyText, cta, chipsOverride){
   var after = el('div','after');
 
-  var rel = chipsOverride || []; /* 관련 칩은 카테고리 하위칩(한 눈에 보기 제외) 답변에만 */
+  var rel = chipsOverride || []; /* 관련 칩은 카테고리 하위칩(핵심만 보기 제외) 답변에만 */
   if(rel.length){
     var chips = el('div','qchips');
     rel.forEach(function(q){
@@ -1752,24 +1884,10 @@ function addActions(body, copyText, cta, chipsOverride){
     after.appendChild(ctaWrap);
   }
 
-  bl.innerHTML = '<span style="position:relative;width:16px;height:16px;flex-shrink:0;display:block"><svg width="11.738" height="11.2" viewBox="0 0 11.738 11.2" style="position:absolute;left:2.369px;top:2.13px"><path d="M 5.184 0.174 C 5.416 -0.058 5.793 -0.058 6.026 0.174 C 6.258 0.406 6.258 0.782 6.026 1.015 L 2.036 5 L 11.139 5 C 11.47 5 11.738 5.269 11.738 5.6 C 11.738 5.931 11.47 6.199 11.139 6.199 L 2.037 6.199 L 6.026 10.185 C 6.258 10.417 6.258 10.793 6.026 11.026 C 5.793 11.258 5.416 11.258 5.184 11.026 L 0.174 6.021 C -0.058 5.788 -0.058 5.412 0.174 5.18 L 5.184 0.174 Z" fill-rule="nonzero"/></svg></span><span>이전으로</span>';
+  bl.innerHTML = BACK_HTML;;
   /* 이전으로: 대화는 그대로 두고, 바로 앞 챗봇 답변으로 스크롤. 앞 답변이 없으면(첫 대화) 칩 영역/맨 위로 */
-  bl.onclick = function(){
-    var con = document.querySelector('.chat-con'), n = bl.closest('.row-bot');
-    n = n && n.previousElementSibling;
-    while(n && !n.classList.contains('intro') && !n.classList.contains('row-bot')) n = n.previousElementSibling;
-    /* 첫 번째·두 번째 답변은 항상 맨 위로 */
-    var bots = Array.prototype.filter.call(con.children, function(x){ return x.classList.contains('row-bot'); });
-    if(bots.indexOf(bl.closest('.row-bot')) <= 1) n = null;
-    var top = (!n || n === con.firstElementChild) ? 0 : con.scrollTop + n.getBoundingClientRect().top - con.getBoundingClientRect().top;
-    /* 아래 내용이 짧아도 대상 버블이 항상 맨 위에 오도록 하단 여백 확보 (새 대화가 오면 scrollDown에서 해제) */
-    S.hold = true; /* 타이핑·이미지 로딩 중 자동 스크롤이 덮어쓰지 않게 */
-    con.style.paddingBottom = '';
-    var lack = top + con.clientHeight - con.scrollHeight;
-    if(lack > 0) con.style.paddingBottom = (parseFloat(getComputedStyle(con).paddingBottom) + lack) + 'px';
-    S.userScroll = false; /* 이전으로는 사용자가 직접 누른 이동이라 항상 스크롤 */
-    con.scrollTo({ top: top, behavior: 'smooth' });
-  };
+  /* 이전으로: 항상 바로 앞 질문으로 (카테고리 소개를 지나쳐도 맨 위로 가지 않음) */
+  bl.onclick = function(){ var me = bl.closest('.row-bot'); prevQ(me ? userAbove(me) : null); };
   /* 카테고리 페이지의 첫 번째 답변에는 이전으로 없음 */
   var conEl = document.querySelector('.chat-con'), rowEl = body.closest ? body.closest('.row-bot') : null;
   if(!(conEl && rowEl && conEl.querySelector('.row-bot') === rowEl)) after.appendChild(bl);
@@ -1810,7 +1928,8 @@ function isNoise(input){
 }
 function reply(q, text){
   var con = $('chatCon');
-  var r = el('div','row-user'); r.appendChild(el('div','bub-user', q)); con.appendChild(r);
+  var r = el('div','row-user'); r.appendChild(el('div','bub-user', shownQ(q))); con.appendChild(r);
+  if(S.pinNext){ S.pin = r; S.hold = false; S.userScroll = false; } else S.pin = null; S.pinNext = false;
   var br = el('div','row-bot'), av = el('div','avatar'); av.innerHTML = AVATAR_HTML;
   var bb = el('div','bot-body'), ing = el('div','bub-ing');
   ing.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>';
@@ -1820,16 +1939,147 @@ function reply(q, text){
 function send(){
   var v = msg.value.trim();
   if(!v) return;
+  /* 한글 표기(메타, 프라이머리…)는 영어 용어로 바꿔서 처리 · 말풍선에는 입력한 그대로 */
+  var ven = moaKoEn(v); S.showQ = ven !== v ? { en: ven, ko: v } : null; v = ven;
   if(!S.connected){ $('discOverlay').classList.remove('hide'); return; }
+  S.pinNext = S.screen !== 'chat' && $('chatCon').children.length > 0; /* 홈에서 이어서 질문 */
   msg.value = ''; $('bar').classList.remove('typing'); autoGrow();
+  /* 짧은 맞장구(웅, 응, 어, 그래…)는 '네!'로만 답하고 끝 */
+  if(/^(웅+|응+|어+|엉+|으응|ㅇ+|ㅇㅇ|넹+|넵|네+|예+|그래+|그래요|그럼|오케이|오키|ok(ay)?|ㅇㅋ|알겠어요?|알았어요?|알겠습니다|좋아요?|굿|good)[\s.!~?ㅎㅋ^]*$/i.test(v)){
+    if(S.screen !== 'chat') openCategory(GENERAL, null, 'quiet');
+    return reply(v, '네!');
+  }
+  /* 카테고리 없이 '스펙·토큰·값'만 물으면 어떤 카테고리인지 함께 적어 달라고 안내 */
+  if(!detectTopics(v).length && /스[펙팩]|토큰|값|spec|token|value/i.test(v) && !String(v).toLowerCase().replace(/스[펙팩]|토큰|값|spec(s)?|token(s)?|value(s)?|및|그리고|이랑|랑|과|와|하고|전체|모든|목록|리스트|정리|좀|알려\s*(줘|주세요|줄래|주실래요)?|보여\s*(줘|주세요)?|궁금해요?|뭐야|뭐예요|뭔가요|무엇인가요|어떻게\s*돼(요)?|은|는|이|가|을|를|요|[?!.~,·\/\s]/g, '')){
+    if(S.screen !== 'chat') openCategory(GENERAL, null, 'quiet');
+    return reply(v, '어떤 카테고리의 스펙·토큰이 궁금하신가요?\n카테고리 이름과 함께 질문해 주세요. (예: Chip 스펙 알려줘)');
+  }
   if(isNoise(v)){
-    if(S.screen !== 'chat') openCategory(GENERAL);
+    if(S.screen !== 'chat') openCategory(GENERAL, null, 'quiet');
     return reply(v, '‘' + moaQShort(v) + '’에 대해 정확히 인식하지 못했어요.\n원하시는 내용을 다시 질문해 주세요.');
   }
-  if(S.screen !== 'chat' && detectTopics(v).length > 1 && !compareTopics(v)){ openCategory(GENERAL); ask(v, true); return; } /* 여러 카테고리 → Moa 창에서 후보 확인 */
-  if(S.screen !== 'chat'){ var tp = detectTopics(v)[0]; if(tp && compareTopics(v)){ openCategory(tp, tp); ask(v); return; } if(tp){ openCategory(tp, tp); ask(v); return; } openCategory(GENERAL); }
+  if(S.screen !== 'chat' && detectTopics(v).length > 1 && !compareTopics(v)){ openCategory(GENERAL, null, 'quiet'); ask(v, true); return; } /* 여러 카테고리 → Moa 창에서 후보 확인 */
+  if(S.screen !== 'chat'){ var tp = detectTopics(v)[0]; if(tp && compareTopics(v)){ openCategory(tp, tp, 'quiet'); ask(v); return; } if(tp){ openCategory(tp, tp, 'quiet'); ask(v); return; } openCategory(GENERAL, null, 'quiet'); }
   ask(v, true);
 }
+
+/* ── 대화 히스토리 저장: 최근 질문 30개까지 (기기별 · 플러그인: Figma clientStorage / 미리보기: localStorage)
+   Gemini 참고 대화(S.convo)는 최근 5개만 함께 저장 ── */
+(function(){
+  var KEY = 'moa-history', MAX_Q = 30, MAX_LEN = 1500000, con = $('chatCon'), t = 0, ready = false;
+  var snapshot = function(){
+    var box = document.createElement('div');
+    Array.prototype.forEach.call(con.children, function(n){
+      if(n.classList.contains('intro') || n.classList.contains('hist-top')) return;
+      if(!n.classList.contains('row-user') && !n.classList.contains('row-bot')) return;
+      var c = n.cloneNode(true); c.setAttribute('data-old', '');
+      Array.prototype.forEach.call(c.querySelectorAll('.bub-ing,.steps,.caret,span.fwrap>mark'), function(x){ if(x.tagName === 'MARK') x.outerHTML = x.textContent; else x.parentNode.removeChild(x); });
+      if(c.querySelector('.bot-body') && !c.querySelector('.bot-body').children.length) return;
+      box.appendChild(c);
+    });
+    var users = box.querySelectorAll(':scope > .row-user');
+    if(users.length > MAX_Q){ var cut = users[users.length - MAX_Q]; while(box.firstChild && box.firstChild !== cut) box.removeChild(box.firstChild); }
+    var html = box.innerHTML;
+    while(html.length > MAX_LEN && box.children.length > 2){ box.removeChild(box.firstChild); while(box.firstChild && !box.firstChild.classList.contains('row-user')) box.removeChild(box.firstChild); html = box.innerHTML; }
+    return JSON.stringify({ v: 1, html: html, convo: (S.convo || []).slice(-5) });
+  };
+  var save = function(){
+    if(!ready || con.querySelector('.bub-ing,.caret')){ clearTimeout(t); t = setTimeout(save, 1200); return; }
+    var s = snapshot();
+    try{ localStorage.setItem(KEY, s); }catch(e){}
+    post({ type: 'save-history', data: s });
+  };
+  new MutationObserver(function(){ clearTimeout(t); t = setTimeout(save, 1200); }).observe(con, { childList: true, subtree: true, characterData: true });
+  var restore = function(s){
+    ready = true;
+    if(!s || con.children.length) return;
+    var d = null; try{ d = JSON.parse(s); }catch(e){ return; }
+    if(!d || !d.html) return;
+    con.innerHTML = d.html;
+    if(Array.isArray(d.convo)) S.convo = d.convo.slice(-5);
+  };
+  window.addEventListener('message', function(e){ var m = e.data && e.data.pluginMessage; if(m && m.type === 'history') restore(m.data); });
+  var local = null; try{ local = localStorage.getItem(KEY); }catch(e){}
+  if(local) restore(local);
+  post({ type: 'load-history' });
+  setTimeout(function(){ ready = true; }, 1500); /* 플러그인 응답이 없어도 저장은 시작 */
+})();
+/* 저장된 이전 대화: 색상·타입 적용은 그대로, 오래된 칩·복사·이전으로는 숨김 */
+document.addEventListener('click', function(e){
+  var o = e.target.closest && e.target.closest('[data-old] .sw[data-hex], [data-old] .tp-row[data-size]');
+  if(!o) return;
+  if(o.classList.contains('sw')) post({ type: 'apply-fill', hex: o.getAttribute('data-hex'), name: o.getAttribute('data-name') || o.getAttribute('data-hex') });
+  else post({ type: 'apply-fontsize', size: parseInt(o.getAttribute('data-size'), 10), label: o.getAttribute('data-label') });
+});
+
+/* ── 대화 내용 검색 (Cmd/Ctrl+F) ── */
+(function(){
+  var bar = $('fbar'), inp = $('fInput'), cnt = $('fCnt'), hits = [], cur = -1;
+  var clear = function(){
+    Array.prototype.forEach.call(document.querySelectorAll('#chatCon span.fwrap'), function(s){ var p = s.parentNode; p.replaceChild(document.createTextNode(s.textContent), s); p.normalize(); });
+    hits = []; cur = -1;
+  };
+  var paint = function(){
+    hits.forEach(function(m, i){ m.classList.toggle('cur', i === cur); });
+    cnt.textContent = inp.value.trim() ? (hits.length ? (cur + 1) + '/' + hits.length : '0/0') : '';
+    $('fPrev').disabled = $('fNext').disabled = hits.length < 2;
+    var m = hits[cur]; if(!m) return;
+    var con = $('chatCon');
+    S.userScroll = true; /* 검색 이동 중 자동 스크롤 멈춤 */
+    con.scrollTop += m.getBoundingClientRect().top - con.getBoundingClientRect().top - (con.clientHeight / 2) + 10;
+  };
+  var run = function(){
+    clear();
+    var q = inp.value.trim().toLowerCase();
+    if(q){
+      var con = $('chatCon');
+      var w = document.createTreeWalker(con, NodeFilter.SHOW_TEXT, { acceptNode: function(n){
+        var p = n.parentNode; if(!p || /^(SCRIPT|STYLE|SVG)$/i.test(p.nodeName) || p.closest('svg,.bub-ing,.steps')) return NodeFilter.FILTER_REJECT;
+        return p.offsetParent || p.getClientRects().length ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      } });
+      var nodes = []; while(w.nextNode()) nodes.push(w.currentNode);
+      nodes.forEach(function(n){
+        var t = n.nodeValue, lo = t.toLowerCase(), i = lo.indexOf(q); if(i < 0) return;
+        var f = document.createElement('span'), at = 0; f.className = 'fwrap'; /* 플렉스 안에서도 한 덩어리로 유지 */
+        while(i > -1){
+          if(i > at) f.appendChild(document.createTextNode(t.slice(at, i)));
+          var m = document.createElement('mark'); m.className = 'fhit'; m.textContent = t.slice(i, i + q.length); f.appendChild(m); hits.push(m);
+          at = i + q.length; i = lo.indexOf(q, at);
+        }
+        if(at < t.length) f.appendChild(document.createTextNode(t.slice(at)));
+        n.parentNode.replaceChild(f, n);
+      });
+      cur = hits.length ? hits.length - 1 : -1; /* 가장 최근 대화부터 */
+    }
+    paint();
+  };
+  var step = function(d){ if(!hits.length) return; cur = (cur + d + hits.length) % hits.length; paint(); };
+  /* 검색바가 열리면 대화 영역을 검색바 아래로 (맨 위 버블이 검색바에서 24px) */
+  var shift = function(on){ var con = $('chatCon'), keep = con.scrollTop; con.style.transition = on ? 'top .26s cubic-bezier(.22,1,.36,1)' : 'top .3s cubic-bezier(.4,0,.2,1)'; con.style.top = on ? (bar.offsetTop + bar.offsetHeight) + 'px' : ''; con.scrollTop = keep; };
+  window.moaFindOpen = function(){ shift(true); bar.classList.add('on'); inp.focus(); inp.select(); if(inp.value.trim()) run(); };
+  window.moaFindClose = function(){ if(!bar.classList.contains('on')) return; shift(false); bar.classList.remove('on'); clear(); cnt.textContent = ''; inp.blur(); };
+  var t = 0;
+  inp.addEventListener('input', function(){ clearTimeout(t); t = setTimeout(run, 120); });
+  inp.addEventListener('keydown', function(e){
+    if(e.isComposing || e.keyCode === 229) return;
+    if(e.key === 'Enter'){ e.preventDefault(); clearTimeout(t); if(!hits.length) run(); else step(e.shiftKey ? 1 : -1); }
+    else if(e.key === 'Escape'){ e.preventDefault(); moaFindClose(); }
+  });
+  $('fPrev').onclick = function(){ step(-1); };
+  $('fNext').onclick = function(){ step(1); };
+  $('fClose').onclick = moaFindClose;
+  /* 대화창 어디를 누르든(버블 포함) 검색바 닫기 */
+  $('pgChat').addEventListener('pointerdown', function(e){
+    if(!bar.classList.contains('on')) return;
+    moaFindClose();
+  });
+  document.addEventListener('keydown', function(e){
+    if((e.metaKey || e.ctrlKey) && !e.altKey && (e.key === 'f' || e.key === 'F' || e.keyCode === 70)){
+      if(S.screen !== 'chat') return;
+      e.preventDefault(); moaFindOpen();
+    } else if(e.key === 'Escape' && bar.classList.contains('on')) moaFindClose();
+  });
+})();
 
 /* ── chrome events ───────────────────────────────────────────── */
 $('btnEtc').onclick = function(){ openCategory('기타 문의'); };
@@ -1850,7 +2100,11 @@ $('btnAsk').onclick = function(){ show('key'); };
 /* 설정에 들어가면 반짝임 완전히 멈춤 (돌아와도 다시 안 함) */
 function stopFlash(){ var b = $('btnSettings'); clearTimeout(b._hl0); clearTimeout(b._hl); clearTimeout(b._hl2); b.classList.remove('hl'); }
 $('btnSettings').onclick = function(){ stopFlash(); show('key'); renderUsage(); checkApi(); };
-$('btnRefresh').onclick = function(){ if(S.cat) openCategory(S.cat, S.topic); toast('대화를 초기화했어요'); };
+/* 초기화: 확인 팝업 → 초기화 누를 때만 대화 삭제 */
+$('btnRefresh').onclick = function(){ $('resetOverlay').classList.remove('hide'); };
+$('resetNo').onclick = function(){ $('resetOverlay').classList.add('hide'); };
+$('resetOverlay').addEventListener('click', function(e){ if(e.target === this) this.classList.add('hide'); });
+$('resetYes').onclick = function(){ $('resetOverlay').classList.add('hide'); if(S.cat) openCategory(S.cat, S.topic, 'fresh'); toast('대화를 초기화했어요'); };
 $('statusDot').parentNode.addEventListener('contextmenu', function(e){ e.preventDefault(); setConnected(!S.connected); });
 $('discClose').onclick = function(){ $('discOverlay').classList.add('hide'); };
 $('discGo').onclick = function(){ stopFlash(); $('discOverlay').classList.add('hide'); show('key'); };

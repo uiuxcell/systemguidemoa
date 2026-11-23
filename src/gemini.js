@@ -414,7 +414,9 @@ function moaEnglish(qs){
 
 function moaTokenize(s){
   /* 영어 뒤에 붙은 조사 분리 (resting은 → resting) */
-  return String(s).toLowerCase().replace(/([a-z0-9#._]+)(?:은|는|이|가|을|를|의|에|로|으로|도|란|이란|이랑|랑|과|와|에서|이야|야|이에요|예요)(?=[^\uac00-\ud7a3]|$)/g, '$1 ').replace(/[^\uac00-\ud7a3a-z0-9#.]+/g,' ').split(' ').filter(function(t){ return t.length > 1 || /[\uac00-\ud7a3]/.test(t); });
+  return String(s).toLowerCase().replace(/([a-z0-9#._]+)(?:은|는|이|가|을|를|의|에|로|으로|도|란|이란|이랑|랑|과|와|에서|이야|야|이에요|예요)(?=[^\uac00-\ud7a3]|$)/g, '$1 ')
+    /* 띄어쓰기 없이 붙은 한글 분리 (meta가뭐야 → meta 뭐야) */
+    .replace(/([a-z0-9#._]+)(?:은|는|이|가|을|를|의|에|로|으로|도|란|이란|이랑|랑|과|와|에서)?(?=[\uac00-\ud7a3])/g, '$1 ').replace(/[^\uac00-\ud7a3a-z0-9#.]+/g,' ').split(' ').filter(function(t){ return t.length > 1 || /[\uac00-\ud7a3]/.test(t); });
 }
 
 function moaHead(ch){ return String(ch.title || ch.section || ch.group || ''); }
@@ -663,6 +665,35 @@ function moaCall(model, apiKey, body, onDelta){
       });
     });
 }
+
+/* ── 가벼운 대화 (디자인 시스템과 무관한 인사·감사·안부 등) ──────
+   디자인 관련이면 {"chat": false} → 일반 가이드 검색으로. 디자인 내용·수치는 절대 만들지 않음 */
+var MOA_CHAT_RULE = [
+  '너는 디자인 시스템 가이드 챗봇 "Moa"야. 받은 메시지가 디자인 시스템과 무관한 가벼운 일상 대화(인사, 감사, 안부, 칭찬, 자기소개 요청, 가벼운 감정 표현 등)인지 판단해.',
+  '- 디자인·UI·색상·폰트·간격·컴포넌트·스펙·수치·토큰·피그마 등 디자인과 조금이라도 관련 있으면 반드시 {"chat": false}만 출력해. 디자인 관련 내용은 절대 답하거나 지어내지 마.',
+  '- 가벼운 대화면 {"chat": true, "answer": "..."}: 1~2문장, 친근하고 긍정적인 존댓말(~요). 마지막에 디자인 시스템에서 궁금한 걸 물어봐 달라고 자연스럽게 안내해.',
+  '- 날씨·뉴스·시세·코딩·상식 검색처럼 정보를 요구하는 질문은 답하지 말고 {"chat": true, "answer": "..."}로 디자인 시스템 가이드만 도와드릴 수 있다고 정중히 안내해.',
+  '- 부정적·공격적·민감한 주제(정치, 종교, 혐오, 성적 내용, 비방 등)는 의견 없이 가볍게 넘기고 디자인 시스템 질문으로 안내해.',
+  '- 사실 정보·숫자·링크·이모지는 쓰지 마. JSON만 출력해.'
+].join('\n');
+function moaChat(question, apiKey){
+  if(!apiKey) return Promise.resolve(null);
+  var models = MOA_MODELS.filter(function(m){ return !moaSkip(m); }).slice(0, 2);
+  var tryAt = function(i){
+    if(i >= models.length) return Promise.resolve(null);
+    var body = { systemInstruction: { parts: [{ text: MOA_CHAT_RULE }] }, contents: [{ role: 'user', parts: [{ text: String(question) }] }], generationConfig: moaGenCfg(models[i]) };
+    return moaCall(models[i], apiKey, body).then(function(json){
+      var s = String(moaText(json) || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+      var j = null; try { j = JSON.parse(s); } catch(_){ return tryAt(i + 1); }
+      if(!j || j.chat !== true || !j.answer) return null;
+      var a = String(j.answer).trim();
+      if(/#[0-9a-f]{3,8}\b|\d\s?(px|pt|dp|%)|https?:/i.test(a)) return null; /* 디자인 수치·링크가 섞이면 버림 */
+      return { model: models[i], text: a };
+    }, function(){ return tryAt(i + 1); });
+  };
+  return tryAt(0).catch(function(){ return null; });
+}
+if(typeof window !== 'undefined') window.moaChat = moaChat;
 
 /* ── 6단계 파이프라인 ───────────────────────────────────────── */
 /* 지금 카테고리에서 먼저 답을 찾고, 없으면 다른 카테고리에서 다시 찾음 */

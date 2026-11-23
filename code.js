@@ -45,6 +45,17 @@ async function handle(msg) {
     return;
   }
 
+  /* 대화 히스토리: 최근 질문 30개 (UI에서 잘라서 보냄) */
+  if (msg.type === 'save-history') {
+    await figma.clientStorage.setAsync('moa-history', msg.data || '');
+    return;
+  }
+  if (msg.type === 'load-history') {
+    var hst = await figma.clientStorage.getAsync('moa-history');
+    figma.ui.postMessage({ type: 'history', data: hst || '' });
+    return;
+  }
+
   if (msg.type === 'apply-fill') {
     var sel = figma.currentPage.selection;
     if (!sel.length) { notifyUI('요소를 먼저 선택해 주세요'); return; }
