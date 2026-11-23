@@ -46,3 +46,4 @@
 - `label`: 레이블, 라벨
 - `size`: 사이즈
 - `height/size`: 높이
+- `meta`: 메타
