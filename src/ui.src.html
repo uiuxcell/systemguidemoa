@@ -1847,6 +1847,8 @@ function moaLower(html){
     return tag ? tag : txt.replace(/#[0-9A-Fa-f]{3,8}\b|[A-Z]+/g, function(s){ return s.charAt(0) === '#' ? s : s.toLowerCase(); });
   });
 }
+/* 토큰 첫 번째 분류명: 단어 첫 글자 대문자 (label → Label, text-field → Text-Field) */
+function moaCap(s){ return String(s).replace(/(^|[\s\-_])([a-z])/g, function(m, p, c){ return p + c.toUpperCase(); }); }
 function moaLines(html){
   var L0 = html.split('\n');
   var L = L0.filter(function(ln, k){ return ln.trim() || !((L0[k-1] || '').charAt(0) === '\u2063' || (L0[k+1] || '').charAt(0) === '\u2063'); });
@@ -1854,7 +1856,7 @@ function moaLines(html){
   L.forEach(function(ln, k){
     var blk = false, m;
     /* 토큰 첫 번째 분류명: 블랙 */
-    if(ln.charAt(0) === '\u2064'){ ln = '<span class="tk" style="display:block">' + ln.slice(1) + '</span>'; blk = true; }
+    if(ln.charAt(0) === '\u2064'){ ln = '<span class="tk" style="display:block">' + moaCap(ln.slice(1)) + '</span>'; blk = true; }
     else if(ln.charAt(0) === '\u2063'){ ln = '<span class="ah' + (k === 0 ? ' f' : '') + '" role="heading" aria-level="4">' + ln.slice(1) + '</span>'; blk = true; }
     else if((m = ln.match(/^\s*(•|\d+\.|<span class="tk">\d+<\/span>\.|-|<span class="tk">-<\/span>)\s+(.*)$/))){ var sp = moaSpec && moaSpecLine(m[2]);
       ln = '<span class="li' + (sp ? ' tk' : '') + '"><i>' + m[1].replace(/<[^>]+>/g, '') + '</i><span>' + (sp ? moaBulletVal(moaLower(m[2])) : m[2]) + '</span></span>'; blk = true; }
