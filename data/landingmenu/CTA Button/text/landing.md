@@ -4,7 +4,7 @@
 CTA Button의 구성이에요.
 어떤게 궁금하신가요?
 
-## 한 눈에 보기
+## 핵심만 보기
 
 ### Primary Action Button
 주요 액션에 사용
