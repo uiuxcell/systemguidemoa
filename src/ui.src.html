@@ -372,6 +372,19 @@ mark.fhit.cur{background:#FFB938}
 .sheet-banner span{font-size:13px;line-height:16px;letter-spacing:-0.02em}
 .sheet-banner .img{left:250px;top:7px;width:79px;height:56px}
 .sheet-banner .img .s1{left:45px}
+/* 기타 문의 배너: 클릭 가능해 보이게 (화살표 · hover/press · 열릴 때 Moa 올라옴) */
+.sheet-banner{transition:background .15s}
+.sheet-banner:hover{background:#E1E5F6}
+.sheet-banner:active{background:#D7DCF2}
+.sheet-banner span{display:flex;align-items:center;gap:5px}
+.sheet-banner .chev{display:block;width:6px;height:10px;flex:none;transition:transform .15s}
+.sheet-banner:hover .chev{transform:translateX(2px)}
+.sheet-banner .img .s2{transition:transform .2s cubic-bezier(.22,1,.36,1)}
+.sheet-banner:hover .img .s2{transform:translateY(-2px)}
+.sheet-banner .img{overflow:visible} /* 귀 잘림 방지 · 아래쪽은 배너가 잘라줌 */
+/* 시트(.34s)가 다 올라온 뒤 Moa가 톡 튀어 올라옴 */
+.sheet-banner.pop .img .s2{animation:moaPop .55s cubic-bezier(.34,1.56,.64,1) .34s both}
+@keyframes moaPop{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sec-h .en{letter-spacing:-0.02em}
 .sec-h .ko{font-size:13px;line-height:17px;letter-spacing:-0.02em}
 .sec-chips{flex-direction:column;flex-wrap:nowrap;gap:8px}
@@ -380,6 +393,7 @@ mark.fhit.cur{background:#FFB938}
 .sec .chip.sm:hover{background:#E0E3E9;box-shadow:none}
 .lcard{align-self:flex-start;width:276px;max-width:100%;border-radius:8px;background:#fff;padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px;box-sizing:border-box;animation:stepIn .25s cubic-bezier(.22,1,.36,1)}
 .lcard .lt{display:flex;flex-direction:column;gap:2px}
+.lcard.sub .lt{gap:12px} /* 하위칩 답변: 제목↔본문 간격을 제목↔설명 항목 간격(12px)과 동일하게 · 핵심만 보기는 그대로 */
 .lcard .lt b{font-size:14px;font-weight:600;line-height:20px;letter-spacing:-0.02em;color:#000;white-space:pre-line}
 .lcard .lt span{font-size:12px;font-weight:400;line-height:16px;letter-spacing:-0.02em;color:#424751;white-space:pre-line}
 .lcard .lrows{display:flex;flex-direction:column;gap:8px}
@@ -570,7 +584,7 @@ Gemini API 키가 필요해요</h1>
         <button class="iconbtn" id="menuClose" aria-label="닫기"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M0.75 0.75 L11.25 11.25 M11.25 0.75 L0.75 11.25" stroke="#000" stroke-width="1.2" stroke-linecap="round"/></svg></button>
       </div>
       <div class="sheet-banner" id="menuEtc" role="button" tabindex="0" style="cursor:pointer">
-        <span>기타 문의가 있으신가요?</span>
+        <span>기타 문의가 있으신가요?<svg class="chev" viewBox="0 0 6 10"><path d="M1 1 L5 5 L1 9" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <div class="img"><img class="s1" src="__IMG_SMALL__" alt=""><img class="s2" src="__IMG_MASCOT__" alt=""></div>
       </div>
       <div class="sheet-list" id="sheetList"></div>
@@ -1086,7 +1100,7 @@ function renderLanding(body, lp){
       return;
     }
     var b = lp.bubbles[i];
-    var c = el('div','lcard'), lt = el('div','lt');
+    var c = el('div','lcard'), lt = el('div','lt'); if(q !== OVERVIEW) c.classList.add('sub');
     var tb = null; if(b.title){ tb = el('b'); lt.appendChild(tb); }
     c.appendChild(lt);
     body.appendChild(c); scrollDown();
@@ -1215,7 +1229,7 @@ function openCategory(cat, topic, how){
   var g = GUIDE[cat];
   var con = $('chatCon');
   /* 한 화면에서 대화 이어가기: 초기화(fresh)일 때만 비우고, 그 외엔 아래에 이어 붙임 · quiet = 화면 변화 없이 주제만 전환 */
-  var keep = how !== 'fresh' && con.children.length > 0;
+  var keep = how !== 'fresh' && how !== 'reset' && con.children.length > 0;
   /* 홈·다른 화면에 나갔다 들어오면: 대화는 두고, 이전 소개 문구(~구성이에요)와 칩은 숨김 */
   if(keep && S.screen !== 'chat'){
     Array.prototype.forEach.call(con.querySelectorAll('.intro'), function(n){ n.style.display = 'none'; });
@@ -1235,7 +1249,7 @@ function openCategory(cat, topic, how){
   title.innerHTML = STAR.replace(/ti(\d)/g, 'ti$1' + sid);
   if(cat !== GENERAL && title.firstElementChild) title.firstElementChild.classList.add('spin'); /* 카테고리 진입: 로고 한 바퀴 */
   var h1 = el('h1');
-  h1.textContent = cat === GENERAL ? 'Moa에게 질문하세요.\n어떤게 궁금하신가요?' : (LANDING[cat] && LANDING[cat].title) ? LANDING[cat].title : (cat === '기타 문의')
+  h1.textContent = how === 'reset' ? '안녕하세요, 모아에요~\n어떤게 궁금하신가요?' : cat === GENERAL ? 'Moa에게 질문하세요.\n어떤게 궁금하신가요?' : (LANDING[cat] && LANDING[cat].title) ? LANDING[cat].title : (cat === '기타 문의')
     ? '기타문의사항이에요.\n어떤게 궁금하신가요?'
     : cat + '의 구성이에요.\n어떤게 궁금하신가요?';
   h1.className = 'sweep';
@@ -1282,7 +1296,8 @@ function openCategory(cat, topic, how){
   ib.onclick = function(){
     prevQ(intro);
   };
-  intro.appendChild(ib);
+  /* 이전 대화가 없으면 이전으로 버튼 숨김 */
+  if(keep && con.querySelector('.row-user, .row-bot')) intro.appendChild(ib);
   put();
 }
 
@@ -1497,8 +1512,9 @@ function generalAmbiguity(q, wide){
 function askWhich(q, it){
   var con = $('chatCon');
   /* 바로 이전 대화의 카테고리가 후보에 있으면 묻지 않고 그 카테고리로 바로 이동해 답변 */
-  var last = (S.convo || [])[(S.convo || []).length - 1];
-  var lt = last && (last.topics || []).filter(function(t){ return it.topics.indexOf(t) > -1; })[0];
+  /* 직전 3개 대화 중 가장 최근 대화의 카테고리부터 확인 */
+  var lt = null;
+  (S.convo || []).slice(-3).reverse().some(function(c){ lt = (c.topics || []).filter(function(t){ return it.topics.indexOf(t) > -1; })[0]; return !!lt; });
   if(lt){ openCategory(lt, lt, 'quiet'); ask(q); return; }
   if(!S.noUserRow){ var ur = el('div','row-user'); ur.appendChild(el('div','bub-user', shownQ(q))); con.appendChild(ur); if(S.pinNext){ S.pin = ur; S.hold = false; S.userScroll = false; } }
   S.pinNext = false;
@@ -1666,6 +1682,23 @@ function ask(q, typed){
         /* 다른 카테고리에서 찾았으면 주제만 전환 */
         if(!pre && res.movedTo && isTopic(res.movedTo) && res.movedTo !== S.topic && !wide){ S.cat = res.movedTo; S.topic = res.movedTo; } /* 이동 안내 없이 같은 화면에서 이어서 답변 */
         if(res.model){ S.failAt = 0; setApiStatus(true); }
+        /* 카테고리 없는 질문 + 직전 3개 대화에도 카테고리 없음: 후보 카테고리 중 고르게 */
+        if(res.pick && res.pick.length > 1){
+          if(live && live.parentNode) live.parentNode.removeChild(live);
+          Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
+          S.curQ = null;
+          var pn = el('div','bub-note'); pn.style.whiteSpace = 'pre-line';
+          pn.textContent = '질문하신 내용은 ' + res.pick.join(', ') + '에 모두 있어요.\n어떤 카테고리로 이동해서 답변할까요?';
+          body.appendChild(pn);
+          var pc = el('div','qchips');
+          res.pick.forEach(function(t){
+            var b = el('button','chip', t);
+            b.onclick = function(){ var first = !pc.querySelector('.sel'); Array.prototype.forEach.call(pc.children, function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); openCategory(t, t, 'quiet'); S.noUserRow = first; ask(q); };
+            pc.appendChild(b);
+          });
+          body.appendChild(pc); scrollDown();
+          return;
+        }
         /* 용어 식별 불가: 제목 없이 바디 텍스트 한 줄만 */
         /* 1) 의도 파악 불가일 때만 (2) 데이터 없음은 기존 '내용 없음' 답변 유지) */
         if(res.invalid || (!/가이드에 해당 내용이 없/.test(String(res.text || '')) && /용어\s*식별|식별이\s*(불가|어려)|어떤 정보를 찾으시는지|용어인지 다시 확인/.test(String(res.text || '')))){
@@ -2157,7 +2190,7 @@ document.addEventListener('click', function(e){
 /* ── chrome events ───────────────────────────────────────────── */
 $('btnEtc').onclick = function(){ openCategory('기타 문의'); };
 $('menuEtc').onclick = function(){ closeMenu(); openCategory('기타 문의'); };
-$('btnMenu').onclick = function(){ $('menuOverlay').classList.remove('hide'); };
+$('btnMenu').onclick = function(){ $('menuOverlay').classList.remove('hide'); var bn = $('menuEtc'); bn.classList.remove('pop'); void bn.offsetWidth; bn.classList.add('pop'); };
 $('menuClose').onclick = closeMenu;
 /* 전체 메뉴: 칩(버튼) 외 빈 공간을 누르면 닫기 */
 $('menuOverlay').addEventListener('click', function(e){ if(!e.target.closest('button, a, input')) closeMenu(); });
@@ -2177,7 +2210,7 @@ $('btnSettings').onclick = function(){ stopFlash(); show('key'); renderUsage(); 
 $('btnRefresh').onclick = function(){ $('resetOverlay').classList.remove('hide'); };
 $('resetNo').onclick = function(){ $('resetOverlay').classList.add('hide'); };
 $('resetOverlay').addEventListener('click', function(e){ if(e.target === this) this.classList.add('hide'); });
-$('resetYes').onclick = function(){ $('resetOverlay').classList.add('hide'); if(S.cat) openCategory(S.cat, S.topic, 'fresh'); toast('대화를 초기화했어요'); };
+$('resetYes').onclick = function(){ $('resetOverlay').classList.add('hide'); openCategory(GENERAL, null, 'reset'); toast('대화를 초기화했어요'); };
 $('statusDot').parentNode.addEventListener('contextmenu', function(e){ e.preventDefault(); setConnected(!S.connected); });
 $('discClose').onclick = function(){ $('discOverlay').classList.add('hide'); };
 $('discGo').onclick = function(){ stopFlash(); $('discOverlay').classList.add('hide'); show('key'); };

@@ -390,6 +390,19 @@ mark.fhit.cur{background:#FFB938}
 .sheet-banner span{font-size:13px;line-height:16px;letter-spacing:-0.02em}
 .sheet-banner .img{left:250px;top:7px;width:79px;height:56px}
 .sheet-banner .img .s1{left:45px}
+/* 기타 문의 배너: 클릭 가능해 보이게 (화살표 · hover/press · 열릴 때 Moa 올라옴) */
+.sheet-banner{transition:background .15s}
+.sheet-banner:hover{background:#E1E5F6}
+.sheet-banner:active{background:#D7DCF2}
+.sheet-banner span{display:flex;align-items:center;gap:5px}
+.sheet-banner .chev{display:block;width:6px;height:10px;flex:none;transition:transform .15s}
+.sheet-banner:hover .chev{transform:translateX(2px)}
+.sheet-banner .img .s2{transition:transform .2s cubic-bezier(.22,1,.36,1)}
+.sheet-banner:hover .img .s2{transform:translateY(-2px)}
+.sheet-banner .img{overflow:visible} /* 귀 잘림 방지 · 아래쪽은 배너가 잘라줌 */
+/* 시트(.34s)가 다 올라온 뒤 Moa가 톡 튀어 올라옴 */
+.sheet-banner.pop .img .s2{animation:moaPop .55s cubic-bezier(.34,1.56,.64,1) .34s both}
+@keyframes moaPop{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sec-h .en{letter-spacing:-0.02em}
 .sec-h .ko{font-size:13px;line-height:17px;letter-spacing:-0.02em}
 .sec-chips{flex-direction:column;flex-wrap:nowrap;gap:8px}
@@ -398,6 +411,7 @@ mark.fhit.cur{background:#FFB938}
 .sec .chip.sm:hover{background:#E0E3E9;box-shadow:none}
 .lcard{align-self:flex-start;width:276px;max-width:100%;border-radius:8px;background:#fff;padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px;box-sizing:border-box;animation:stepIn .25s cubic-bezier(.22,1,.36,1)}
 .lcard .lt{display:flex;flex-direction:column;gap:2px}
+.lcard.sub .lt{gap:12px} /* 하위칩 답변: 제목↔본문 간격을 제목↔설명 항목 간격(12px)과 동일하게 · 핵심만 보기는 그대로 */
 .lcard .lt b{font-size:14px;font-weight:600;line-height:20px;letter-spacing:-0.02em;color:#000;white-space:pre-line}
 .lcard .lt span{font-size:12px;font-weight:400;line-height:16px;letter-spacing:-0.02em;color:#424751;white-space:pre-line}
 .lcard .lrows{display:flex;flex-direction:column;gap:8px}
@@ -588,7 +602,7 @@ Gemini API 키가 필요해요</h1>
         <button class="iconbtn" id="menuClose" aria-label="닫기"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M0.75 0.75 L11.25 11.25 M11.25 0.75 L0.75 11.25" stroke="#000" stroke-width="1.2" stroke-linecap="round"/></svg></button>
       </div>
       <div class="sheet-banner" id="menuEtc" role="button" tabindex="0" style="cursor:pointer">
-        <span>기타 문의가 있으신가요?</span>
+        <span>기타 문의가 있으신가요?<svg class="chev" viewBox="0 0 6 10"><path d="M1 1 L5 5 L1 9" fill="none" stroke="#000" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
         <div class="img"><img class="s1" src="../assets/img-small.png" alt=""><img class="s2" src="../assets/img-mascot.png" alt=""></div>
       </div>
       <div class="sheet-list" id="sheetList"></div>
@@ -1543,7 +1557,7 @@ var MOA_COOL = {};
 /* 모델별 생성 설정 — 2.x: thinkingBudget / 3.x·latest: thinkingLevel(3.8은 minimal 미지원 → low) / 거부한 모델은 생각 설정 없이 */
 var MOA_NO_THINK = {};
 function moaGenCfg(model){
-  var c = { maxOutputTokens: 4096, responseMimeType: 'application/json' };
+  var c = { maxOutputTokens: 2048, responseMimeType: 'application/json' };
   if(MOA_NO_THINK[model]) return c;
   if(/^gemini-2/.test(model)){ c.temperature = 0; c.thinkingConfig = { thinkingBudget: 0 }; }
   else c.thinkingConfig = { thinkingLevel: /^gemini-3\.[6-9]/.test(model) ? 'low' : 'minimal' };
@@ -1557,6 +1571,10 @@ function moaSkip(m){
 }
 /* 응답 헤더가 이 시간 안에 안 오면 다음 모델로 */
 var MOA_CALL_TIMEOUT = 10000;
+/* lite가 아닌 모델(생각 단계가 있어 첫 응답이 늦음)은 더 기다림 */
+var MOA_SLOW_TIMEOUT = 25000;
+var MOA_RECHECK = false; /* 상위 모델 재확인 중에는 10초만 기다림 */
+function moaTimeout(m){ return (/lite/.test(m) || MOA_RECHECK) ? MOA_CALL_TIMEOUT : MOA_SLOW_TIMEOUT; }
 
 var MOA_STEPS = [
   '질문 범위 및 의도 확인',
@@ -2122,7 +2140,7 @@ function moaCount(model, exhausted){
 function moaUsage(){
   var u = moaUsageAll();
   var left = function(m){ return Math.max(0, (MOA_FREE_RPD[m] || 0) - (u.used[m] || 0)); };
-  var model = MOA_MODELS.filter(function(m){ return left(m) > 0; })[0] || u.last || MOA_MODELS[0];
+  var model = MOA_MODELS.filter(function(m){ return left(m) > 0 && !(MOA_COOL[m] && Date.now() < MOA_COOL[m]); })[0] || u.last || MOA_MODELS[0];
   return { model: model, used: u.used[model] || 0, limit: MOA_FREE_RPD[model] || 0, left: left(model) };
 }
 
@@ -2137,11 +2155,11 @@ function moaCall(model, apiKey, body, onDelta){
   var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model +
     (stream ? ':streamGenerateContent?alt=sse&key=' : ':generateContent?key=') + encodeURIComponent(apiKey);
   var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null, late = false;
-  var tm = setTimeout(function(){ late = true; if(ctl) ctl.abort(); }, MOA_CALL_TIMEOUT);
+  var tm = setTimeout(function(){ late = true; if(ctl) ctl.abort(); }, moaTimeout(model));
   return fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body), signal: ctl ? ctl.signal : undefined })
     .catch(function(){
       clearTimeout(tm);
-      if(late){ var e = moaFail('HTTP 503 · ' + model + ' 응답 시간 초과(' + (MOA_CALL_TIMEOUT / 1000) + '초)'); e.status = 503; throw e; }
+      if(late){ var e = moaFail('HTTP 503 · ' + model + ' 응답 시간 초과(' + (moaTimeout(model) / 1000) + '초)'); e.status = 503; throw e; }
       throw moaFail('네트워크 연결 실패 · 인터넷 연결과 manifest의 allowedDomains를 확인해 주세요');
     })
     .then(function(res){
@@ -2260,8 +2278,8 @@ function moaAskOnce(question, apiKey, opts){
   function end(i, detail, status){ report(i, status || 'done', detail || ''); }
   function skipRest(from, detail){ for(var k = from; k < MOA_STEPS.length; k++) report(k, 'skip', k === from ? detail : ''); }
 
-  var qs, sq, usage = false, topics = [], hits = [], faqs = [], db = window.MOA_DB || [];
-  var hist = (opts.history || []).slice(-5);
+  var qs, sq, usage = false, topics = [], inhTopics = [], ctxOnly = null, needPick = false, picked = null, hits = [], faqs = [], db = window.MOA_DB || [];
+  var hist = (opts.history || []).slice(-3);
   var last = hist[hist.length - 1];
 
   return moaLoadDb()
@@ -2289,11 +2307,18 @@ function moaAskOnce(question, apiKey, opts){
     if(opts.compareTopics && opts.compareTopics.length){ opts.compareTopics.forEach(function(t){ if(topics.indexOf(t) < 0) topics.push(t); }); }
     var onlyBase = topics.every(function(t){ return MOA_FOUNDATION.indexOf(t) > -1; });
     /* 카테고리 창: 이전 질문 주제는 같은 카테고리일 때만 이어받음 (다른 카테고리 스펙이 섞이지 않게) */
-    if(last && last.topics && onlyBase && !opts.compareTopics){ last.topics.forEach(function(t){ if(opts.topic && t !== opts.topic) return; if(topics.indexOf(t) < 0){ topics.push(t); inherited = true; } }); }
+    /* 질문에 카테고리가 없으면: 직전 대화부터 거슬러 올라가 카테고리가 있는 대화의 주제를 이어받음 */
+    var noCat = !topics.length && !opts.compareTopics, src = last, all = hist; /* 직전 3개 대화만 */
+    if(onlyBase && !opts.compareTopics){ for(var h = all.length - 1; h >= 0; h--){ if(all[h].topics && all[h].topics.length){ src = all[h]; break; } } }
+    if(src && src.topics && onlyBase && !opts.compareTopics){ src.topics.forEach(function(t){ if(opts.topic && t !== opts.topic) return; if(topics.indexOf(t) < 0){ topics.push(t); inhTopics.push(t); inherited = true; } }); }
+    /* 이어받은 카테고리 안에서만 근거를 찾음 (전체 카테고리 정보가 섞이지 않게) */
+    if(noCat && inherited && !opts.topic) ctxOnly = topics.slice();
+    /* 직전 대화에도 카테고리가 없으면: 검색 결과의 카테고리를 후보로 사용자에게 고르게 함 */
+    if(noCat && !inherited && !opts.topic) needPick = true;
     if(opts.topic && !opts.compareTopics){ topics = topics.filter(function(t){ return t === opts.topic; }); if(topics.indexOf(opts.topic) < 0) topics.unshift(opts.topic); }
     var termTxt = gm.terms.length ? '\n용어 ' + gm.terms.slice(0, 6).join(', ') : '';
     if(opts.compareTopics) termTxt += '\n비교 모드 · ' + opts.compareTopics.join(' vs ');
-    end(1, (topics.length ? topics.join(', ') + (inherited ? ' (이전 질문 주제 포함)' : '') : '매핑된 주제 없음 · 전체 DB 검색') + termTxt, (topics.length || gm.terms.length) ? 'done' : 'warn');
+    end(1, (topics.length ? topics.join(', ') + (ctxOnly ? ' (이전 대화 카테고리로 답변)' : inherited ? ' (이전 질문 주제 포함)' : '') : '매핑된 주제 없음 · 전체 DB 검색') + termTxt, (topics.length || gm.terms.length) ? 'done' : 'warn');
   })
   /* 3 */
   .then(function(){ return begin(2); })
@@ -2335,8 +2360,9 @@ function moaAskOnce(question, apiKey, opts){
       /* 지금 카테고리 안에서 먼저 찾고, 없을 때만 다른 카테고리 */
       /* 카테고리 창: 해당 카테고리 근거만 사용 (다른 카테고리로 넘어가지 않음) */
       if(opts.topic && !opts.compareTopics) list = list.filter(function(r){ return r.ch.topic === opts.topic; });
+      if(ctxOnly) list = list.filter(function(r){ return ctxOnly.indexOf(r.ch.topic) > -1; });
       if(opts.excludeTopic){ var other = list.filter(function(r){ return r.ch.topic !== opts.excludeTopic; }); if(other.length) list = other; }
-      list.forEach(function(r){ if(topics.indexOf(r.ch.topic) > -1) r.score *= 2; });
+      list.forEach(function(r){ if(topics.indexOf(r.ch.topic) > -1) r.score *= 2; if(inhTopics.indexOf(r.ch.topic) > -1 && MOA_FOUNDATION.indexOf(r.ch.topic) < 0) r.score *= 2; }); /* '여백은?'처럼 공통 스타일만 물으면 직전 대화 컴포넌트 우선 */
       list.sort(function(a,b){ return b.score - a.score; });
       return list.slice(0, n).map(function(r){ return r.ch; });
     };
@@ -2352,6 +2378,9 @@ function moaAskOnce(question, apiKey, opts){
     if(!g.length && opts.topic && !cmp){
       g = db.filter(function(c){ return c.topic === opts.topic && /정의|개요|타입별 ?요약|적용 ?상황|사용 ?기준|용도/.test(moaHead(c)); }).slice(0, 5);
     }
+    if(!g.length && ctxOnly && !cmp){
+      g = db.filter(function(c){ return ctxOnly.indexOf(c.topic) > -1 && /정의|개요|타입별 ?요약|적용 ?상황|사용 ?기준|용도/.test(moaHead(c)); }).slice(0, 5);
+    }
     /* 스펙·토큰 질문인데 키워드가 안 걸리면 해당 카테고리 토큰 전체를 근거로 */
     if(!t.length && !usage && opts.topic && !cmp) t = (window.MOA_TOKENS || []).filter(function(c){ return c.topic === opts.topic; }).slice(0, 4);
     hits = g.concat(t);
@@ -2359,6 +2388,7 @@ function moaAskOnce(question, apiKey, opts){
     var ft = [], addT = function(x){ if(x && x !== opts.excludeTopic && ft.indexOf(x) < 0) ft.push(x); };
     addT(opts.topic); topics.forEach(addT); g.slice(0, 2).forEach(function(c){ addT(c.topic); });
     faqs = cmp ? [] : moaFaqMatch(question, ft, 3);
+    if(needPick && !cmp){ var tp = []; hits.forEach(function(c){ if(c.topic && tp.indexOf(c.topic) < 0) tp.push(c.topic); }); if(tp.length > 1) picked = { pick: tp.slice(0, 8), done: true, topics: tp.slice(0, 8) }; }
     var lab = function(c){ return (c.topic ? c.topic + ' › ' : '') + moaHead(c); };
     var info = (g.length ? '가이드: ' + g.slice(0, 2).map(lab).join(' / ') : '') + (g.length && t.length ? '\n' : '') + (t.length ? '토큰: ' + t.slice(0, 3).map(function(c){ return moaHead(c).replace(/ 토큰$/, ''); }).join(', ') : '');
     if(faqs.length) info += '\nFAQ 형식: ' + faqs.map(function(f){ return f.q; }).slice(0, 2).join(' / ');
@@ -2367,6 +2397,7 @@ function moaAskOnce(question, apiKey, opts){
   /* 5 */
   .then(function(){ return begin(4); })
   .then(function(){
+    if(picked){ end(4, '카테고리 후보 ' + picked.pick.join(', ') + ' · 사용자 선택 대기', 'warn'); skipRest(5, '생략'); return picked; }
     if(!hits.length){
       end(4, '가이드에 근거가 없어 답변할 수 없어요', 'warn');
       skipRest(5, '생략');
@@ -2390,7 +2421,7 @@ function moaAskOnce(question, apiKey, opts){
           return [{ role: 'user', parts: [{ text: h.q }] }, { role: 'model', parts: [{ text: String(h.a || '').slice(0, 1200) }] }];
         })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n' + moaFaqContext(faqs) + '질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') + moaLeadHint() }] }]),
       };
-      var tried = [], fails = [], plain = false;
+      var tried = [], fails = [], plain = false, again = false, once = false;
       function next(i){
         while(i + 1 < MOA_MODELS.length && moaSkip(MOA_MODELS[i])) i++;
         var model = MOA_MODELS[i];
@@ -2409,9 +2440,16 @@ function moaAskOnce(question, apiKey, opts){
         }).catch(function(err){
           if(err.status === 503 || err.status === 500) MOA_COOL[model] = Date.now() + 300000;
           if(err.status === 429 && !/per ?minute|PerMinute/i.test(err.message)) moaCount(model, true);
-          if([400, 404, 429, 500, 503].indexOf(err.status) > -1 && !/API key/i.test(err.message) && i + 1 < MOA_MODELS.length){
+          if([400, 404, 429, 500, 503].indexOf(err.status) > -1 && !/API key/i.test(err.message) && !once && i + 1 < MOA_MODELS.length){
             fails.push(model + ' ' + err.status);
             return next(i + 1);
+          }
+          /* 모든 모델이 503·시간 초과면 5분 건너뛰기를 풀고 lite부터 한 번 더 */
+          if((err.status === 503 || err.status === 500) && !again && !once && i + 1 >= MOA_MODELS.length){
+            again = true; fails.push(model + ' ' + err.status);
+            for(var k in MOA_COOL) delete MOA_COOL[k];
+            report(5, 'run', '모든 모델 응답 지연 · 처음부터 한 번 더 시도');
+            return next(0);
           }
           if(fails.length) err.message += ' (앞선 시도: ' + fails.join(', ') + ')';
           if(err.status === 403 || /API key/i.test(err.message)) err.message += ' · API 키를 확인해 주세요';
@@ -2442,7 +2480,7 @@ function moaAskOnce(question, apiKey, opts){
       function emptyNext(model, why, i){
         fails.push(model + ' 빈 응답');
         plain = false;
-        if(i + 1 < MOA_MODELS.length) return next(i + 1);
+        if(!once && i + 1 < MOA_MODELS.length) return next(i + 1);
         throw moaFail(model + ' · 답변이 비어 있어요 (' + why + ')' + (fails.length > 1 ? ' (앞선 시도: ' + fails.slice(0, -1).join(', ') + ')' : ''));
       }
       /* 근거(hits)가 있는데 "가이드에 해당 내용이 없습니다"로 답하면 한 번 더 시도 — 같은 질문을 두 번 해야 답하던 문제 */
@@ -2451,8 +2489,9 @@ function moaAskOnce(question, apiKey, opts){
         report(5, 'run', r.model + ' · 근거가 있어 상위 모델로 다시 확인 중');
         var lp = body.contents[body.contents.length - 1].parts[0];
         lp.text += '\n\n(위 <context>에 질문과 관련된 가이드 내용이 있습니다. "가이드에 해당 내용이 없습니다"로 답하지 말고 context 내용만 근거로 답하세요. context에 관련 내용이 정말 하나도 없을 때만 그 문장을 쓰세요.)';
-        plain = false; fails = [];
-        return next(MOA_UPPER < MOA_MODELS.length ? MOA_UPPER : 0).catch(function(){ return r; });
+        /* 재확인은 상위 모델 1번만 · 10초 (내용 없는 질문에서 50초 넘게 걸리고 상위 모델 한도를 쓰던 문제) */
+        plain = false; fails = []; once = true; MOA_RECHECK = true;
+        return next(MOA_UPPER < MOA_MODELS.length ? MOA_UPPER : 0).then(function(x){ MOA_RECHECK = false; return x; }, function(){ MOA_RECHECK = false; return r; });
       });
     }).then(function(r){
       var pj = moaParseValid(r.text);
@@ -2950,7 +2989,7 @@ function renderLanding(body, lp){
       return;
     }
     var b = lp.bubbles[i];
-    var c = el('div','lcard'), lt = el('div','lt');
+    var c = el('div','lcard'), lt = el('div','lt'); if(q !== OVERVIEW) c.classList.add('sub');
     var tb = null; if(b.title){ tb = el('b'); lt.appendChild(tb); }
     c.appendChild(lt);
     body.appendChild(c); scrollDown();
@@ -3079,7 +3118,7 @@ function openCategory(cat, topic, how){
   var g = GUIDE[cat];
   var con = $('chatCon');
   /* 한 화면에서 대화 이어가기: 초기화(fresh)일 때만 비우고, 그 외엔 아래에 이어 붙임 · quiet = 화면 변화 없이 주제만 전환 */
-  var keep = how !== 'fresh' && con.children.length > 0;
+  var keep = how !== 'fresh' && how !== 'reset' && con.children.length > 0;
   /* 홈·다른 화면에 나갔다 들어오면: 대화는 두고, 이전 소개 문구(~구성이에요)와 칩은 숨김 */
   if(keep && S.screen !== 'chat'){
     Array.prototype.forEach.call(con.querySelectorAll('.intro'), function(n){ n.style.display = 'none'; });
@@ -3099,7 +3138,7 @@ function openCategory(cat, topic, how){
   title.innerHTML = STAR.replace(/ti(\d)/g, 'ti$1' + sid);
   if(cat !== GENERAL && title.firstElementChild) title.firstElementChild.classList.add('spin'); /* 카테고리 진입: 로고 한 바퀴 */
   var h1 = el('h1');
-  h1.textContent = cat === GENERAL ? 'Moa에게 질문하세요.\n어떤게 궁금하신가요?' : (LANDING[cat] && LANDING[cat].title) ? LANDING[cat].title : (cat === '기타 문의')
+  h1.textContent = how === 'reset' ? '안녕하세요, 모아에요~\n어떤게 궁금하신가요?' : cat === GENERAL ? 'Moa에게 질문하세요.\n어떤게 궁금하신가요?' : (LANDING[cat] && LANDING[cat].title) ? LANDING[cat].title : (cat === '기타 문의')
     ? '기타문의사항이에요.\n어떤게 궁금하신가요?'
     : cat + '의 구성이에요.\n어떤게 궁금하신가요?';
   h1.className = 'sweep';
@@ -3146,7 +3185,8 @@ function openCategory(cat, topic, how){
   ib.onclick = function(){
     prevQ(intro);
   };
-  intro.appendChild(ib);
+  /* 이전 대화가 없으면 이전으로 버튼 숨김 */
+  if(keep && con.querySelector('.row-user, .row-bot')) intro.appendChild(ib);
   put();
 }
 
@@ -3361,8 +3401,9 @@ function generalAmbiguity(q, wide){
 function askWhich(q, it){
   var con = $('chatCon');
   /* 바로 이전 대화의 카테고리가 후보에 있으면 묻지 않고 그 카테고리로 바로 이동해 답변 */
-  var last = (S.convo || [])[(S.convo || []).length - 1];
-  var lt = last && (last.topics || []).filter(function(t){ return it.topics.indexOf(t) > -1; })[0];
+  /* 직전 3개 대화 중 가장 최근 대화의 카테고리부터 확인 */
+  var lt = null;
+  (S.convo || []).slice(-3).reverse().some(function(c){ lt = (c.topics || []).filter(function(t){ return it.topics.indexOf(t) > -1; })[0]; return !!lt; });
   if(lt){ openCategory(lt, lt, 'quiet'); ask(q); return; }
   if(!S.noUserRow){ var ur = el('div','row-user'); ur.appendChild(el('div','bub-user', shownQ(q))); con.appendChild(ur); if(S.pinNext){ S.pin = ur; S.hold = false; S.userScroll = false; } }
   S.pinNext = false;
@@ -3530,6 +3571,23 @@ function ask(q, typed){
         /* 다른 카테고리에서 찾았으면 주제만 전환 */
         if(!pre && res.movedTo && isTopic(res.movedTo) && res.movedTo !== S.topic && !wide){ S.cat = res.movedTo; S.topic = res.movedTo; } /* 이동 안내 없이 같은 화면에서 이어서 답변 */
         if(res.model){ S.failAt = 0; setApiStatus(true); }
+        /* 카테고리 없는 질문 + 직전 3개 대화에도 카테고리 없음: 후보 카테고리 중 고르게 */
+        if(res.pick && res.pick.length > 1){
+          if(live && live.parentNode) live.parentNode.removeChild(live);
+          Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
+          S.curQ = null;
+          var pn = el('div','bub-note'); pn.style.whiteSpace = 'pre-line';
+          pn.textContent = '질문하신 내용은 ' + res.pick.join(', ') + '에 모두 있어요.\n어떤 카테고리로 이동해서 답변할까요?';
+          body.appendChild(pn);
+          var pc = el('div','qchips');
+          res.pick.forEach(function(t){
+            var b = el('button','chip', t);
+            b.onclick = function(){ var first = !pc.querySelector('.sel'); Array.prototype.forEach.call(pc.children, function(x){ x.classList.remove('sel'); }); b.classList.add('sel'); openCategory(t, t, 'quiet'); S.noUserRow = first; ask(q); };
+            pc.appendChild(b);
+          });
+          body.appendChild(pc); scrollDown();
+          return;
+        }
         /* 용어 식별 불가: 제목 없이 바디 텍스트 한 줄만 */
         /* 1) 의도 파악 불가일 때만 (2) 데이터 없음은 기존 '내용 없음' 답변 유지) */
         if(res.invalid || (!/가이드에 해당 내용이 없/.test(String(res.text || '')) && /용어\s*식별|식별이\s*(불가|어려)|어떤 정보를 찾으시는지|용어인지 다시 확인/.test(String(res.text || '')))){
@@ -4021,7 +4079,7 @@ document.addEventListener('click', function(e){
 /* ── chrome events ───────────────────────────────────────────── */
 $('btnEtc').onclick = function(){ openCategory('기타 문의'); };
 $('menuEtc').onclick = function(){ closeMenu(); openCategory('기타 문의'); };
-$('btnMenu').onclick = function(){ $('menuOverlay').classList.remove('hide'); };
+$('btnMenu').onclick = function(){ $('menuOverlay').classList.remove('hide'); var bn = $('menuEtc'); bn.classList.remove('pop'); void bn.offsetWidth; bn.classList.add('pop'); };
 $('menuClose').onclick = closeMenu;
 /* 전체 메뉴: 칩(버튼) 외 빈 공간을 누르면 닫기 */
 $('menuOverlay').addEventListener('click', function(e){ if(!e.target.closest('button, a, input')) closeMenu(); });
@@ -4041,7 +4099,7 @@ $('btnSettings').onclick = function(){ stopFlash(); show('key'); renderUsage(); 
 $('btnRefresh').onclick = function(){ $('resetOverlay').classList.remove('hide'); };
 $('resetNo').onclick = function(){ $('resetOverlay').classList.add('hide'); };
 $('resetOverlay').addEventListener('click', function(e){ if(e.target === this) this.classList.add('hide'); });
-$('resetYes').onclick = function(){ $('resetOverlay').classList.add('hide'); if(S.cat) openCategory(S.cat, S.topic, 'fresh'); toast('대화를 초기화했어요'); };
+$('resetYes').onclick = function(){ $('resetOverlay').classList.add('hide'); openCategory(GENERAL, null, 'reset'); toast('대화를 초기화했어요'); };
 $('statusDot').parentNode.addEventListener('contextmenu', function(e){ e.preventDefault(); setConnected(!S.connected); });
 $('discClose').onclick = function(){ $('discOverlay').classList.add('hide'); };
 $('discGo').onclick = function(){ stopFlash(); $('discOverlay').classList.add('hide'); show('key'); };

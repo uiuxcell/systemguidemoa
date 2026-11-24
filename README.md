@@ -59,7 +59,7 @@ data/faq/DB_FAQ.csv      답변 형식 예시 · {변수} 없는 질문은 고�
 
 - 순서: `gemini-3.1-flash-lite` → `gemini-flash-lite-latest` → `gemini-3.8-flash` → `gemini-3.5-flash`
 - lite가 "가이드에 해당 내용이 없습니다"로 답하면 상위 모델(3.8-flash~)로 한 번 더 확인
-- 오류 시 다음 모델로: 400(생각 설정 거부 → 설정 없이 재시도), 429(하루 한도 → 당일 건너뜀), 503·빈 응답·10초 무응답(5분 건너뜀)
+- 오류 시 다음 모델로: 400(생각 설정 거부 → 설정 없이 재시도), 429(하루 한도 → 당일 건너뜀), 503·빈 응답·무응답(lite 10초 / 그 외 25초, 5분 건너뜀) · 모든 모델이 503·시간 초과면 건너뛰기를 풀고 처음부터 한 번 더
 - 설정 화면에 현재 모델과 오늘 남은 사용량(추정) 표시
 
 ### 답변 불가 안내
@@ -85,7 +85,7 @@ data/faq/DB_FAQ.csv      답변 형식 예시 · {변수} 없는 질문은 고�
 - **컬러칩 클릭 → 선택한 Figma 요소의 fill 적용**
 - **타입 행 클릭 → 선택한 텍스트의 fontSize 적용**
 - 복사, 이전으로, 대화 초기화
-- 대화 히스토리: 최근 질문 30개 저장(플러그인 `clientStorage` `moa-history` / 미리보기 localStorage) · Gemini 참고 대화는 최근 5개
+- 대화 히스토리: 최근 질문 30개 저장(플러그인 `clientStorage` `moa-history` / 미리보기 localStorage) · Gemini 참고 대화는 최근 3개
 - 대화 검색: Cmd/Ctrl+F → 상단 검색바 (Enter 다음 · Esc/빈 곳 클릭 닫기)
 - 짧은 맞장구(웅·응·그래…)는 "네!"로 답변
 - API 키는 `figma.clientStorage`(`moa-gemini-key`)에 저장

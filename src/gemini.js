@@ -13,7 +13,7 @@ var MOA_COOL = {};
 /* 모델별 생성 설정 — 2.x: thinkingBudget / 3.x·latest: thinkingLevel(3.8은 minimal 미지원 → low) / 거부한 모델은 생각 설정 없이 */
 var MOA_NO_THINK = {};
 function moaGenCfg(model){
-  var c = { maxOutputTokens: 4096, responseMimeType: 'application/json' };
+  var c = { maxOutputTokens: 2048, responseMimeType: 'application/json' };
   if(MOA_NO_THINK[model]) return c;
   if(/^gemini-2/.test(model)){ c.temperature = 0; c.thinkingConfig = { thinkingBudget: 0 }; }
   else c.thinkingConfig = { thinkingLevel: /^gemini-3\.[6-9]/.test(model) ? 'low' : 'minimal' };
@@ -27,6 +27,10 @@ function moaSkip(m){
 }
 /* 응답 헤더가 이 시간 안에 안 오면 다음 모델로 */
 var MOA_CALL_TIMEOUT = 10000;
+/* lite가 아닌 모델(생각 단계가 있어 첫 응답이 늦음)은 더 기다림 */
+var MOA_SLOW_TIMEOUT = 25000;
+var MOA_RECHECK = false; /* 상위 모델 재확인 중에는 10초만 기다림 */
+function moaTimeout(m){ return (/lite/.test(m) || MOA_RECHECK) ? MOA_CALL_TIMEOUT : MOA_SLOW_TIMEOUT; }
 
 var MOA_STEPS = [
   '질문 범위 및 의도 확인',
@@ -592,7 +596,7 @@ function moaCount(model, exhausted){
 function moaUsage(){
   var u = moaUsageAll();
   var left = function(m){ return Math.max(0, (MOA_FREE_RPD[m] || 0) - (u.used[m] || 0)); };
-  var model = MOA_MODELS.filter(function(m){ return left(m) > 0; })[0] || u.last || MOA_MODELS[0];
+  var model = MOA_MODELS.filter(function(m){ return left(m) > 0 && !(MOA_COOL[m] && Date.now() < MOA_COOL[m]); })[0] || u.last || MOA_MODELS[0];
   return { model: model, used: u.used[model] || 0, limit: MOA_FREE_RPD[model] || 0, left: left(model) };
 }
 
@@ -607,11 +611,11 @@ function moaCall(model, apiKey, body, onDelta){
   var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model +
     (stream ? ':streamGenerateContent?alt=sse&key=' : ':generateContent?key=') + encodeURIComponent(apiKey);
   var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null, late = false;
-  var tm = setTimeout(function(){ late = true; if(ctl) ctl.abort(); }, MOA_CALL_TIMEOUT);
+  var tm = setTimeout(function(){ late = true; if(ctl) ctl.abort(); }, moaTimeout(model));
   return fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body), signal: ctl ? ctl.signal : undefined })
     .catch(function(){
       clearTimeout(tm);
-      if(late){ var e = moaFail('HTTP 503 · ' + model + ' 응답 시간 초과(' + (MOA_CALL_TIMEOUT / 1000) + '초)'); e.status = 503; throw e; }
+      if(late){ var e = moaFail('HTTP 503 · ' + model + ' 응답 시간 초과(' + (moaTimeout(model) / 1000) + '초)'); e.status = 503; throw e; }
       throw moaFail('네트워크 연결 실패 · 인터넷 연결과 manifest의 allowedDomains를 확인해 주세요');
     })
     .then(function(res){
@@ -730,8 +734,8 @@ function moaAskOnce(question, apiKey, opts){
   function end(i, detail, status){ report(i, status || 'done', detail || ''); }
   function skipRest(from, detail){ for(var k = from; k < MOA_STEPS.length; k++) report(k, 'skip', k === from ? detail : ''); }
 
-  var qs, sq, usage = false, topics = [], hits = [], faqs = [], db = window.MOA_DB || [];
-  var hist = (opts.history || []).slice(-5);
+  var qs, sq, usage = false, topics = [], inhTopics = [], ctxOnly = null, needPick = false, picked = null, hits = [], faqs = [], db = window.MOA_DB || [];
+  var hist = (opts.history || []).slice(-3);
   var last = hist[hist.length - 1];
 
   return moaLoadDb()
@@ -759,11 +763,18 @@ function moaAskOnce(question, apiKey, opts){
     if(opts.compareTopics && opts.compareTopics.length){ opts.compareTopics.forEach(function(t){ if(topics.indexOf(t) < 0) topics.push(t); }); }
     var onlyBase = topics.every(function(t){ return MOA_FOUNDATION.indexOf(t) > -1; });
     /* 카테고리 창: 이전 질문 주제는 같은 카테고리일 때만 이어받음 (다른 카테고리 스펙이 섞이지 않게) */
-    if(last && last.topics && onlyBase && !opts.compareTopics){ last.topics.forEach(function(t){ if(opts.topic && t !== opts.topic) return; if(topics.indexOf(t) < 0){ topics.push(t); inherited = true; } }); }
+    /* 질문에 카테고리가 없으면: 직전 대화부터 거슬러 올라가 카테고리가 있는 대화의 주제를 이어받음 */
+    var noCat = !topics.length && !opts.compareTopics, src = last, all = hist; /* 직전 3개 대화만 */
+    if(onlyBase && !opts.compareTopics){ for(var h = all.length - 1; h >= 0; h--){ if(all[h].topics && all[h].topics.length){ src = all[h]; break; } } }
+    if(src && src.topics && onlyBase && !opts.compareTopics){ src.topics.forEach(function(t){ if(opts.topic && t !== opts.topic) return; if(topics.indexOf(t) < 0){ topics.push(t); inhTopics.push(t); inherited = true; } }); }
+    /* 이어받은 카테고리 안에서만 근거를 찾음 (전체 카테고리 정보가 섞이지 않게) */
+    if(noCat && inherited && !opts.topic) ctxOnly = topics.slice();
+    /* 직전 대화에도 카테고리가 없으면: 검색 결과의 카테고리를 후보로 사용자에게 고르게 함 */
+    if(noCat && !inherited && !opts.topic) needPick = true;
     if(opts.topic && !opts.compareTopics){ topics = topics.filter(function(t){ return t === opts.topic; }); if(topics.indexOf(opts.topic) < 0) topics.unshift(opts.topic); }
     var termTxt = gm.terms.length ? '\n용어 ' + gm.terms.slice(0, 6).join(', ') : '';
     if(opts.compareTopics) termTxt += '\n비교 모드 · ' + opts.compareTopics.join(' vs ');
-    end(1, (topics.length ? topics.join(', ') + (inherited ? ' (이전 질문 주제 포함)' : '') : '매핑된 주제 없음 · 전체 DB 검색') + termTxt, (topics.length || gm.terms.length) ? 'done' : 'warn');
+    end(1, (topics.length ? topics.join(', ') + (ctxOnly ? ' (이전 대화 카테고리로 답변)' : inherited ? ' (이전 질문 주제 포함)' : '') : '매핑된 주제 없음 · 전체 DB 검색') + termTxt, (topics.length || gm.terms.length) ? 'done' : 'warn');
   })
   /* 3 */
   .then(function(){ return begin(2); })
@@ -805,8 +816,9 @@ function moaAskOnce(question, apiKey, opts){
       /* 지금 카테고리 안에서 먼저 찾고, 없을 때만 다른 카테고리 */
       /* 카테고리 창: 해당 카테고리 근거만 사용 (다른 카테고리로 넘어가지 않음) */
       if(opts.topic && !opts.compareTopics) list = list.filter(function(r){ return r.ch.topic === opts.topic; });
+      if(ctxOnly) list = list.filter(function(r){ return ctxOnly.indexOf(r.ch.topic) > -1; });
       if(opts.excludeTopic){ var other = list.filter(function(r){ return r.ch.topic !== opts.excludeTopic; }); if(other.length) list = other; }
-      list.forEach(function(r){ if(topics.indexOf(r.ch.topic) > -1) r.score *= 2; });
+      list.forEach(function(r){ if(topics.indexOf(r.ch.topic) > -1) r.score *= 2; if(inhTopics.indexOf(r.ch.topic) > -1 && MOA_FOUNDATION.indexOf(r.ch.topic) < 0) r.score *= 2; }); /* '여백은?'처럼 공통 스타일만 물으면 직전 대화 컴포넌트 우선 */
       list.sort(function(a,b){ return b.score - a.score; });
       return list.slice(0, n).map(function(r){ return r.ch; });
     };
@@ -822,6 +834,9 @@ function moaAskOnce(question, apiKey, opts){
     if(!g.length && opts.topic && !cmp){
       g = db.filter(function(c){ return c.topic === opts.topic && /정의|개요|타입별 ?요약|적용 ?상황|사용 ?기준|용도/.test(moaHead(c)); }).slice(0, 5);
     }
+    if(!g.length && ctxOnly && !cmp){
+      g = db.filter(function(c){ return ctxOnly.indexOf(c.topic) > -1 && /정의|개요|타입별 ?요약|적용 ?상황|사용 ?기준|용도/.test(moaHead(c)); }).slice(0, 5);
+    }
     /* 스펙·토큰 질문인데 키워드가 안 걸리면 해당 카테고리 토큰 전체를 근거로 */
     if(!t.length && !usage && opts.topic && !cmp) t = (window.MOA_TOKENS || []).filter(function(c){ return c.topic === opts.topic; }).slice(0, 4);
     hits = g.concat(t);
@@ -829,6 +844,7 @@ function moaAskOnce(question, apiKey, opts){
     var ft = [], addT = function(x){ if(x && x !== opts.excludeTopic && ft.indexOf(x) < 0) ft.push(x); };
     addT(opts.topic); topics.forEach(addT); g.slice(0, 2).forEach(function(c){ addT(c.topic); });
     faqs = cmp ? [] : moaFaqMatch(question, ft, 3);
+    if(needPick && !cmp){ var tp = []; hits.forEach(function(c){ if(c.topic && tp.indexOf(c.topic) < 0) tp.push(c.topic); }); if(tp.length > 1) picked = { pick: tp.slice(0, 8), done: true, topics: tp.slice(0, 8) }; }
     var lab = function(c){ return (c.topic ? c.topic + ' › ' : '') + moaHead(c); };
     var info = (g.length ? '가이드: ' + g.slice(0, 2).map(lab).join(' / ') : '') + (g.length && t.length ? '\n' : '') + (t.length ? '토큰: ' + t.slice(0, 3).map(function(c){ return moaHead(c).replace(/ 토큰$/, ''); }).join(', ') : '');
     if(faqs.length) info += '\nFAQ 형식: ' + faqs.map(function(f){ return f.q; }).slice(0, 2).join(' / ');
@@ -837,6 +853,7 @@ function moaAskOnce(question, apiKey, opts){
   /* 5 */
   .then(function(){ return begin(4); })
   .then(function(){
+    if(picked){ end(4, '카테고리 후보 ' + picked.pick.join(', ') + ' · 사용자 선택 대기', 'warn'); skipRest(5, '생략'); return picked; }
     if(!hits.length){
       end(4, '가이드에 근거가 없어 답변할 수 없어요', 'warn');
       skipRest(5, '생략');
@@ -860,7 +877,7 @@ function moaAskOnce(question, apiKey, opts){
           return [{ role: 'user', parts: [{ text: h.q }] }, { role: 'model', parts: [{ text: String(h.a || '').slice(0, 1200) }] }];
         })).concat([{ role: 'user', parts: [{ text: '<context>\n' + moaContext(hits) + '\n</context>\n\n' + moaFaqContext(faqs) + '질문: ' + question + (usage ? MOA_USAGE_HINT : '') + (opts.compareTopics ? MOA_COMPARE_HINT : '') + moaLeadHint() }] }]),
       };
-      var tried = [], fails = [], plain = false;
+      var tried = [], fails = [], plain = false, again = false, once = false;
       function next(i){
         while(i + 1 < MOA_MODELS.length && moaSkip(MOA_MODELS[i])) i++;
         var model = MOA_MODELS[i];
@@ -879,9 +896,16 @@ function moaAskOnce(question, apiKey, opts){
         }).catch(function(err){
           if(err.status === 503 || err.status === 500) MOA_COOL[model] = Date.now() + 300000;
           if(err.status === 429 && !/per ?minute|PerMinute/i.test(err.message)) moaCount(model, true);
-          if([400, 404, 429, 500, 503].indexOf(err.status) > -1 && !/API key/i.test(err.message) && i + 1 < MOA_MODELS.length){
+          if([400, 404, 429, 500, 503].indexOf(err.status) > -1 && !/API key/i.test(err.message) && !once && i + 1 < MOA_MODELS.length){
             fails.push(model + ' ' + err.status);
             return next(i + 1);
+          }
+          /* 모든 모델이 503·시간 초과면 5분 건너뛰기를 풀고 lite부터 한 번 더 */
+          if((err.status === 503 || err.status === 500) && !again && !once && i + 1 >= MOA_MODELS.length){
+            again = true; fails.push(model + ' ' + err.status);
+            for(var k in MOA_COOL) delete MOA_COOL[k];
+            report(5, 'run', '모든 모델 응답 지연 · 처음부터 한 번 더 시도');
+            return next(0);
           }
           if(fails.length) err.message += ' (앞선 시도: ' + fails.join(', ') + ')';
           if(err.status === 403 || /API key/i.test(err.message)) err.message += ' · API 키를 확인해 주세요';
@@ -912,7 +936,7 @@ function moaAskOnce(question, apiKey, opts){
       function emptyNext(model, why, i){
         fails.push(model + ' 빈 응답');
         plain = false;
-        if(i + 1 < MOA_MODELS.length) return next(i + 1);
+        if(!once && i + 1 < MOA_MODELS.length) return next(i + 1);
         throw moaFail(model + ' · 답변이 비어 있어요 (' + why + ')' + (fails.length > 1 ? ' (앞선 시도: ' + fails.slice(0, -1).join(', ') + ')' : ''));
       }
       /* 근거(hits)가 있는데 "가이드에 해당 내용이 없습니다"로 답하면 한 번 더 시도 — 같은 질문을 두 번 해야 답하던 문제 */
@@ -921,8 +945,9 @@ function moaAskOnce(question, apiKey, opts){
         report(5, 'run', r.model + ' · 근거가 있어 상위 모델로 다시 확인 중');
         var lp = body.contents[body.contents.length - 1].parts[0];
         lp.text += '\n\n(위 <context>에 질문과 관련된 가이드 내용이 있습니다. "가이드에 해당 내용이 없습니다"로 답하지 말고 context 내용만 근거로 답하세요. context에 관련 내용이 정말 하나도 없을 때만 그 문장을 쓰세요.)';
-        plain = false; fails = [];
-        return next(MOA_UPPER < MOA_MODELS.length ? MOA_UPPER : 0).catch(function(){ return r; });
+        /* 재확인은 상위 모델 1번만 · 10초 (내용 없는 질문에서 50초 넘게 걸리고 상위 모델 한도를 쓰던 문제) */
+        plain = false; fails = []; once = true; MOA_RECHECK = true;
+        return next(MOA_UPPER < MOA_MODELS.length ? MOA_UPPER : 0).then(function(x){ MOA_RECHECK = false; return x; }, function(){ MOA_RECHECK = false; return r; });
       });
     }).then(function(r){
       var pj = moaParseValid(r.text);
