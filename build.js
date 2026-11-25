@@ -54,14 +54,14 @@ for (const name of fs.readdirSync(path.join(__dirname, 'data/DB_guide')).sort())
     }
     continue;
   }
-  let group = '', section = '', buf = [];
+  let group = '', sub = '', section = '', title = '', buf = [];
   const flush = () => {
     const text = buf.join('\n').replace(/\n{3,}/g, '\n\n').trim();
     buf = [];
     if (!text || !section) return;
     if (SKIP_SEC.test(group) || SKIP_SEC.test(section)) return;
     if (SKIP_TEXT.test(text) || text.length < 12) return;
-    chunks.push({ source: name, topic: base, group, section, text, kind: 'md' });
+    chunks.push(Object.assign({ source: name, topic: base, group, section, text, kind: 'md' }, title ? { title } : {}));
   };
   for (const line of raw.split(/\r?\n/)) {
     const h = /^(#{1,4})\s+(.*)$/.exec(line);
@@ -69,7 +69,9 @@ for (const name of fs.readdirSync(path.join(__dirname, 'data/DB_guide')).sort())
       const l = clean(h[2]);
       if (!l) continue;
       flush();
-      if (h[1].length <= 2) { group = l; section = l; } else section = l;
+      if (h[1].length <= 2) { group = l; sub = ''; section = l; title = ''; }
+      else if (h[1].length === 3) { sub = l; section = l; title = ''; }
+      else { section = l; title = sub ? sub + ' · ' + l : ''; }
     } else buf.push(line);
   }
   flush();

@@ -153,14 +153,17 @@ function moaParseGuide(name, raw){
     });
     return out;
   }
-  var group = '', section = '', buf = [];
+  /* #### 소제목은 상위 ### 제목을 title로 함께 기록 (예: 내부 운영 규칙 · 배너 타이틀) */
+  var group = '', sub = '', section = '', title = '', buf = [];
   var flush = function(){
     var text = buf.join('\n').replace(/\n{3,}/g, '\n\n').trim();
     buf = [];
     if(!text || !section) return;
     if(/^(메타|관련 피그마 좌표)/.test(group) || /^(메타|관련 피그마 좌표)/.test(section)) return;
     if(/^DB 등록:/m.test(text) || text.length < 12) return;
-    out.push({ source: name, topic: base, group: group, section: section, text: text, kind: 'md' });
+    var ch = { source: name, topic: base, group: group, section: section, text: text, kind: 'md' };
+    if(title) ch.title = title;
+    out.push(ch);
   };
   raw.split(/\r?\n/).forEach(function(line){
     var h = /^(#{1,4})\s+(.*)$/.exec(line);
@@ -168,7 +171,9 @@ function moaParseGuide(name, raw){
       var l = moaClean(h[2]);
       if(!l) return;
       flush();
-      if(h[1].length <= 2){ group = l; section = l; } else section = l;
+      if(h[1].length <= 2){ group = l; sub = ''; section = l; title = ''; }
+      else if(h[1].length === 3){ sub = l; section = l; title = ''; }
+      else { section = l; title = sub ? sub + ' · ' + l : ''; }
     } else buf.push(line);
   });
   flush();
