@@ -9,7 +9,7 @@
 2. 메뉴 → Plugins → Development → **Import plugin from manifest…**
 3. 이 저장소의 `manifest.json` 선택
 4. Plugins → Development → **System Guide Moa** 실행
-5. 설정에서 Gemini API 키 입력 ([발급](https://aistudio.google.com/apikey))
+5. 설정에서 Gemini API 키 입력 ([발급](https://aistudio.google.com/api-keys))
 
 ## 구조
 

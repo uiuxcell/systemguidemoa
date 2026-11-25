@@ -29,6 +29,10 @@ figma.ui.onmessage = async function (msg) {
 };
 
 async function handle(msg) {
+  if (msg.type === 'open-url') {
+    if (/^https:\/\//.test(msg.url || '')) figma.openExternal(msg.url);
+    return;
+  }
   if (msg.type === 'close') {
     figma.closePlugin();
     return;

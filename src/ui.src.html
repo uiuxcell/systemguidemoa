@@ -81,9 +81,10 @@ body.web{background:#1E1E1E}
 [data-old] .acts,[data-old] .backlink,[data-old] .qchips{display:none}
 mark.fhit{background:#FFE58A;color:#000;border-radius:2px}
 mark.fhit.cur{background:#FFB938}
-.topbar .lead{display:flex;align-items:center;align-self:stretch;width:260px}
-.topbar .back{width:24px;align-self:stretch;display:flex;align-items:center;justify-content:center}
-.topbar .title{width:248px;font-size:12px;font-weight:600;line-height:15.96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar .lead{display:flex;align-items:center;align-self:stretch;width:260px;min-width:0}
+.topbar .lead .hit{display:flex;align-items:center;gap:8px;align-self:stretch;min-width:0;max-width:100%;cursor:pointer}
+.topbar .back{align-self:stretch;display:flex;align-items:center;padding-left:9px;flex-shrink:0}
+.topbar .title{min-width:0;font-size:12px;font-weight:600;line-height:15.96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .topbar .tools{width:52px;display:flex;gap:4px;justify-content:flex-end;align-items:center;align-self:stretch}
 .topbar .tool{position:relative;width:24px;align-self:stretch;display:flex;align-items:center;justify-content:center}
 .dot{position:absolute;left:20px;top:3px;width:4px;height:4px;border-radius:50%;background:#00BC06}
@@ -114,7 +115,7 @@ mark.fhit.cur{background:#FFB938}
 .bg-ing .i1{position:absolute;left:0;top:358px;width:365px;height:375px;filter:blur(90px)}
 .bg-ing .i2{position:absolute;left:263px;top:378px;width:299px;height:350px;filter:blur(90px)}
 .bg-ing .iblur{position:absolute;left:0;top:0;width:360px;height:640px;background:linear-gradient(180deg,rgba(255,255,255,0) 30.16%,rgba(255,255,255,.5) 100%)}
-.bg-key{position:absolute;inset:0;overflow:hidden;background:#F8F9FC url(__IMG_KEYBG__) center / 360px 640px no-repeat;z-index:1}
+.bg-key{position:absolute;inset:0;overflow:hidden;background:linear-gradient(180deg,#F5F6FA 21.88%,#fff 83.75%);z-index:1}
 
 /* ── home content (2:639) ── */
 .home-con{position:absolute;left:0;top:72px;bottom:78px;width:360px;display:flex;flex-direction:column;gap:20px;align-items:flex-start;z-index:5;min-height:0}
@@ -288,37 +289,102 @@ mark.fhit.cur{background:#FFB938}
 #pgIntro .ibottom{position:absolute;left:0;top:568px;width:360px;height:72px;padding:12px 16px 16px;display:flex;flex-direction:column}
 #pgIntro .icta{height:44px;align-self:stretch;border-radius:999px;background:#fff;display:flex;justify-content:center;align-items:center;padding:12px 16px;font-size:14px;font-weight:700;line-height:19px;letter-spacing:-0.02em;color:#000}
 #pgIntro .icta:hover{background:#F4F6F9}
-/* ── API key screen (2:597 / 2:611 / 2:625) ── */
-.key-img{display:none}
-.key-body{position:absolute;left:24px;top:190px;width:312px;display:flex;flex-direction:column;gap:24px;z-index:5}
-.key-text{display:flex;flex-direction:column;gap:12px}
-.key-text h1{font-size:24px;font-weight:600;line-height:32px;color:#000;white-space:pre-line}
-.key-text a{align-self:flex-start;font-size:14px;font-weight:600;line-height:19px;color:#424751;text-decoration:underline}
-.field-box{width:312px;display:flex;flex-direction:column;justify-content:center}
+/* ── API key screen (키 입력하기 1:136 / 설정_키 입력하기 1:152 / 오류 1:429·1:488) ── */
+.ktabs{position:absolute;left:0;top:40px;width:360px;height:40px;background:#fff;border:1px solid rgba(0,0,0,.1);box-sizing:border-box;padding:0 16px;display:flex;justify-content:space-between;align-items:flex-end;z-index:20}
+.ktabs .in{position:relative;display:flex;gap:12px;align-items:center;align-self:stretch}
+.ktab{position:relative;align-self:stretch;display:flex;align-items:center;font-size:12px;font-weight:600;line-height:15.96px;letter-spacing:-0.02em;color:#424751;white-space:nowrap;cursor:pointer;transition:color .18s ease}
+.ktab.on,.ktab:hover{color:#000}
+.ktabs .kbar{position:absolute;left:0;bottom:0;width:0;height:1px;background:#000;transition:left .32s cubic-bezier(.4,0,.2,1),width .32s cubic-bezier(.4,0,.2,1);pointer-events:none}
+#pgKey.set .ktabs{display:none}
+.kpane{position:absolute;inset:0}
+.kp-key{background:linear-gradient(180deg,#F5F6FA 21.88%,#fff 83.75%);isolation:isolate}
+#pgKey.guide .kp-key,#pgKey:not(.guide) .kp-guide{display:none}
+.key-img{position:absolute;left:167px;top:45px;width:216px;height:216px;object-fit:cover;pointer-events:none;z-index:2;-webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(closest-side,#000 62%,transparent 100%)}
+#pgKey.set .key-img{left:168px}
+.key-body{position:absolute;left:0;top:220px;width:360px;display:flex;flex-direction:column;gap:32px;align-items:center;z-index:5}
+.key-text{align-self:stretch;padding:0 24px;display:flex;flex-direction:column;gap:12px}
+.key-text h1{font-size:24px;font-weight:600;line-height:32px;letter-spacing:-0.02em;color:#000}
+.key-text p{font-size:14px;font-weight:500;line-height:1.5;letter-spacing:-0.02em;color:#424751}
+.key-form{width:312px;display:flex;flex-direction:column}
+.field-box{width:312px;display:flex;flex-direction:column}
 .field-box .lab{align-self:stretch;font-size:12px;font-weight:500;line-height:16px;letter-spacing:-0.02em;color:#5C6473}
-.field-box .inp{height:43px;align-self:stretch;border:0;border-bottom:1px solid #C8CDD4;border-radius:0;background:none;display:flex;flex-direction:row;gap:10px;padding:8px 0 10px;align-items:center;box-sizing:border-box}
+.field-box .inp{height:41px;align-self:stretch;border:0;border-bottom:1px solid #C8CDD4;border-radius:0;background:none;display:flex;flex-direction:row;gap:10px;padding:8px 0 8px;align-items:center;box-sizing:border-box}
 .field-box.on .inp{border-bottom-color:#000}
-.field-box.err .inp{border-bottom-color:#D62E2E;height:45px;padding:10px 0}
+.field-box.err .inp{border-bottom-color:#D40004}
 .field-box input{flex:1;min-width:0;font-size:16px;font-weight:500;line-height:22px;letter-spacing:-0.02em;color:#000}
 .field-box input::placeholder{color:#8C93A0}
 .field-box .clear{position:relative;width:24px;height:24px;flex-shrink:0;display:none}
 .field-box.on .clear,.field-box.err .clear{display:flex;align-items:center;justify-content:center}
 .field-box .clear i{position:absolute;left:5px;top:5px;width:14px;height:14px;border-radius:50%;background:#8C93A0}
 .field-box .clear svg{position:absolute;left:9.083px;top:9.083px}
-.err-msg{margin-top:8px;align-self:stretch;font-size:12px;font-weight:400;line-height:16px;color:#D62E2E;display:none}
+.key-msg{margin-top:6px;min-height:16px;display:flex;flex-direction:column}
+.err-msg{align-self:stretch;font-size:12px;font-weight:500;line-height:16px;letter-spacing:-0.02em;color:#D40004;display:none}
 .field-box.err .err-msg{display:block}
-.key-usage{margin-top:8px;display:none;align-items:center;gap:6px;font-size:11px;font-weight:500;line-height:15px;letter-spacing:-0.02em;color:#5C6473}
+.key-usage{display:none;align-items:center;gap:6px;font-size:11px;font-weight:500;line-height:16px;letter-spacing:-0.02em;color:#5C6473}
 .key-usage.on{display:flex}
 .field-box.err .key-usage{display:none}
 .key-usage i{width:4px;height:4px;border-radius:50%;background:#00BC06;flex-shrink:0}
 .key-usage b{font-weight:600;color:#000}
-.key-usage.low b{color:#D62E2E}
-.key-cta{position:absolute;left:24px;top:404px;width:312px;z-index:5}
-.cta{width:100%;height:44px;border-radius:8px;background:#4185FF;display:flex;justify-content:center;align-items:center;font-size:14px;font-weight:600;line-height:20px;color:#fff}
+.key-usage.low b{color:#D40004}
+.key-cta{margin-top:12px;width:312px;display:flex;flex-direction:column;gap:16px;align-items:center}
+.cta{width:100%;height:44px;border-radius:8px;background:#4185FF;display:flex;justify-content:center;align-items:center;padding:12px 16px;box-sizing:border-box;font-size:14px;font-weight:600;line-height:20px;letter-spacing:-0.02em;color:#fff;text-decoration:none}
 .cta[disabled]{background:#E0E3E9;color:#8C93A0;cursor:default}
-.key-info{position:absolute;left:0;top:485px;width:360px;height:155px;padding:24px 24px 32px;display:flex;flex-direction:column;gap:8px;z-index:5}
-.key-info h2{font-size:12px;font-weight:600;line-height:19px;color:#000}
-.key-info p{font-size:12px;font-weight:400;line-height:1.5;color:#424751;white-space:pre-line}
+.key-link{display:flex;gap:8px;align-items:center;height:20px;font-size:13px;line-height:1.5;letter-spacing:-0.02em;color:#424751;white-space:nowrap}
+.key-link span{font-weight:500}
+.key-link a{font-weight:600;color:#424751;text-decoration:underline;text-decoration-color:#424751;transition:color .18s ease,text-decoration-color .18s ease}
+.key-link a:hover{color:#000;text-decoration-color:#000}
+/* 설정 모드 상단바: 돌아가기 + 키 발급 가이드 (1:107) */
+.topbar .kgbtn{display:none;width:91px;align-self:stretch;align-items:center;font-size:12px;font-weight:600;line-height:15.96px;letter-spacing:-0.02em;color:#000;white-space:nowrap}
+.topbar .kgbtn .ic{position:relative;width:24px;align-self:stretch;flex-shrink:0}
+.topbar .kgbtn svg{position:absolute;left:5px;top:50%;margin-top:-7px}
+.topbar.kset{gap:24px;background:transparent;border-color:transparent;z-index:31}
+.topbar .back svg,.topbar .kgbtn .ic svg{transition:transform .18s ease}
+.topbar .lead .hit:hover .back svg{transform:translateX(-1px)}
+.topbar .kgbtn:hover .ic svg{transform:translateX(1px)}
+.topbar .kgbtn.nohov:hover .ic svg{transform:none}
+.topbar .kgbtn{cursor:pointer}
+.topbar.kset .lead{width:auto;flex:1;min-width:0}
+.topbar.kset .kgbtn{display:flex}
+.topbar.kset.kg .kgbtn{display:none}
+/* ── 키 발급 가이드 (1:168 / 1:233) ── */
+.kg-scroll{position:absolute;left:0;top:80px;width:360px;height:560px;overflow-y:auto;overflow-x:hidden;background:#F5F6FA;z-index:5}
+.kg-scroll{scrollbar-width:none}
+.kg-scroll::-webkit-scrollbar{width:0 !important;height:0 !important;display:none}
+.kg-in{position:relative;padding:32px 24px 108px}
+.kg-moa{position:absolute;left:232px;top:20px;width:120px;height:120px;pointer-events:none}
+.kg-moa .m{position:absolute;left:14.929px;top:16px;width:90.261px;height:89px}
+.kg-moa .sh{position:absolute;left:18.025px;top:79.734px;width:64.215px;height:11.266px;border-radius:50%;background:rgba(0,0,0,.2);filter:blur(4px)}
+.kg-moa .gl{position:absolute;left:3.918px;top:23.946px;width:18.722px;height:18.722px;opacity:.8;border-radius:50%;background:linear-gradient(126.027deg,#fff 15.24%,rgba(255,255,255,.1) 83.17%);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:inset 6px 4px 4px 0 rgba(94,166,253,.3)}
+.kg-moa img{position:absolute;left:0;top:0;width:90.261px;height:85.337px;object-fit:cover}
+.kg-col{position:relative;width:312px;display:flex;flex-direction:column;gap:24px}
+.kg-col h1{font-size:24px;font-weight:600;line-height:32px;letter-spacing:-0.02em;color:#000;white-space:pre-line}
+.kg-steps{display:flex;flex-direction:column;gap:12px}
+.kg-step{display:flex;gap:12px;align-items:flex-start}
+.kg-rail{width:20px;align-self:stretch;display:flex;flex-direction:column;gap:8px;align-items:center;flex-shrink:0}
+.kg-num{width:20px;height:20px;border-radius:16px;background:#424751;display:flex;justify-content:center;align-items:center;padding:6px 0 5px;box-sizing:border-box;flex-shrink:0;font-size:12px;font-weight:600;line-height:1.33;letter-spacing:-0.02em;color:#fff}
+.kg-line{width:1px;flex-grow:1;background:#C8CDD4}
+.kg-body{width:280px;display:flex;flex-direction:column;gap:12px;padding-bottom:12px;box-sizing:border-box;flex-shrink:0}
+.kg-tx{display:flex;flex-direction:column;gap:4px}
+.kg-tx b{font-size:16px;font-weight:600;line-height:1.33;letter-spacing:-0.02em;color:#000}
+.kg-tx span{font-size:14px;font-weight:500;line-height:1.33;letter-spacing:-0.02em;color:#424751;white-space:pre-line}
+.kg-img{position:relative;height:120px;overflow:hidden;border-radius:4px;background:#E0E3E9;flex-shrink:0}
+.kg-img .p{position:absolute;background-repeat:no-repeat}
+.kg-img .hl{position:absolute;border-radius:2px;background:rgba(32,99,255,.2);box-shadow:inset 0 0 0 1px rgba(32,99,255,.8);background:rgba(32,99,255,.1)}
+.kg-img.play .hl{animation:kgOnce 1.2s ease-in-out forwards}
+#kgScroll.sync .kg-img .hl{animation:none;background:rgba(32,99,255,.3)}
+.kg-tx span a{font-size:12px;font-weight:500;color:#424751;text-decoration:underline;word-break:break-all}
+@keyframes kgOnce{0%{background:rgba(32,99,255,.1)}25%{background:rgba(32,99,255,.3)}50%{background:rgba(32,99,255,.1)}75%,100%{background:rgba(32,99,255,.3)}}
+.kg-type{position:absolute;left:48.4px;top:27.9px;width:162.5px;height:15.2px;background:#FAFBFD;overflow:hidden;display:flex;justify-content:flex-start;align-items:center}
+.kg-type span{flex-shrink:0;white-space:nowrap;font-size:10.1px;font-weight:500;line-height:15.2px;letter-spacing:-0.02em;color:#000}
+.kg-type i{flex-shrink:0;width:1px;height:10px;margin-left:1px;background:#000;animation:kgCaret 1s steps(1) infinite}
+@keyframes kgCaret{50%{opacity:0}}
+.kg-press{position:absolute;left:50.3px;top:69px;width:176.4px;height:24px;border-radius:5px;background:rgba(0,0,0,.18);opacity:0;transition:opacity .12s ease;pointer-events:none}
+.kg-press.on{opacity:1}
+.kg-cur{position:absolute;left:0;top:0;width:12px;height:17px;opacity:0;transform:translate(205px,112px);transition:transform .7s cubic-bezier(.4,0,.2,1),opacity .2s ease;pointer-events:none}
+.kg-cur.on{opacity:1}
+.kg-cur svg{display:block;transition:transform .1s ease;transform-origin:0 0}
+.kg-cur.down svg{transform:scale(.85)}
+.kg-float{position:absolute;left:0;bottom:0;width:360px;padding:24px 24px 24px;box-sizing:border-box;background:linear-gradient(180deg,rgba(245,246,250,0) 0%,#F5F6FA 45%);z-index:6}
 
 /* ── overlays ── */
 .overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:60}
@@ -483,30 +549,86 @@ mark.fhit.cur{background:#FFB938}
 
   <!-- API key -->
   <div class="page hide" id="pgKey">
-    <img class="key-img" src="__IMG_KEY__" alt="">
-    <div class="key-body">
-      <div class="key-text">
-        <h1>시작하려면
-Gemini API 키가 필요해요</h1>
-        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">발급하러 가기</a>
-      </div>
-      <div class="field-box" id="keyBox">
-        <span class="lab">키 입력</span>
-        <div class="inp">
-          <input id="keyInput" type="text" placeholder="키를 입력해 주세요." autocomplete="off" spellcheck="false">
-          <button class="clear" id="keyClear" aria-label="지우기"><i></i><svg width="5.833" height="5.833" viewBox="0 0 5.833 5.833"><path d="M 5.833 0.587 L 5.246 0 L 2.917 2.329 L 0.587 0 L 0 0.587 L 2.329 2.917 L 0 5.246 L 0.587 5.833 L 2.917 3.504 L 5.246 5.833 L 5.833 5.246 L 3.504 2.917 L 5.833 0.587 Z" fill="#fff"/></svg></button>
-        </div>
-        <div class="err-msg" id="keyErr">키 형식이 올바르지 않습니다</div>
-        <div class="key-usage" id="keyUsage"></div>
+    <div class="ktabs" id="keyTabs">
+      <div class="in">
+        <button class="ktab on" data-kv="key">키 입력하기</button>
+        <button class="ktab" data-kv="guide">키 발급 가이드</button>
+        <i class="kbar" id="keyTabBar"></i>
       </div>
     </div>
-    <div class="key-cta"><button class="cta" id="keySave" disabled>저장하고 시작하기</button></div>
-    <div class="key-info">
-      <h2>키 발급 방법</h2>
-      <p>1. 발급하러 가기를 눌러 Google AI Studio에 로그인하세요.
-2. 좌측 메뉴에서 ‘Get API key’를 선택하세요.
-3. ‘Create API key’ 버튼을 눌러 새 키를 생성하세요.
-4. 생성된 키를 복사해 입력창에 붙여넣으세요.</p>
+    <div class="kpane kp-key">
+      <img class="key-img" src="__IMG_KEY__" alt="">
+      <div class="key-body">
+        <div class="key-text">
+          <h1>모아를 시작하려면<br>Gemini API 키가 필요해요</h1>
+          <p>입력한 키는 현재 기기에만 저장되며,<br>질문의 파악하고 가이드를 분석하기 위해 사용해요.</p>
+        </div>
+        <div class="key-form">
+          <div class="field-box" id="keyBox">
+            <span class="lab">키 입력</span>
+            <div class="inp">
+              <input id="keyInput" type="text" placeholder="키를 입력해 주세요." autocomplete="off" spellcheck="false">
+              <button class="clear" id="keyClear" aria-label="지우기"><i></i><svg width="5.833" height="5.833" viewBox="0 0 5.833 5.833"><path d="M 5.833 0.587 L 5.246 0 L 2.917 2.329 L 0.587 0 L 0 0.587 L 2.329 2.917 L 0 5.246 L 0.587 5.833 L 2.917 3.504 L 5.246 5.833 L 5.833 5.246 L 3.504 2.917 L 5.833 0.587 Z" fill="#fff"/></svg></button>
+            </div>
+            <div class="key-msg">
+              <div class="err-msg" id="keyErr"></div>
+              <div class="key-usage" id="keyUsage"></div>
+            </div>
+          </div>
+          <div class="key-cta">
+            <button class="cta" id="keySave" disabled>저장하고 시작하기</button>
+            <div class="key-link"><span>API 키가 없다면?</span><a href="https://aistudio.google.com/api-keys" target="_blank" rel="noopener">발급하러 가기</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="kpane kp-guide">
+      <div class="kg-scroll" id="kgScroll">
+        <div class="kg-in">
+          <div class="kg-moa"><div class="m"><div class="sh"></div><div class="gl"></div><img src="__IMG_GUIDEMOA__" alt=""></div></div>
+          <div class="kg-col">
+            <h1>키 발급 방법이
+궁금하다면?</h1>
+            <div class="kg-steps">
+              <div class="kg-step">
+                <div class="kg-rail"><div class="kg-num">1</div><div class="kg-line"></div></div>
+                <div class="kg-body" style="gap:4px"><div class="kg-tx"><b>로그인 하기</b><span>사이트를 방문해 Google AI Studio에 
+로그인하세요. <a href="https://aistudio.google.com/api-keys" target="_blank" rel="noopener">(https://aistudio.google.com/api-keys)</a></span></div></div>
+              </div>
+              <div class="kg-step">
+                <div class="kg-rail"><div class="kg-num">2</div><div class="kg-line"></div></div>
+                <div class="kg-body">
+                  <div class="kg-tx"><b>API 키 만들기 클릭</b><span>좌측 메뉴에서 API 키 만들기를 선택해 주세요.</span></div>
+                  <div class="kg-img" style="height:60px"><div class="p" style="left:45px;top:12px;width:191px;height:36px;border-radius:4px;background:url(__IMG_KG2__) 61.905% 44.575% / 108.861% 151.201% no-repeat"></div><div class="hl" style="left:136px;top:18px;width:93px;height:24px"></div></div>
+                </div>
+              </div>
+              <div class="kg-step">
+                <div class="kg-rail"><div class="kg-num">3</div><div class="kg-line"></div></div>
+                <div class="kg-body">
+                  <div class="kg-tx"><b>프로젝트 만들기</b><span>프로젝트가 없다면 키를 만들 수 없습니다.
+프로젝트를 생성해 주세요.</span></div>
+                  <div class="kg-img"><div class="p" style="left:40px;top:-93px;width:321px;height:189px;background:url(__IMG_KG3__) center / cover no-repeat"></div><div class="hl" style="left:56px;top:69px;width:89px;height:24px"></div></div>
+                </div>
+              </div>
+              <div class="kg-step">
+                <div class="kg-rail"><div class="kg-num">4</div><div class="kg-line"></div></div>
+                <div class="kg-body">
+                  <div class="kg-tx"><b>API 키 만들기</b><span>키 만들기 버튼을 선택해 완료해 주세요.</span></div>
+                  <div class="kg-img"><div class="p" style="left:-78px;top:-90px;width:316.643px;height:186px;background:url(__IMG_KG4__) center / cover no-repeat"></div><div class="hl" style="left:174px;top:52px;width:59px;height:24px"></div></div>
+                </div>
+              </div>
+              <div class="kg-step">
+                <div class="kg-rail" style="align-self:flex-start"><div class="kg-num">5</div></div>
+                <div class="kg-body">
+                  <div class="kg-tx"><b>키 복사하고 붙여넣기</b><span>API 키를 복사하고, 모아로 돌아와 키 입력창에 입력해 주세요.</span></div>
+                  <div class="kg-img"><div class="p" style="left:39px;top:-159px;width:198px;height:360px;background:url(__IMG_KG5__) 48.889% 45.542% / 121.028% 108.671% no-repeat"></div><div class="kg-type" id="kgType"><span id="kgTypeTx"></span><i></i></div><div class="kg-press" id="kgPress"></div><div class="kg-cur" id="kgCur"><svg width="12" height="17" viewBox="0 0 12 17"><path d="M1 1 L1 14 L4.2 11 L6.4 16 L8.6 15 L6.4 10.2 L10.8 10.2 Z" fill="#000" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="kg-float"><a class="cta" href="https://aistudio.google.com/api-keys" target="_blank" rel="noopener">키 발급하러 가기</a></div>
     </div>
   </div>
 
@@ -533,11 +655,14 @@ Gemini API 키가 필요해요</h1>
 
   <div class="topbar hide" id="topbar">
     <div class="lead">
-      <button class="back" id="btnBack" aria-label="뒤로">
+      <div class="hit" id="backHit" role="button" tabindex="0" aria-label="뒤로">
+      <span class="back" id="btnBack">
         <svg width="6" height="12" viewBox="0 0 6 12"><path d="M5.4 0.6 L0.6 6 L5.4 11.4" fill="none" stroke="#000" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+      </span>
       <span class="title" id="topTitle">Color</span>
+      </div>
     </div>
+    <button class="kgbtn" id="btnKeyGuide">키 발급 가이드<span class="ic"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M 12.8 7 C 12.8 3.797 10.203 1.2 7 1.2 C 3.797 1.2 1.2 3.797 1.2 7 C 1.2 10.203 3.797 12.8 7 12.8 L 7 14 C 3.134 14 0 10.866 0 7 C 0 3.134 3.134 0 7 0 C 10.866 0 14 3.134 14 7 C 14 10.866 10.866 14 7 14 L 7 12.8 C 10.203 12.8 12.8 10.203 12.8 7 Z" fill="#000"/><circle cx="7" cy="4.6" r="0.6" fill="#000"/><rect x="6.4" y="6" width="1.2" height="4" fill="#000"/></svg></span></button>
     <div class="tools">
       <button class="tool" id="btnRefresh" aria-label="새로고침">
         <svg width="15" height="15" viewBox="0 0 16 16"><g fill="none" stroke="#000" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M13.4 6.4 A5.7 5.7 0 0 0 3.2 4.6"/><path d="M13.6 2.9 V6.5 H10"/><path d="M2.6 9.6 A5.7 5.7 0 0 0 12.8 11.4"/><path d="M2.4 13.1 V9.5 H6"/></g></svg>
@@ -758,7 +883,7 @@ function dbAnswer(section, chunks){
 
 /* ── state ───────────────────────────────────────────────────── */
 /* key: 창을 닫기 전까지 메모리에만 보관 */
-var S = {screen:'home', cat:null, topic:null, history:[], connected:true, key:'', hasKey:false};
+var S = {keyMode:'set', keyView:'key', screen:'home', cat:null, topic:null, history:[], connected:true, key:'', hasKey:false};
 var $ = function(id){return document.getElementById(id);};
 var el = function(tag,cls,txt){var n=document.createElement(tag);if(cls)n.className=cls;if(txt!=null)n.textContent=txt;return n;};
 
@@ -779,12 +904,16 @@ function show(screen){
   $('bgIng').classList.toggle('hide', screen!=='chat');
   if(screen!=='chat') setIng(false);
   $('bgKey').classList.toggle('hide', screen!=='key');
-  $('topbar').classList.toggle('hide', screen!=='chat' && screen!=='key');
+  var kset = screen==='key' && S.keyMode !== 'first';
+  $('topbar').classList.toggle('hide', screen!=='chat' && !kset);
+  $('topbar').classList.toggle('kset', kset);
+  $('pgKey').classList.toggle('set', S.keyMode !== 'first');
+  if(screen==='key' && prevScreen !== 'key') keyView('key');
   $('bar').classList.toggle('hide', screen!=='chat' && screen!=='home');
   $('head').classList.toggle('transparent', screen==='key');
   document.querySelector('#topbar .tools').classList.toggle('hide', screen==='key');
   if(screen==='chat') $('topTitle').textContent = GENERAL;
-  if(screen==='key') $('topTitle').textContent = '설정';
+  if(screen==='key') $('topTitle').textContent = '돌아가기';
   if(prevScreen && prevScreen !== screen) slideIn(screen, S.navDir || 'fwd');
   S.navDir = null;
 }
@@ -2263,12 +2392,115 @@ function closeMenu(){
   o.classList.add('closing');
   setTimeout(function(){ o.classList.add('hide'); o.classList.remove('closing'); }, 260);
 }
-$('btnBack').onclick = back;
+$('backHit').onclick = function(){ if(S.screen === 'key' && S.keyMode !== 'first' && S.keyView === 'guide'){ keyView('key'); return; } back(); };
+/* 키 화면: 탭(처음 진입) / 상단 '키 발급 가이드'(설정 진입) */
+function keyView(v){
+  S.keyView = v;
+  $('pgKey').classList.toggle('guide', v === 'guide');
+  $('topbar').classList.toggle('kg', v === 'guide');
+  document.querySelectorAll('#keyTabs .ktab').forEach(function(t){ t.classList.toggle('on', t.getAttribute('data-kv') === v); });
+  var on = document.querySelector('#keyTabs .ktab.on'), bar = $('keyTabBar');
+  if(on && bar && on.offsetWidth){
+    var first = !bar.offsetWidth;
+    if(first) bar.style.transition = 'none';
+    bar.style.left = on.offsetLeft + 'px'; bar.style.width = on.offsetWidth + 'px';
+    if(first){ void bar.offsetWidth; bar.style.transition = ''; }
+  }
+  if(v === 'guide'){ $('kgScroll').scrollTop = 0; kgOpenedAt = Date.now(); }
+  if(window.kgSyncOff) kgSyncOff();
+}
+document.querySelectorAll('#keyTabs .ktab').forEach(function(t){ t.onclick = function(){ keyView(t.getAttribute('data-kv')); }; });
+$('btnKeyGuide').onclick = function(){ keyView('guide'); };
+/* 설정 진입 직후 첫 호버는 무시, 한 번 벗어난 뒤부터 효과 */
+$('btnKeyGuide').addEventListener('mouseleave', function(){ this.classList.remove('nohov'); });
+/* 가이드 2~5단계: 화면에 보이면 시작, 벗어나면 초기화 (가이드 진입 후 1초 대기) */
+var kgOpenedAt = 0;
+(function(){
+  var el = $('kgTypeTx'), box = $('kgType'), cur = $('kgCur'), press = $('kgPress'), gen = 0;
+  var C = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
+  function nk(){ var k = 'AIzaSy'; for(var n = 0; n < 33; n++) k += C.charAt(Math.floor(Math.random() * C.length)); return k; }
+  function fit(){ var over = el.offsetWidth + 2 - box.clientWidth; el.style.marginLeft = over > 0 ? (-over) + 'px' : '0'; }
+  function later(g, fn, ms){ setTimeout(function(){ if(g === gen) fn(); }, ms); }
+  function reset5(){ gen++; el.textContent = ''; fit(); cur.classList.remove('on','down'); press.classList.remove('on'); cur.style.transition = 'none'; cur.style.transform = 'translate(205px,112px)'; }
+  function run5(g){
+    var key = nk(), i = 0;
+    (function type(){
+      if(i <= key.length){ el.textContent = key.slice(0, i); fit(); i++; later(g, type, 45 + Math.random() * 55); return; }
+      later(g, function(){
+        cur.style.transition = 'none'; cur.style.transform = 'translate(205px,112px)'; void cur.offsetWidth; cur.style.transition = '';
+        cur.classList.add('on');
+        later(g, function(){ cur.style.transform = 'translate(136px,78px)'; }, 60);
+        later(g, function(){ cur.classList.add('down'); press.classList.add('on'); }, 860);
+        later(g, function(){ cur.classList.remove('down'); press.classList.remove('on'); }, 1060);
+        later(g, function(){ cur.classList.remove('on'); }, 1700);
+        later(g, function(){ el.textContent = ''; fit(); later(g, function(){ run5(g); }, 600); }, 2000);
+      }, 400);
+    })();
+  }
+  /* 2~4: 사각형이 화면(플로팅 버튼 위)에 다 보이면 1초 뒤 / 5: 이미지가 보이면 루프 */
+  var hls = [].slice.call(document.querySelectorAll('#kgScroll .kg-img .hl')), img5 = box.parentNode, timers = [];
+  function enter(t, idx){
+    clearTimeout(timers[idx]);
+    if(t === img5){ timers[idx] = setTimeout(function(){ reset5(); run5(gen); }, Math.max(0, kgOpenedAt + 1000 - Date.now())); return; }
+    if(sc.classList.contains('sync')) return;
+    timers[idx] = setTimeout(function(){ if(sc.classList.contains('sync')) return; var p = t.parentNode; p.classList.remove('play'); void p.offsetWidth; p.classList.add('play'); }, 1000);
+  }
+  function leave(t, idx){
+    clearTimeout(timers[idx]);
+    if(t === img5) reset5(); else t.parentNode.classList.remove('play');
+  }
+  var targets = hls.concat([img5]);
+  /* 끝까지 스크롤하면 2~4 동시 깜빡임 루프 */
+  var sc = $('kgScroll');
+  var syncAnims = [];
+  function syncOn(){
+    if(sc.classList.contains('sync')) return;
+    sc.classList.add('sync');
+    var A = 'rgba(32,99,255,.3)', B = 'rgba(32,99,255,.1)';
+    /* 깜빡깜빡 1.92s + 쉬기 4s = 5.92s */
+    var kf = [{offset:0,background:A},{offset:480/5920,background:B},{offset:960/5920,background:A},{offset:1440/5920,background:B},{offset:1920/5920,background:A},{offset:1,background:A}];
+    var t0 = document.timeline ? document.timeline.currentTime : null;
+    syncAnims = hls.map(function(h){ var a = h.animate(kf, {duration:5920, iterations:Infinity, easing:'ease-in-out'}); if(t0 != null) a.startTime = t0; return a; });
+  }
+  function syncOff(){ if(!sc.classList.contains('sync')) return; sc.classList.remove('sync'); syncAnims.forEach(function(a){ a.cancel(); }); syncAnims = []; }
+  function syncCheck(){
+    var gap = sc.scrollHeight - sc.clientHeight - sc.scrollTop;
+    if(S.keyView === 'guide' && sc.scrollHeight > 0 && gap <= 2) syncOn();
+    else if(S.keyView !== 'guide') syncOff();
+  }
+  window.kgSyncOff = syncOff;
+  sc.addEventListener('scroll', syncCheck, {passive:true});
+  window.kgSyncCheck = syncCheck;
+  if('IntersectionObserver' in window){
+    var shown = [];
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        var idx = targets.indexOf(e.target), full = e.isIntersecting && e.intersectionRatio >= 0.98;
+        if(full && !shown[idx]){ shown[idx] = true; enter(e.target, idx); }
+        else if(!full && shown[idx]){ shown[idx] = false; leave(e.target, idx); }
+      });
+    }, {root:$('kgScroll'), rootMargin:'0px 0px -92px 0px', threshold:[0, 0.5, 0.98, 1]});
+    hls.forEach(function(h){ io.observe(h); });
+    var io5 = new IntersectionObserver(function(es){
+      es.forEach(function(e){ var idx = targets.indexOf(e.target); e.isIntersecting ? enter(e.target, idx) : leave(e.target, idx); });
+    }, {root:$('kgScroll'), threshold:0.6});
+    io5.observe(img5);
+  }
+})();
+/* 외부 링크: 플러그인에서는 figma.openExternal, 브라우저에서는 새 탭 */
+document.addEventListener('click', function(e){
+  var a = e.target.closest && e.target.closest('a[href^="http"]'); if(!a) return;
+  e.preventDefault();
+  var ao = location.ancestorOrigins, inFigma = location.protocol === 'data:' || /figma\.com/.test(document.referrer) || (ao && [].some.call(ao, function(o){ return /figma\.com/.test(o); }));
+  if(inFigma){ post({type:'open-url', url:a.href}); return; }
+  var w = null; try{ w = window.open(a.href, '_blank', 'noopener'); }catch(_){}
+  if(!w) try{ (window.top || window).location.href = a.href; }catch(_){ location.href = a.href; }
+});
 $('btnClose').onclick = function(){ show(S.screen === 'home' ? 'intro' : 'home'); };
-$('btnAsk').onclick = function(){ show('key'); };
+$('btnAsk').onclick = function(){ S.keyMode = 'first'; show('key'); };
 /* 설정에 들어가면 반짝임 완전히 멈춤 (돌아와도 다시 안 함) */
 function stopFlash(){ var b = $('btnSettings'); clearTimeout(b._hl0); clearTimeout(b._hl); clearTimeout(b._hl2); b.classList.remove('hl'); }
-$('btnSettings').onclick = function(){ stopFlash(); show('key'); renderUsage(); checkApi(); };
+$('btnSettings').onclick = function(){ stopFlash(); $('btnKeyGuide').classList.add('nohov'); S.keyMode = 'set'; show('key'); renderUsage(); checkApi(); };
 /* 초기화: 확인 팝업 → 초기화 누를 때만 대화 삭제 */
 /* 대화(질문·답변)가 없으면 팝업 없이 바로 새로고침처럼 처음 화면으로 */
 $('btnRefresh').onclick = function(){
@@ -2280,7 +2512,7 @@ $('resetOverlay').addEventListener('click', function(e){ if(e.target === this) t
 $('resetYes').onclick = function(){ $('resetOverlay').classList.add('hide'); openCategory(GENERAL, null, 'reset'); toast('대화를 초기화했어요'); };
 $('statusDot').parentNode.addEventListener('contextmenu', function(e){ e.preventDefault(); setConnected(!S.connected); });
 $('discClose').onclick = function(){ $('discOverlay').classList.add('hide'); };
-$('discGo').onclick = function(){ stopFlash(); $('discOverlay').classList.add('hide'); show('key'); };
+$('discGo').onclick = function(){ stopFlash(); $('discOverlay').classList.add('hide'); S.keyMode = 'set'; show('key'); };
 
 /* Gemini API 연결 상태 → 설정 아이콘 위 점 (초록: 연결 / 빨강: 끊김) */
 /* 설정 화면: 연결돼 있으면 현재 모델과 오늘 남은 사용량(추정) */
@@ -2321,6 +2553,7 @@ function setConnected(v){
 var keyInput = $('keyInput'), keyBox = $('keyBox'), keySave = $('keySave');
 /* 키가 맞고 인터넷이 연결될 때만 '저장하고 시작하기' 활성화 — 입력이 멈추면 바로 확인 */
 var keyTimer = 0, keySeq = 0, KEY_LABEL = keySave.textContent;
+var KEY_ERR = '키를 확인할 수 없어요. 입력한 키가 맞는지 다시 확인해 주세요.', NET_ERR = '연결이 끊겼어요. 네트워크 연결을 확인한 뒤 다시 시도해 주세요.';
 function keyFail(msg){ var e = $('keyErr'); e.textContent = msg; keyBox.classList.remove('on'); keyBox.classList.add('err'); if(window.moaPlaceKeyCta) moaPlaceKeyCta(); }
 function keyState(ok){ keySave._ok = ok ? keyInput.value : ''; keySave.disabled = !ok; keySave.textContent = KEY_LABEL; }
 function verifyKeyInput(){
@@ -2329,8 +2562,8 @@ function verifyKeyInput(){
   var seq = ++keySeq;
   keyState(false);
   if(!v) return;
-  if(v.length < 20){ keyFail('키가 너무 짧아요. 전체를 복사했는지 확인해 주세요'); return; }
-  if(typeof navigator !== 'undefined' && navigator.onLine === false){ keyFail('연결하지 못했어요. 인터넷 연결을 확인해 주세요'); return; }
+  if(v.length < 20){ keyFail(KEY_ERR); return; }
+  if(typeof navigator !== 'undefined' && navigator.onLine === false){ keyFail(NET_ERR); return; }
   keySave.textContent = '확인 중…';
   window.moaKeyErr = '';
   var check = typeof moaVerifyKey === 'function' ? moaVerifyKey(v) : Promise.resolve('ok');
@@ -2340,11 +2573,10 @@ function verifyKeyInput(){
     var why = window.moaKeyErr ? ' (' + window.moaKeyErr + ')' : '';
     if(res !== 'ok') console.warn('[Moa] key check:', res, window.moaKeyErr);
     if(res === 'ok'){ if(keyInput.value !== v) keyInput.value = v; keyBox.classList.remove('err'); keyBox.classList.add('on'); keyState(true); return; }
-    if(res === 'invalid') return keyFail('키가 올바르지 않아요. 다시 확인해 주세요' + why);
-    if(res === 'disabled') return keyFail('이 키는 Gemini API 사용 권한이 없어요. AI Studio에서 발급한 키인지, 키에 웹사이트·IP 제한이 걸려 있지 않은지 확인해 주세요' + why);
-    if(res === 'region') return keyFail('현재 지역에서는 Gemini API를 사용할 수 없어요');
-    if(res === 'network') return keyFail('연결하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요' + why);
-    keyFail('연결하지 못했어요. 키를 확인하고 다시 시도해 주세요' + why);
+    if(res === 'invalid') return keyFail(KEY_ERR);
+    if(res === 'disabled') return keyFail('이 키로는 Gemini를 사용할 수 없어요. AI Studio에서 발급한 키인지 확인해 주세요.');
+    if(res === 'region') return keyFail('현재 지역에서는 Gemini API를 사용할 수 없어요.');
+    keyFail(NET_ERR);
   });
 }
 keyInput.addEventListener('input', function(){
@@ -2355,7 +2587,7 @@ keyInput.addEventListener('input', function(){
   if(!v){ if(S.key) deleteKey(); return; }
   clearTimeout(keyTimer); keyTimer = setTimeout(verifyKeyInput, 600);
 });
-window.addEventListener('offline', function(){ if(keyInput.value.trim()){ keySeq++; keyState(false); keyFail('연결하지 못했어요. 인터넷 연결을 확인해 주세요'); } });
+window.addEventListener('offline', function(){ if(keyInput.value.trim()){ keySeq++; keyState(false); keyFail(NET_ERR); } });
 window.addEventListener('online', function(){ if(keyInput.value.trim()) verifyKeyInput(); });
 /* 키 삭제: 저장된 키 제거 → 빨간불 + 모델·사용량 표시 숨김 */
 function deleteKey(){
@@ -2374,20 +2606,6 @@ keySave.onclick = function(){
   if(keySave._ok && keySave._ok === keyInput.value && !(typeof navigator !== 'undefined' && navigator.onLine === false)){ applyKey(keyInput.value); return; }
   verifyKeyInput();
 };
-/* 오류 문구가 길어지면(두 줄 등) 버튼과 안내를 그만큼 아래로 */
-(function(){
-  var kb = document.querySelector('.key-body'), cta = document.querySelector('.key-cta'), info = document.querySelector('.key-info');
-  if(!kb || !cta) return;
-  var CTA0 = 404, INFO0 = 485, GAP = 16;
-  var place = function(){
-    if(!kb.offsetHeight) return;
-    var top = Math.max(CTA0, kb.offsetTop + kb.offsetHeight + GAP);
-    cta.style.top = top + 'px';
-    if(info) info.style.top = (INFO0 + top - CTA0) + 'px';
-  };
-  if(typeof ResizeObserver !== 'undefined') new ResizeObserver(place).observe(kb);
-  window.moaPlaceKeyCta = place;
-})();
 function applyKey(v, unverified){
   S.key = v; S.hasKey = true; S.failAt = 0; setConnected(true);
   /* 기기별 저장 — 웹: 이 브라우저 / 플러그인: Figma clientStorage */

@@ -151,7 +151,7 @@ const easteregg = fs.existsSync(path.join(__dirname, 'data/easteregg.md')) ? R('
 
 const map = {
   __IMG_HOME__: 'home', __IMG_KEY__: 'key', __IMG_KEYBG__: 'keybg', __IMG_SAD__: 'sad',
-  __IMG_MASCOT__: 'mascot', __IMG_PROFILE__: 'profile', __IMG_SMALL__: 'small', __IMG_INTROBG__: 'introbg', __IMG_MOAHI__: 'moahi', __IMG_MOATURN__: 'moaturn', __IMG_MOATEACHER__: 'moateacher'
+  __IMG_MASCOT__: 'mascot', __IMG_PROFILE__: 'profile', __IMG_SMALL__: 'small', __IMG_INTROBG__: 'introbg', __IMG_MOAHI__: 'moahi', __IMG_MOATURN__: 'moaturn', __IMG_MOATEACHER__: 'moateacher', __IMG_GUIDEMOA__: 'guidemoa', __IMG_KG2__: 'kg2', __IMG_KG3__: 'kg3', __IMG_KG4__: 'kg4', __IMG_KG5__: 'kg5'
 };
 const esc = (s) => s.replace(/<\//g, '<\\/');
 const build = (get) => {
