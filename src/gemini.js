@@ -538,6 +538,21 @@ function moaWhy(json){
     ' · parts ' + parts.length;
 }
 
+/* 질문 단어 → 먼저 보여줄 공통 스타일 카테고리 */
+var MOA_PREFER = [
+  [/텍스트|글자|글씨|문구|폰트|서체|글꼴|타이포|typo|typography|font|text|행간|자간|line\s?height|letter\s?spacing/i, 'Typeface'],
+  [/컬러|색상|색깔|색\b|colou?r|hex/i, 'Color'],
+  [/간격|여백|패딩|마진|spacing|padding|margin|gap/i, 'Spacing'],
+  [/라운드|모서리|radius|corner/i, 'Radius'],
+  [/그림자|딤드|dimmed|shadow/i, 'Dimmed & Shadow'],
+  [/아이콘|icon/i, 'Iconography']
+];
+function moaPreferTopics(q){
+  var s = String(q || ''), out = [];
+  var has = function(t){ return (window.MOA_DB || []).some(function(c){ return c.topic === t; }) || (window.MOA_TOKENS || []).some(function(c){ return c.topic === t; }); };
+  MOA_PREFER.forEach(function(p){ if(p[0].test(s) && out.indexOf(p[1]) < 0 && has(p[1])) out.push(p[1]); });
+  return out;
+}
 /* Gemini 연결 확인: 키로 모델 목록을 1건 조회 */
 /* 키 검증: 'ok' | 'invalid' | 'network' */
 function moaVerifyKey(apiKey, retried){
@@ -849,7 +864,10 @@ function moaAskOnce(question, apiKey, opts){
     var ft = [], addT = function(x){ if(x && x !== opts.excludeTopic && ft.indexOf(x) < 0) ft.push(x); };
     addT(opts.topic); topics.forEach(addT); g.slice(0, 2).forEach(function(c){ addT(c.topic); });
     faqs = cmp ? [] : moaFaqMatch(question, ft, 3);
-    if(needPick && !cmp){ var tp = []; hits.forEach(function(c){ if(c.topic && tp.indexOf(c.topic) < 0) tp.push(c.topic); }); if(tp.length > 1) picked = { pick: tp.slice(0, 8), done: true, topics: tp.slice(0, 8) }; }
+    if(needPick && !cmp){ var tp = []; hits.forEach(function(c){ if(c.topic && tp.indexOf(c.topic) < 0) tp.push(c.topic); });
+      /* 질문 성격에 맞는 공통 스타일 카테고리를 후보 맨 앞에 (텍스트·폰트 → Typeface 등) */
+      moaPreferTopics(question).reverse().forEach(function(t){ var k = tp.indexOf(t); if(k > -1) tp.splice(k, 1); tp.unshift(t); });
+      if(tp.length > 1) picked = { pick: tp.slice(0, 8), done: true, topics: tp.slice(0, 8) }; }
     var lab = function(c){ return (c.topic ? c.topic + ' › ' : '') + moaHead(c); };
     var info = (g.length ? '가이드: ' + g.slice(0, 2).map(lab).join(' / ') : '') + (g.length && t.length ? '\n' : '') + (t.length ? '토큰: ' + t.slice(0, 3).map(function(c){ return moaHead(c).replace(/ 토큰$/, ''); }).join(', ') : '');
     if(faqs.length) info += '\nFAQ 형식: ' + faqs.map(function(f){ return f.q; }).slice(0, 2).join(' / ');

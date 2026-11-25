@@ -594,13 +594,13 @@ Gemini API 키가 필요해요</h1>
   <!-- 대화 초기화 확인 -->
   <div class="overlay hide" id="resetOverlay">
     <div class="modal" style="top:220px">
-      <div class="modal-body" style="padding-top:28px">
+      <div class="modal-body" style="padding-top:28px;gap:24px">
         <div class="modal-txt">
           <h2>대화를 초기화할까요?</h2>
           <p>지금까지의 대화 기록이 모두 삭제되며
 복구할 수 없어요.</p>
         </div>
-        <div class="modal-bottom" style="gap:8px"><button class="cta" id="resetNo" style="background:#F0F2F5;color:#424751">취소</button><button class="cta" id="resetYes">초기화</button></div>
+        <div class="modal-bottom" style="gap:8px;height:auto;padding-top:0"><button class="cta" id="resetNo" style="background:#F0F2F5;color:#424751">취소</button><button class="cta" id="resetYes">초기화</button></div>
       </div>
     </div>
   </div>
@@ -1490,6 +1490,20 @@ function topicsForWord(w){
   });
   return out.filter(function(t){ return isTopic(t) || t === 'Tab'; });
 }
+/* 질문 단어가 여러 카테고리 이름의 일부일 때 후보 (버튼 → CTA Button, CTA Button Icon) */
+function partialAmbiguity(q){
+  if(!USE_DB || detectTopics(q, true).length) return null;
+  var s = String(q).toLowerCase().replace(/\s+/g, ''), word = '', out = [];
+  TOPICS.forEach(function(t){
+    topicWords(t).forEach(function(w){
+      var hit = (TOPIC_WORD_KO[w] || [w]).filter(function(x){ return s.indexOf(x) > -1; })[0];
+      if(hit){ if(out.indexOf(t) < 0) out.push(t); if(!word || hit.length > word.length) word = hit; }
+    });
+  });
+  if(out.length < 2) return null;
+  if(S.screen === 'chat' && S.cat !== GENERAL && S.topic && out.indexOf(S.topic) > -1) return null; /* 지금 보고 있는 카테고리가 후보면 그대로 답변 */
+  return { name: word, topics: out.slice(0, 8), plain: true };
+}
 function generalAmbiguity(q, wide){
   if(!USE_DB || (!wide && S.cat !== GENERAL && S.screen === 'chat')) return null;
   if(compareTopics(q)) return null;
@@ -1524,8 +1538,10 @@ function askWhich(q, it){
   var note = el('div','bub-note'); note.style.whiteSpace = 'pre-line';
   /* 영문 용어는 첫 글자 대문자 (meta → Meta) */
   if(it.name && /^[a-z]/.test(it.name)) it = Object.assign({}, it, { name: it.name.charAt(0).toUpperCase() + it.name.slice(1) });
-  note.textContent = !it.name ? '질문에 ' + it.topics.join(', ') + ' 내용이 함께 있어요.\n어떤 카테고리로 이동해서 답변할까요?'
-    : it.plain ? '‘' + it.name + '’' + moaJosa(it.name, ['은','는']) + ' ' + it.topics.join(', ') + '에 모두 있어요.\n어떤 카테고리로 이동해서 답변할까요?'
+  /* 텍스트·폰트 질문이면 Typeface 등 관련 공통 스타일을 후보 맨 앞에 */
+  if(typeof moaPreferTopics === 'function'){ var pt = it.topics.slice(); moaPreferTopics(q).reverse().forEach(function(t){ var k = pt.indexOf(t); if(k > -1) pt.splice(k, 1); pt.unshift(t); }); it = Object.assign({}, it, { topics: pt.slice(0, 8) }); }
+  note.textContent = !it.name ? '질문에 ' + it.topics.join(', ') + ' 내용이 함께 있어요.\n어떤 카테고리 내용을 답변할까요?'
+    : it.plain ? '‘' + it.name + '’' + moaJosa(it.name, ['은','는']) + ' ' + it.topics.join(', ') + '에 모두 있어요.\n어떤 카테고리 내용을 답변할까요?'
     : '‘' + it.name + '’ 타입은 ' + it.topics.join(', ') + '에 모두 있어요.\n어떤 항목의 ' + it.name + '에 대해 알려드릴까요?';
   bb.appendChild(note);
   var chips = el('div','qchips'); /* 버블과 8px (bot-body gap) */
@@ -1564,6 +1580,8 @@ function ask(q, typed){
   var wide = inCat && !!typed && !fixed && !firstInCat;
   var cmp = ((inCat && !wide) || fixed) ? null : compareTopics(q);
   var amb = (!inCat || wide) && !fixed && !cmp && S.cat !== '기타 문의' && !eggFor(q) && !faqFixed(q) && (typed && (S.cat === GENERAL || wide) ? generalAmbiguity(q, wide) : ambiguousType(q));
+  /* 카테고리 이름 일부만 말한 질문(버튼 가이드 → CTA Button / CTA Button Icon): 결과 없음 대신 후보를 물어봄 */
+  if(!amb && !fixed && !cmp && S.cat !== '기타 문의' && !eggFor(q) && !faqFixed(q)) amb = partialAmbiguity(q);
   if(amb){ S.pinNext = pinMe; askWhich(q, amb); return; }
   /* 다른 카테고리 이름(한글·영문)을 물으면 같은 화면에서 주제만 전환 */
   if(typed && !cmp && !fixed){
@@ -1691,7 +1709,7 @@ function ask(q, typed){
           Array.prototype.slice.call(body.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
           S.curQ = null;
           var pn = el('div','bub-note'); pn.style.whiteSpace = 'pre-line';
-          pn.textContent = '질문하신 내용은 ' + res.pick.join(', ') + '에 모두 있어요.\n어떤 카테고리로 이동해서 답변할까요?';
+          pn.textContent = '질문하신 내용은 ' + res.pick.join(', ') + '에 모두 있어요.\n어떤 카테고리 내용을 답변할까요?';
           body.appendChild(pn);
           var pc = el('div','qchips');
           res.pick.forEach(function(t){
@@ -1890,17 +1908,32 @@ function moaCap(s){ return String(s).replace(/(^|[\s\-_])([a-z])/g, function(m, 
 function moaLines(html){
   var L0 = html.split('\n');
   var L = L0.filter(function(ln, k){ return ln.trim() || !((L0[k-1] || '').charAt(0) === '\u2063' || (L0[k+1] || '').charAt(0) === '\u2063'); });
-  var out = '';
+  /* 문단: 빈 줄(엔터) 대신 12px 블록으로 끊음 · 문단 → 스펙·토큰 값으로 넘어갈 때는 24px */
+  var out = '', gap = false, prev = '';
+  var GAP = function(px){ return '<span class="pg" style="display:block;height:' + px + 'px"></span>'; };
   L.forEach(function(ln, k){
-    var blk = false, m;
+    if(!ln.trim()){ if(prev) gap = true; return; }
+    var blk = false, kind = 'text', m;
     /* 토큰 첫 번째 분류명: 블랙 */
-    if(ln.charAt(0) === '\u2064'){ ln = '<span class="tk" style="display:block">' + moaCap(ln.slice(1)) + '</span>'; blk = true; }
-    else if(ln.charAt(0) === '\u2063'){ ln = '<span class="ah' + (k === 0 ? ' f' : '') + '" role="heading" aria-level="4">' + ln.slice(1) + '</span>'; blk = true; }
+    if(ln.charAt(0) === '\u2064'){ ln = '<span class="tk" style="display:block">' + moaCap(ln.slice(1)) + '</span>'; blk = true; kind = 'spec'; }
+    else if(ln.charAt(0) === '\u2063'){ ln = '<span class="ah' + (k === 0 ? ' f' : '') + '" role="heading" aria-level="4">' + ln.slice(1) + '</span>'; blk = true; kind = 'head'; gap = false; }
     else if((m = ln.match(/^\s*(•|\d+\.|<span class="tk">\d+<\/span>\.|-|<span class="tk">-<\/span>)\s+(.*)$/))){ var sp = moaSpec && moaSpecLine(m[2]);
-      ln = '<span class="li' + (sp ? ' tk' : '') + '"><i>' + m[1].replace(/<[^>]+>/g, '') + '</i><span>' + (sp ? moaBulletVal(moaLower(m[2])) : m[2]) + '</span></span>'; blk = true; }
-    out += ln; if(k < L.length - 1 && !blk) out += '\n';
+      ln = '<span class="li' + (sp ? ' tk' : '') + '"><i>' + m[1].replace(/<[^>]+>/g, '') + '</i><span>' + (sp ? moaBulletVal(moaLower(m[2])) : m[2]) + '</span></span>'; blk = true; kind = sp ? 'spec' : 'li'; }
+    /* 스펙 위아래 16px (Subtitle 바로 다음 스펙은 Subtitle 아래 4px 유지 · 스펙 다음 Subtitle은 4px + Subtitle margin 12px) */
+    var g = prev && kind === 'spec' && prev !== 'spec' && prev !== 'head' ? 16
+      : prev === 'spec' && kind !== 'spec' ? (kind === 'head' ? 4 : 16)
+      /* 스펙 아닌 불릿 묶음: 첫 불릿 위 12px · 마지막 불릿 아래(뒤에 텍스트가 있을 때) 12px · 불릿 사이 0 */
+      : kind === 'li' && prev === 'li' ? 0
+      : kind === 'li' && prev && prev !== 'head' ? 12
+      : prev === 'li' && kind !== 'head' ? 12
+      : gap ? 12 : 0;
+    if((g || blk) && out.slice(-1) === '\n') out = out.slice(0, -1);
+    if(g) out += GAP(g);
+    gap = false;
+    out += ln; if(!blk) out += '\n';
+    prev = kind;
   });
-  return out;
+  return out.replace(/\n$/, '');
 }
 /* 토큰 그룹: 첫 번째 분류명(label)은 불릿·들여쓰기 없이 한 줄, 두 번째부터(/color: …)만 불릿 */
 function moaTokGroups(t){
@@ -1973,22 +2006,23 @@ function typeText(node, text, done, noCaret, noHex){
   if(!noCaret) node.parentNode.appendChild(caret);
   /* HEX 코드는 컬러칩과 함께 한 번에 표시 (텍스트가 끝난 뒤 칩이 붙지 않게) */
   var hx = new RegExp(HEX_RE.source, 'y');
-  /* 답변이 16줄 또는 채팅 화면 높이를 넘으면 타이핑을 멈추고 나머지는 한 번에 (같은 답변의 다음 카드도) */
-  var bb = node.closest ? node.closest('.bot-body') : null, con = $('chatCon');
+  /* 8줄까지 한 글자씩 → 그 뒤로 처음엔 천천히, 갈수록 크게 가속해 끝까지 흘러나옴 (ease-in) · 같은 답변의 다음 카드는 이어서 빠르게 */
+  var bb = node.closest ? node.closest('.bot-body') : null;
   var lh = parseFloat(getComputedStyle(node).lineHeight) || 20;
-  var limit = Math.min(16 * lh, (con && con.clientHeight ? con.clientHeight - 48 : 9999));
+  var SLOW = 8;
+  var t = bb && bb.dataset.acc ? +bb.dataset.acc : 0;
+  var adv = function(){ hx.lastIndex = i - 1; var m = text.charAt(i - 1) === '#' && hx.exec(text); if(m) i = i - 1 + m[0].length; };
   (function step(){
-    if(bb && (bb.dataset.fast || bb.offsetHeight > limit)){
-      if(bb) bb.dataset.fast = '1';
-      moaRich(node, text, !noHex); scrollDown();
-      if(caret.parentNode) caret.parentNode.removeChild(caret);
-      if(done) setTimeout(done, 0);
-      return;
-    }
+    var h = bb ? bb.offsetHeight : node.offsetHeight;
     moaRich(node, text.slice(0, i), !noHex);
     scrollDown();
-    if(i++ < text.length){ hx.lastIndex = i - 1; var m = text.charAt(i - 1) === '#' && hx.exec(text); if(m) i = i - 1 + m[0].length; setTimeout(step, 16); }
-    else { if(caret.parentNode) caret.parentNode.removeChild(caret); if(done) done(); }
+    if(i < text.length){
+      if(t > 0 || h / lh > SLOW) t++;
+      var n = Math.max(1, Math.round(Math.min(1 + 0.01 * t * t, 600)));
+      for(var k = 0; k < n && i < text.length; k++){ i++; adv(); }
+      setTimeout(step, 16);
+    }
+    else { if(bb && t > 0) bb.dataset.acc = t; if(caret.parentNode) caret.parentNode.removeChild(caret); if(done) done(); }
   })();
 }
 
@@ -2285,13 +2319,44 @@ function setConnected(v){
 
 /* ── API key ─────────────────────────────────────────────────── */
 var keyInput = $('keyInput'), keyBox = $('keyBox'), keySave = $('keySave');
+/* 키가 맞고 인터넷이 연결될 때만 '저장하고 시작하기' 활성화 — 입력이 멈추면 바로 확인 */
+var keyTimer = 0, keySeq = 0, KEY_LABEL = keySave.textContent;
+function keyFail(msg){ var e = $('keyErr'); e.textContent = msg; keyBox.classList.remove('on'); keyBox.classList.add('err'); if(window.moaPlaceKeyCta) moaPlaceKeyCta(); }
+function keyState(ok){ keySave._ok = ok ? keyInput.value : ''; keySave.disabled = !ok; keySave.textContent = KEY_LABEL; }
+function verifyKeyInput(){
+  clearTimeout(keyTimer);
+  var v = typeof moaCleanKey === 'function' ? moaCleanKey(keyInput.value) : keyInput.value.trim();
+  var seq = ++keySeq;
+  keyState(false);
+  if(!v) return;
+  if(v.length < 20){ keyFail('키가 너무 짧아요. 전체를 복사했는지 확인해 주세요'); return; }
+  if(typeof navigator !== 'undefined' && navigator.onLine === false){ keyFail('연결하지 못했어요. 인터넷 연결을 확인해 주세요'); return; }
+  keySave.textContent = '확인 중…';
+  window.moaKeyErr = '';
+  var check = typeof moaVerifyKey === 'function' ? moaVerifyKey(v) : Promise.resolve('ok');
+  check.then(function(res){
+    if(seq !== keySeq) return; /* 그 사이 키가 바뀜 */
+    keySave.textContent = KEY_LABEL;
+    var why = window.moaKeyErr ? ' (' + window.moaKeyErr + ')' : '';
+    if(res !== 'ok') console.warn('[Moa] key check:', res, window.moaKeyErr);
+    if(res === 'ok'){ if(keyInput.value !== v) keyInput.value = v; keyBox.classList.remove('err'); keyBox.classList.add('on'); keyState(true); return; }
+    if(res === 'invalid') return keyFail('키가 올바르지 않아요. 다시 확인해 주세요' + why);
+    if(res === 'disabled') return keyFail('이 키는 Gemini API 사용 권한이 없어요. AI Studio에서 발급한 키인지, 키에 웹사이트·IP 제한이 걸려 있지 않은지 확인해 주세요' + why);
+    if(res === 'region') return keyFail('현재 지역에서는 Gemini API를 사용할 수 없어요');
+    if(res === 'network') return keyFail('연결하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요' + why);
+    keyFail('연결하지 못했어요. 키를 확인하고 다시 시도해 주세요' + why);
+  });
+}
 keyInput.addEventListener('input', function(){
   var v = keyInput.value.trim();
   keyBox.classList.remove('err');
   keyBox.classList.toggle('on', v.length > 0);
-  keySave.disabled = v.length === 0;
-  if(!v && S.key) deleteKey();
+  keyState(false); keySeq++;
+  if(!v){ if(S.key) deleteKey(); return; }
+  clearTimeout(keyTimer); keyTimer = setTimeout(verifyKeyInput, 600);
 });
+window.addEventListener('offline', function(){ if(keyInput.value.trim()){ keySeq++; keyState(false); keyFail('연결하지 못했어요. 인터넷 연결을 확인해 주세요'); } });
+window.addEventListener('online', function(){ if(keyInput.value.trim()) verifyKeyInput(); });
 /* 키 삭제: 저장된 키 제거 → 빨간불 + 모델·사용량 표시 숨김 */
 function deleteKey(){
   var had = !!S.key;
@@ -2302,30 +2367,27 @@ function deleteKey(){
   renderUsage();
   if(had) toast('API 키를 삭제했어요');
 }
-$('keyClear').onclick = function(){ keyInput.value=''; keyBox.classList.remove('on','err'); keySave.disabled = true; deleteKey(); keyInput.focus(); };
+$('keyClear').onclick = function(){ keyInput.value=''; keyBox.classList.remove('on','err'); keySeq++; keyState(false); deleteKey(); keyInput.focus(); if(window.moaPlaceKeyCta) moaPlaceKeyCta(); };
 keySave.onclick = function(){
-  var v = typeof moaCleanKey === 'function' ? moaCleanKey(keyInput.value) : keyInput.value.trim();
-  keyInput.value = v;
-  var keyErr = $('keyErr');
-  var fail = function(msg){ keyErr.textContent = msg; keyBox.classList.remove('on'); keyBox.classList.add('err'); };
-  if(v.length < 20){ fail('키가 너무 짧아요. 전체를 복사했는지 확인해 주세요'); return; }
-  if(keySave._busy) return;
-  keySave._busy = true; keySave.disabled = true;
-  var label = keySave.textContent; keySave.textContent = '확인 중…';
-  var done = function(){ keySave._busy = false; keySave.disabled = false; keySave.textContent = label; };
-  window.moaKeyErr = '';
-  var check = typeof moaVerifyKey === 'function' ? moaVerifyKey(v) : Promise.resolve('ok');
-  check.then(function(res){
-    done();
-    var why = window.moaKeyErr ? ' (' + window.moaKeyErr + ')' : '';
-    if(res !== 'ok') console.warn('[Moa] key check:', res, window.moaKeyErr);
-    if(res === 'invalid'){ fail('키가 올바르지 않아요. 다시 확인해 주세요' + why); return; }
-    if(res === 'disabled'){ fail('이 키는 Gemini API 사용 권한이 없어요. AI Studio에서 발급한 키인지, 키에 웹사이트·IP 제한이 걸려 있지 않은지 확인해 주세요' + why); return; }
-    if(res === 'region'){ fail('현재 지역에서는 Gemini API를 사용할 수 없어요'); return; }
-    if(res === 'network'){ applyKey(v, true); return; }
-    applyKey(v);
-  });
+  /* 확인된 키·연결 상태에서만 저장 (그 외엔 다시 확인) */
+  if(keySave.disabled) return;
+  if(keySave._ok && keySave._ok === keyInput.value && !(typeof navigator !== 'undefined' && navigator.onLine === false)){ applyKey(keyInput.value); return; }
+  verifyKeyInput();
 };
+/* 오류 문구가 길어지면(두 줄 등) 버튼과 안내를 그만큼 아래로 */
+(function(){
+  var kb = document.querySelector('.key-body'), cta = document.querySelector('.key-cta'), info = document.querySelector('.key-info');
+  if(!kb || !cta) return;
+  var CTA0 = 404, INFO0 = 485, GAP = 16;
+  var place = function(){
+    if(!kb.offsetHeight) return;
+    var top = Math.max(CTA0, kb.offsetTop + kb.offsetHeight + GAP);
+    cta.style.top = top + 'px';
+    if(info) info.style.top = (INFO0 + top - CTA0) + 'px';
+  };
+  if(typeof ResizeObserver !== 'undefined') new ResizeObserver(place).observe(kb);
+  window.moaPlaceKeyCta = place;
+})();
 function applyKey(v, unverified){
   S.key = v; S.hasKey = true; S.failAt = 0; setConnected(true);
   /* 기기별 저장 — 웹: 이 브라우저 / 플러그인: Figma clientStorage */
@@ -2346,7 +2408,7 @@ function moaSplitTitle(t, q){
 window.onmessage = function(e){
   var m = e.data.pluginMessage; if(!m) return;
   if(m.type === 'key'){
-    if(m.key){ keyInput.value = m.key; keyBox.classList.add('on'); keySave.disabled = false; S.key = m.key; S.hasKey = true; checkApi(); }
+    if(m.key){ keyInput.value = m.key; keyBox.classList.add('on'); S.key = m.key; S.hasKey = true; checkApi(); verifyKeyInput(); }
   }
   if(m.type === 'toast') toast(m.text);
 };
