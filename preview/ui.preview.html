@@ -294,6 +294,15 @@ mark.fhit.cur{background:#FFB938}
 .bar .send{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:#424751;flex-shrink:0;align-self:flex-end;margin:-4px 0 -3.5px;opacity:0;transform:translateX(-36px);transition:opacity .14s ease,transform .26s cubic-bezier(.2,.9,.3,1.3)}
 .bar .send svg path{fill:url(#sendGrad)}
 .bar.typing .send{opacity:1;transform:translateX(0)}
+.bar .stop{display:none;width:24px;height:24px;flex-shrink:0;align-self:flex-end;margin:-4px 0 -3.5px;padding:0;border:0;border-radius:50%;background:#FFFFFF;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.08);color:#8C93A0;align-items:center;justify-content:center;cursor:pointer;animation:stopIn .18s ease-out;transition:color .15s ease}
+.bar .stop:hover{color:#424751}
+.bar .stop i{width:8px;height:8px;border-radius:1.5px;background:currentColor}
+.bar .stop svg{display:none;margin-left:1.5px}
+.bar.paused .stop i{display:none}
+.bar.paused .stop svg{display:block}
+.bar.answering .send{display:none}
+.bar.answering .stop{display:flex}
+@keyframes stopIn{from{opacity:0;transform:scale(.6)}}
 
 /* ── intro (home.fig 1:50) ── */
 #pgIntro{overflow:hidden;background:rgb(238,243,247)}
@@ -312,6 +321,8 @@ mark.fhit.cur{background:#FFB938}
 .ktabs .in{position:relative;display:flex;gap:12px;align-items:center;align-self:stretch}
 .ktab{position:relative;align-self:stretch;display:flex;align-items:center;font-size:12px;font-weight:600;line-height:15.96px;letter-spacing:-0.02em;color:#424751;white-space:nowrap;cursor:pointer;transition:color .18s ease}
 .ktab.on,.ktab:hover{color:#000}
+.ktab::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:#C8CDD4;opacity:0;transition:opacity .18s ease;pointer-events:none}
+.ktab:not(.on):hover::after{opacity:1}
 .ktabs .kbar{position:absolute;left:0;bottom:0;width:0;height:1px;background:#000;transition:left .32s cubic-bezier(.4,0,.2,1),width .32s cubic-bezier(.4,0,.2,1);pointer-events:none}
 #pgKey.set .ktabs{display:none}
 .kpane{position:absolute;inset:0}
@@ -347,6 +358,7 @@ mark.fhit.cur{background:#FFB938}
 .key-cta{margin-top:12px;width:312px;display:flex;flex-direction:column;gap:16px;align-items:center}
 .cta{width:100%;height:44px;border-radius:8px;background:#4185FF;display:flex;justify-content:center;align-items:center;padding:12px 16px;box-sizing:border-box;font-size:14px;font-weight:600;line-height:20px;letter-spacing:-0.02em;color:#fff;text-decoration:none}
 .cta[disabled]{background:#E0E3E9;color:#8C93A0;cursor:default}
+.cta:not([disabled]):hover{background:#2F73EB}
 .key-link{display:flex;gap:8px;align-items:center;height:20px;font-size:13px;line-height:1.5;letter-spacing:-0.02em;color:#424751;white-space:nowrap}
 .key-link span{font-weight:500}
 .key-link a{font-weight:600;color:#424751;text-decoration:underline;text-decoration-color:#424751;transition:color .18s ease,text-decoration-color .18s ease}
@@ -391,6 +403,18 @@ mark.fhit.cur{background:#FFB938}
 .kg-img.play .hl{animation:kgOnce 1.2s ease-in-out forwards}
 #kgScroll.sync .kg-img .hl{animation:none;background:rgba(32,99,255,.3)}
 .kg-tx span a{font-size:12px;font-weight:500;color:#424751;text-decoration:underline;word-break:break-all}
+.kg-copy{display:flex;align-items:center;gap:4px;margin-top:2px;padding:0;border:0;background:none;font:inherit;font-size:12px;font-weight:500;line-height:1.33;letter-spacing:-0.02em;color:#424751;cursor:pointer;text-align:left;transition:color .18s ease}
+.kg-copy i{font-style:normal;word-break:break-all}
+.kg-copy svg{flex-shrink:0}
+.kg-copy:hover{color:#000}
+.kg-copy .ck{display:none}
+.kg-copy.done{color:#2063FF}
+.kg-copy.done .cp{display:none}
+.kg-copy.done .ck{display:block}
+.kg-type.paste span{animation:kgPaste .9s ease-out}
+@keyframes kgPaste{0%,35%{background:rgba(32,99,255,.28)}100%{background:rgba(32,99,255,0)}}
+.kg-pv{position:absolute;right:calc(100% - 44.4px);top:27.5px;white-space:nowrap;height:16px;padding:0 5px;border-radius:4px;background:#424751;color:#fff;font-size:9px;font-weight:600;line-height:16px;letter-spacing:.02em;opacity:0;transform:translateX(-3px) scale(.9);transition:opacity .16s ease,transform .16s ease;pointer-events:none}
+.kg-pv.on{opacity:1;transform:none}
 @keyframes kgOnce{0%{background:rgba(32,99,255,.1)}25%{background:rgba(32,99,255,.3)}50%{background:rgba(32,99,255,.1)}75%,100%{background:rgba(32,99,255,.3)}}
 .kg-type{position:absolute;left:48.4px;top:27.9px;width:162.5px;height:15.2px;background:#FAFBFD;overflow:hidden;display:flex;justify-content:flex-start;align-items:center}
 .kg-type span{flex-shrink:0;white-space:nowrap;font-size:10.1px;font-weight:500;line-height:15.2px;letter-spacing:-0.02em;color:#000}
@@ -579,7 +603,7 @@ mark.fhit.cur{background:#FFB938}
       <div class="key-body">
         <div class="key-text">
           <h1>모아를 시작하려면<br>Gemini API 키가 필요해요</h1>
-          <p>입력한 키는 현재 기기에만 저장되며,<br>질문의 파악하고 가이드를 분석하기 위해 사용해요.</p>
+          <p>입력한 키는 현재 기기에만 저장되며,<br>질문을 파악하고 가이드를 분석하기 위해 사용해요.</p>
         </div>
         <div class="key-form">
           <div class="field-box" id="keyBox">
@@ -611,7 +635,7 @@ mark.fhit.cur{background:#FFB938}
               <div class="kg-step">
                 <div class="kg-rail"><div class="kg-num">1</div><div class="kg-line"></div></div>
                 <div class="kg-body" style="gap:4px"><div class="kg-tx"><b>로그인 하기</b><span>사이트를 방문해 Google AI Studio에 
-로그인하세요. <a href="https://aistudio.google.com/api-keys" target="_blank" rel="noopener">(https://aistudio.google.com/api-keys)</a></span></div></div>
+로그인하세요.</span><button class="kg-copy" id="kgCopy" type="button" title="링크 복사"><i>https://aistudio.google.com/api-keys</i><svg class="cp" width="12" height="12" viewBox="0 0 12 12"><rect x="3.5" y="3.5" width="7" height="7" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.1"/><path d="M8 1.5 H2.7 C2 1.5 1.5 2 1.5 2.7 V8" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg><svg class="ck" width="12" height="12" viewBox="0 0 12 12"><path d="M2 6.3 L4.8 9 L10 3.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></div>
               </div>
               <div class="kg-step">
                 <div class="kg-rail"><div class="kg-num">2</div><div class="kg-line"></div></div>
@@ -639,7 +663,7 @@ mark.fhit.cur{background:#FFB938}
                 <div class="kg-rail" style="align-self:flex-start"><div class="kg-num">5</div></div>
                 <div class="kg-body">
                   <div class="kg-tx"><b>키 복사하고 붙여넣기</b><span>API 키를 복사하고, 모아로 돌아와 키 입력창에 입력해 주세요.</span></div>
-                  <div class="kg-img"><div class="p" style="left:39px;top:-159px;width:198px;height:360px;background:url(../assets/img-kg5.png) 48.889% 45.542% / 121.028% 108.671% no-repeat"></div><div class="kg-type" id="kgType"><span id="kgTypeTx"></span><i></i></div><div class="kg-press" id="kgPress"></div><div class="kg-cur" id="kgCur"><svg width="12" height="17" viewBox="0 0 12 17"><path d="M1 1 L1 14 L4.2 11 L6.4 16 L8.6 15 L6.4 10.2 L10.8 10.2 Z" fill="#000" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg></div></div>
+                  <div class="kg-img"><div class="p" style="left:39px;top:-159px;width:198px;height:360px;background:url(../assets/img-kg5.png) 48.889% 45.542% / 121.028% 108.671% no-repeat"></div><div class="kg-pv" id="kgPv">⌘ V</div><div class="kg-type" id="kgType"><span id="kgTypeTx"></span><i></i></div><div class="kg-press" id="kgPress"></div><div class="kg-cur" id="kgCur"><svg width="12" height="17" viewBox="0 0 12 17"><path d="M1 1 L1 14 L4.2 11 L6.4 16 L8.6 15 L6.4 10.2 L10.8 10.2 Z" fill="#000" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/></svg></div></div>
                 </div>
               </div>
             </div>
@@ -712,6 +736,7 @@ mark.fhit.cur{background:#FFB938}
           </span>
           <textarea id="msgInput" rows="1" placeholder="궁금한 점을 입력해 주세요" autocomplete="off"></textarea>
         </div>
+        <button class="stop" id="btnStop" aria-label="답변 멈추기" title="답변 멈추기"><i></i><svg width="9" height="10" viewBox="0 0 9 10"><path d="M1 1.2 C1 .6 1.6 .3 2.1 .6 L8.2 4.4 C8.7 4.7 8.7 5.3 8.2 5.6 L2.1 9.4 C1.6 9.7 1 9.4 1 8.8 Z" fill="currentColor"/></svg></button>
         <button class="send" id="btnSend" aria-label="보내기">
           <svg width="15.5" height="15.5" viewBox="0 0 15.5 15.5"><defs><linearGradient id="sendGrad" x1="0.854" y1="0.146" x2="0.146" y2="0.854"><stop offset="4.54%" stop-color="#00C8FF"/><stop offset="48.31%" stop-color="#2063FF"/><stop offset="92.93%" stop-color="#FFCDFF"/></linearGradient></defs><path d="M 14.502 0.042 C 14.773 -0.053 15.076 0.016 15.28 0.22 C 15.484 0.423 15.553 0.726 15.458 0.998 L 10.557 14.998 C 10.456 15.288 10.188 15.486 9.881 15.499 C 9.573 15.512 9.29 15.336 9.165 15.055 L 6.807 9.752 L 11.28 5.28 C 11.573 4.987 11.573 4.513 11.28 4.22 C 10.987 3.927 10.512 3.927 10.219 4.22 L 5.747 8.691 L 0.445 6.335 C 0.164 6.21 -0.012 5.926 0.001 5.619 C 0.013 5.312 0.212 5.044 0.502 4.942 L 14.502 0.042 Z" fill="currentColor"/></svg>
         </button>
@@ -2898,16 +2923,16 @@ moa.addEventListener('mouseleave', function(){ moaHover = false; moaHoverN++; if
 moa.onclick = function(){ if(!moaTurning) moaTurn(); };
 
 var HOME_DESC = {
-  'Color': '브랜드 느낌과 정보의 중요도를 전달하기 위해 정해둔 색상 체계예요.',
-  'Typeface': '화면에 쓰는 글꼴과 글자 크기, 굵기, 줄 간격 규칙이에요.',
-  'Spacing': '요소와 요소 사이, 화면 가장자리에 두는 여백의 기준이에요.',
-  'CTA Button': "'구매하기', '더 알아보기'처럼 사용자가 다음 행동을 하도록 이끄는 버튼이에요.",
-  'CTA Button Icon': '글자 없이 아이콘만으로 기능을 실행하는 버튼이에요. (재생, 닫기, 좋아요 등)',
-  'Popup': '화면 위에 떠서 중요한 안내나 선택을 요청하는 창이에요.',
-  'Chip': '키워드나 카테고리를 작은 알약 모양으로 보여주고, 눌러서 필터링할 수 있는 요소예요.',
-  'Option Chip': '색상, 용량처럼 제품 옵션 중 하나를 고를 때 쓰는 선택용 칩이에요.',
-  'Tab': '같은 화면 안에서 여러 콘텐츠를 나눠 두고 전환해서 볼 수 있게 하는 메뉴예요.',
-  'Radius': '버튼이나 카드 같은 요소의 모서리를 얼마나 둥글게 할지 정한 값이에요.'
+  'Color': '브랜드의 느낌을 살리고 정보의 중요도를 한눈에 구분할 수 있도록 정해둔 색상 체계예요.',
+  'Typeface': '화면에 쓰는 글꼴과 함께 글자 크기, 굵기, 줄 간격을 정해둔 규칙이에요.',
+  'Spacing': '요소 사이와 화면 가장자리에 얼마만큼 여백을 둘지 정한 기준이에요.',
+  'CTA Button': '구매하기, 더 알아보기처럼 사용자가 다음 행동으로 자연스럽게 넘어가도록 이끄는 버튼이에요.',
+  'CTA Button Icon': '글자 없이 재생, 닫기, 좋아요 같은 아이콘만으로 기능을 바로 실행하는 버튼이에요.',
+  'Popup': '화면 위에 떠서 꼭 필요한 안내를 전하거나 사용자의 선택을 요청하는 창이에요.',
+  'Chip': '키워드나 카테고리를 작고 둥근 모양으로 보여주고, 눌러서 원하는 내용만 걸러볼 수 있는 요소예요.',
+  'Option Chip': '색상이나 용량처럼 제품 옵션 중 하나를 고를 때 쓰는 선택용 칩이에요.',
+  'Tab': '한 화면 안에서 여러 콘텐츠를 나눠 두고 필요한 내용으로 바로 전환해 볼 수 있게 해주는 메뉴예요.',
+  'Radius': '버튼이나 카드처럼 화면 요소의 모서리를 얼마나 둥글게 할지 정한 값이에요.'
 };
 var homeSub = document.querySelector('.hero-sub');
 var HOME_SUB_DEFAULT = homeSub.textContent;
@@ -4291,6 +4316,51 @@ document.addEventListener('click', function(e){
   });
 })();
 
+/* ── 답변 일시정지 / 이어하기
+   정지: 타이머 콜백을 대기열에 보관(타이핑 멈춤) + 화면엔 현재 상태 사본 표시
+   재생: 원본을 되돌리고 대기열 실행 → 멈춘 지점부터 이어서 답변
+   정지 중 새 질문을 보내면 사본은 그대로 두고 원본 흐름은 화면 밖에서 마무리 ── */
+(function(){
+  var con = $('chatCon'), bar = $('bar'), btn = $('btnStop');
+  var paused = null, queue = [], _st = window.setTimeout;
+  window.setTimeout = function(fn, ms){
+    var args = Array.prototype.slice.call(arguments, 2);
+    return _st.call(window, function(){
+      if(paused){ queue.push(function(){ fn.apply(null, args); }); return; }
+      if(typeof fn === 'function') fn.apply(null, args);
+    }, ms);
+  };
+  function flush(){ var q = queue; queue = []; q.forEach(function(f){ try{ f(); }catch(e){ console.error(e); } }); }
+  function cur(){ var rs = con.querySelectorAll(':scope > .row-bot'), r = rs[rs.length - 1]; var b = r && r.querySelector('.bot-body'); return b && b.querySelector('.bub-ing,.caret') ? b : null; }
+  function sync(){
+    bar.classList.toggle('paused', !!paused);
+    bar.classList.toggle('answering', !!paused || !!cur());
+    btn.setAttribute('aria-label', paused ? '답변 이어하기' : '답변 멈추기'); btn.title = btn.getAttribute('aria-label');
+  }
+  function finalize(){ if(!paused) return; paused = null; flush(); }
+  new MutationObserver(function(ms){
+    if(paused && ms.some(function(m){ return [].some.call(m.addedNodes, function(n){ return n.classList && n.classList.contains('row-user'); }); })) finalize();
+    sync();
+  }).observe(con, { childList: true, subtree: true });
+  btn.onclick = function(){
+    if(paused){
+      var p = paused; paused = null;
+      if(p.copy.parentNode) p.copy.parentNode.replaceChild(p.orig, p.copy);
+      if(p.ing) setIng(true);
+      flush(); sync(); scrollDown();
+      return;
+    }
+    var b = cur(); if(!b){ sync(); return; }
+    var c = b.cloneNode(true);
+    /* 하던 줄 끝(커서 자리)에 '......' 표시 */
+    Array.prototype.slice.call(c.querySelectorAll('.caret')).forEach(function(n){ var d = el('span','', '......'); d.style.color = '#8C93A0'; var t = n.previousElementSibling; n.parentNode.removeChild(n); if(!t) return; while(t.lastElementChild && /^(DIV|P|LI|UL|OL)$/.test(t.lastElementChild.tagName)) t = t.lastElementChild; t.appendChild(d); });
+    Array.prototype.slice.call(c.querySelectorAll('.bub-ing')).forEach(function(n){ n.parentNode.removeChild(n); });
+    c.appendChild(el('div','bub-note','대화를 멈췄어요.'));
+    paused = { orig: b, copy: c, ing: $('bgIng').classList.contains('on') };
+    b.parentNode.replaceChild(c, b);
+    setIng(false); sync();
+  };
+})();
 /* ── chrome events ───────────────────────────────────────────── */
 $('btnEtc').onclick = function(){ openCategory('기타 문의'); };
 $('menuEtc').onclick = function(){ closeMenu(); openCategory('기타 문의'); };
@@ -4328,17 +4398,19 @@ $('btnKeyGuide').addEventListener('mouseleave', function(){ this.classList.remov
 /* 가이드 2~5단계: 화면에 보이면 시작, 벗어나면 초기화 (가이드 진입 후 1초 대기) */
 var kgOpenedAt = 0;
 (function(){
-  var el = $('kgTypeTx'), box = $('kgType'), cur = $('kgCur'), press = $('kgPress'), gen = 0;
+  var el = $('kgTypeTx'), box = $('kgType'), pv = $('kgPv'), cur = $('kgCur'), press = $('kgPress'), gen = 0;
   var C = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
   function nk(){ var k = 'AIzaSy'; for(var n = 0; n < 33; n++) k += C.charAt(Math.floor(Math.random() * C.length)); return k; }
   function fit(){ var over = el.offsetWidth + 2 - box.clientWidth; el.style.marginLeft = over > 0 ? (-over) + 'px' : '0'; }
   function later(g, fn, ms){ setTimeout(function(){ if(g === gen) fn(); }, ms); }
-  function reset5(){ gen++; el.textContent = ''; fit(); cur.classList.remove('on','down'); press.classList.remove('on'); cur.style.transition = 'none'; cur.style.transform = 'translate(205px,112px)'; }
+  function reset5(){ gen++; pv.classList.remove('on'); box.classList.remove('paste'); el.textContent = ''; fit(); cur.classList.remove('on','down'); press.classList.remove('on'); cur.style.transition = 'none'; cur.style.transform = 'translate(205px,112px)'; }
   function run5(g){
-    var key = nk(), i = 0;
-    (function type(){
-      if(i <= key.length){ el.textContent = key.slice(0, i); fit(); i++; later(g, type, 45 + Math.random() * 55); return; }
-      later(g, function(){
+    var key = nk();
+    el.textContent = ''; fit(); box.classList.remove('paste');
+    later(g, function(){ pv.classList.add('on'); }, 500);
+    later(g, function(){ el.textContent = key; fit(); box.classList.remove('paste'); void box.offsetWidth; box.classList.add('paste'); }, 820);
+    later(g, function(){ pv.classList.remove('on'); }, 1250);
+    later(g, function(){
         cur.style.transition = 'none'; cur.style.transform = 'translate(205px,112px)'; void cur.offsetWidth; cur.style.transition = '';
         cur.classList.add('on');
         later(g, function(){ cur.style.transform = 'translate(136px,78px)'; }, 60);
@@ -4346,8 +4418,7 @@ var kgOpenedAt = 0;
         later(g, function(){ cur.classList.remove('down'); press.classList.remove('on'); }, 1060);
         later(g, function(){ cur.classList.remove('on'); }, 1700);
         later(g, function(){ el.textContent = ''; fit(); later(g, function(){ run5(g); }, 600); }, 2000);
-      }, 400);
-    })();
+    }, 1900);
   }
   /* 2~4: 사각형이 화면(플로팅 버튼 위)에 다 보이면 1초 뒤 / 5: 이미지가 보이면 루프 */
   var hls = [].slice.call(document.querySelectorAll('#kgScroll .kg-img .hl')), img5 = box.parentNode, timers = [];
@@ -4399,14 +4470,25 @@ var kgOpenedAt = 0;
     io5.observe(img5);
   }
 })();
+/* 가이드 1단계: 링크 클릭 → 복사 */
+(function(){
+  var b = $('kgCopy'), t = b.querySelector('i'), url = 'https://aistudio.google.com/api-keys', tm;
+  function fb(){ var ta = document.createElement('textarea'); ta.value = url; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0'; document.body.appendChild(ta); ta.select(); var ok = false; try{ ok = document.execCommand('copy'); }catch(_){} ta.remove(); return ok; }
+  b.onclick = function(){
+    if(!fb()) try{ navigator.clipboard.writeText(url); }catch(_){}
+    b.classList.add('done'); t.textContent = '링크가 복사되었어요';
+    clearTimeout(tm); tm = setTimeout(function(){ b.classList.remove('done'); t.textContent = url; }, 1600);
+  };
+})();
 /* 외부 링크: 플러그인에서는 figma.openExternal, 브라우저에서는 새 탭 */
 document.addEventListener('click', function(e){
   var a = e.target.closest && e.target.closest('a[href^="http"]'); if(!a) return;
   e.preventDefault();
   var ao = location.ancestorOrigins, inFigma = location.protocol === 'data:' || /figma\.com/.test(document.referrer) || (ao && [].some.call(ao, function(o){ return /figma\.com/.test(o); }));
   if(inFigma){ post({type:'open-url', url:a.href}); return; }
-  var w = null; try{ w = window.open(a.href, '_blank', 'noopener'); }catch(_){}
-  if(!w) try{ (window.top || window).location.href = a.href; }catch(_){ location.href = a.href; }
+  /* 'noopener' 옵션은 항상 null을 반환해 현재 창까지 이동하던 문제 → 새 탭만 열기 */
+  var w = null; try{ w = window.open(a.href, '_blank'); }catch(_){}
+  if(w) try{ w.opener = null; }catch(_){}
 });
 $('btnClose').onclick = function(){ show(S.screen === 'home' ? 'intro' : 'home'); };
 $('btnAsk').onclick = function(){ S.keyMode = 'first'; show('key'); };
