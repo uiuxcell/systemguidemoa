@@ -278,7 +278,7 @@ mark.fhit.cur{background:#FFB938}
 .bar.typing .send{opacity:1;transform:translateX(0)}
 .bar .stop{display:none;width:24px;height:24px;flex-shrink:0;align-self:flex-end;margin:-4px 0 -3.5px;padding:0;border:0;border-radius:50%;background:#FFFFFF;box-shadow:0 0 0 1px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.08);color:#8C93A0;align-items:center;justify-content:center;cursor:pointer;animation:stopIn .18s ease-out;transition:color .15s ease}
 .bar .stop:hover{color:#424751}
-.bar .stop i{width:8px;height:8px;border-radius:1.5px;background:currentColor}
+.bar .stop i{width:8px;height:9px;box-sizing:border-box;border-left:2.6px solid currentColor;border-right:2.6px solid currentColor;border-radius:1px}
 .bar .stop svg{display:none;margin-left:1.5px}
 .bar.paused .stop i{display:none}
 .bar.paused .stop svg{display:block}
@@ -920,6 +920,7 @@ function show(screen){
   if(S.screen !== screen && S.screen) S.history.push(S.screen);
   S.screen = screen;
   if(screen !== 'chat' && window.moaFindClose) moaFindClose();
+  if(window.moaStopSync) moaStopSync();
   $('pgIntro').classList.toggle('hide', screen!=='intro');
   $('pgHome').classList.toggle('hide', screen!=='home');
   $('pgChat').classList.toggle('hide', screen!=='chat');
@@ -2063,7 +2064,7 @@ function moaLines(html){
   var L0 = html.split('\n');
   var L = L0.filter(function(ln, k){ return ln.trim() || !((L0[k-1] || '').charAt(0) === '\u2063' || (L0[k+1] || '').charAt(0) === '\u2063'); });
   /* 문단: 빈 줄(엔터) 대신 12px 블록으로 끊음 · 문단 → 스펙·토큰 값으로 넘어갈 때는 24px */
-  var out = '', gap = false, prev = '';
+  var out = '', gap = false, prev = '', label = false;
   var GAP = function(px){ return '<span class="pg" style="display:block;height:' + px + 'px"></span>'; };
   L.forEach(function(ln, k){
     if(!ln.trim()){ if(prev) gap = true; return; }
@@ -2078,6 +2079,8 @@ function moaLines(html){
       : prev === 'spec' && kind !== 'spec' ? (kind === 'head' ? 4 : 16)
       /* 스펙 아닌 불릿 묶음: 첫 불릿 위 12px · 마지막 불릿 아래(뒤에 텍스트가 있을 때) 12px · 불릿 사이 0 */
       : kind === 'li' && prev === 'li' ? 0
+      /* '사용 규칙'처럼 짧은 제목 줄 바로 다음 불릿: 제목–설명 간격(4px)과 같게 */
+      : kind === 'li' && prev === 'text' && label ? 4
       : kind === 'li' && prev && prev !== 'head' ? 12
       : prev === 'li' && kind !== 'head' ? 12
       : gap ? 12 : 0;
@@ -2085,6 +2088,7 @@ function moaLines(html){
     if(g) out += GAP(g);
     gap = false;
     out += ln; if(!blk) out += '\n';
+    if(kind === 'text'){ var pl = ln.replace(/<[^>]+>/g, '').trim(); label = pl.length > 0 && pl.length <= 24 && !/[.!?。]$|[다요]$/.test(pl); } else label = false;
     prev = kind;
   });
   return out.replace(/\n$/, '');
@@ -2420,12 +2424,16 @@ document.addEventListener('click', function(e){
   };
   function flush(){ var q = queue; queue = []; q.forEach(function(f){ try{ f(); }catch(e){ console.error(e); } }); }
   function cur(){ var rs = con.querySelectorAll(':scope > .row-bot'), r = rs[rs.length - 1]; var b = r && r.querySelector('.bot-body'); return b && b.querySelector('.bub-ing,.caret') ? b : null; }
+  /* 정지/재생 버튼은 챗봇 화면에서 답변 중일 때만 (홈 등 다른 화면에선 숨김 · 정지 상태로 떠나면 그대로 멈춘 채 마무리) */
   function sync(){
-    bar.classList.toggle('paused', !!paused);
-    bar.classList.toggle('answering', !!paused || !!cur());
+    var chat = S.screen === 'chat';
+    if(!chat && paused) finalize();
+    bar.classList.toggle('paused', chat && !!paused);
+    bar.classList.toggle('answering', chat && (!!paused || !!cur()));
     btn.setAttribute('aria-label', paused ? '답변 이어하기' : '답변 멈추기'); btn.title = btn.getAttribute('aria-label');
   }
   function finalize(){ if(!paused) return; paused = null; flush(); }
+  window.moaStopSync = function(){ sync(); };
   new MutationObserver(function(ms){
     if(paused && ms.some(function(m){ return [].some.call(m.addedNodes, function(n){ return n.classList && n.classList.contains('row-user'); }); })) finalize();
     sync();

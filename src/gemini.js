@@ -464,8 +464,20 @@ moaTokenize = function(q){
     if(!hit.length) return;
     hit.concat(String(it.term).split('/')).forEach(function(t){ t = String(t).toLowerCase().trim(); if(t && out.indexOf(t) < 0) out.push(t); });
   });
+  /* 한글 조사 떼고 어간도 검색 (폰트를 → 폰트, 경우는 → 경우) */
+  out.slice().forEach(function(t){
+    if(!/^[\uac00-\ud7a3]+$/.test(t)) return;
+    var m = /^(.{2,}?)(이랑|에서|으로|에는|이란|이야|은|는|이|가|을|를|의|에|로|도|만|와|과|랑|란|요)$/.exec(t);
+    if(m && out.indexOf(m[1]) < 0) out.push(m[1]);
+  });
+  /* 같은 뜻 한글 용어 묶음: 하나만 물어도 모두 검색 (폰트 질문 → 가이드의 '서체' 섹션도 찾음) */
+  MOA_KO_SYN.forEach(function(g){
+    if(!g.some(function(w){ return out.indexOf(w) > -1; })) return;
+    g.forEach(function(w){ if(out.indexOf(w) < 0) out.push(w); });
+  });
   return out;
 };
+var MOA_KO_SYN = [['폰트','서체','글꼴','글씨체'], ['영문','영어','영문자','알파벳'], ['한글','국문']];
 /* glossary.md → [{term, category, aliases}] — 카테고리 = 가장 가까운 ##/### 제목(괄호 안 영문 우선). build.js와 같은 규칙.
    최신 파일 덮어쓰기는 moaLoadDb()가 함께 처리합니다. */
 function moaParseGlossary(md){
