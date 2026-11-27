@@ -1258,6 +1258,12 @@ function eggFor(q){
   var t = moaEggNorm(q);
   if(!t) return null;
   for(var i = 0; i < EGG.length; i++) if(EGG[i].keys.indexOf(t) > -1) return EGG[i];
+  /* '조이가 누구야', '조이님 알아?' 처럼 키 뒤에 조사·질문 꼬리가 붙은 경우 */
+  var tail = /^(님|씨|양|군)?(이|가|은|는|을|를|도|에대해|에대해서|란|이란|라는사람|이라는사람)?(누구|누군|누구야|누구예요|누구에요|누구세요|누구니|누구임|누구인가요|누구입니까|누군데|누구지|누군지알아|뭐야|뭐예요|뭐에요|알아|알아요|아세요|아니|알고있어|알고있어요|소개|소개해줘|소개해주세요|알려줘|알려주세요|말해줘|어때|어때요|어떤사람|어떤사람이야|어떤사람이에요|야|이야|예요|에요|요)?$/;
+  for(var j = 0; j < EGG.length; j++) for(var k = 0; k < EGG[j].keys.length; k++){
+    var key = EGG[j].keys[k];
+    if(key && t.indexOf(key) === 0 && t.length > key.length && tail.test(t.slice(key.length))) return EGG[j];
+  }
   return null;
 }
 function renderLanding(body, lp){
