@@ -147,6 +147,7 @@ const walkAlias = (o, p) => {
 tokFiles.forEach(f => { const j = JSON.parse(R('data/DB_tokens/' + f)); walkTok(j, []); walkAlias(j, []); });
 /* 범위가 없는 원시 토큰(space/spacing/8 등)은 그 토큰을 참조하는 토큰의 단위를 따름 */
 Object.keys(aliasOf).forEach(p => { const t = aliasOf[p]; if (units[t] == null && units[p]) units[t] = units[p]; });
+const etcmd = fs.existsSync(path.join(__dirname, 'data/Other Inquiries/other_inquiries.md')) ? R('data/Other Inquiries/other_inquiries.md') : '';
 const easteregg = fs.existsSync(path.join(__dirname, 'data/easteregg.md')) ? R('data/easteregg.md') : '';
 
 const map = {
@@ -164,9 +165,10 @@ const build = (get) => {
     .split('__PROMPTS_JSON__').join(esc(JSON.stringify(prompts)))
     .split('__GLOSSARY_JSON__').join(esc(JSON.stringify(glossary)))
     .split('__FAQ_JSON__').join(esc(JSON.stringify(faq)))
-    .split('__EASTEREGG_JSON__').join(esc(JSON.stringify(easteregg)));
+    .split('__EASTEREGG_JSON__').join(esc(JSON.stringify(easteregg)))
+    .split('__ETC_MD__').join(esc(JSON.stringify(etcmd)));
   for (const [tok, name] of Object.entries(map)) h = h.split(tok).join(get(name));
-  if (/__(IMG|DB|GEMINI|FONT|PROMPTS|TOKENS|GLOSSARY|FAQ|EASTEREGG|UNITS)_/.test(h)) throw new Error('unresolved token');
+  if (/__(IMG|DB|GEMINI|FONT|PROMPTS|TOKENS|GLOSSARY|FAQ|EASTEREGG|UNITS|ETC)_/.test(h)) throw new Error('unresolved token');
   return h;
 };
 

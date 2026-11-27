@@ -29,6 +29,7 @@ data/db_glossary/        용어·한글 표기 매핑
 data/landingmenu/        카테고리별 랜딩 화면 (정해진 답변·이미지)
 data/prompts/            Gemini 지시문 (역할 · 예외 · 출력 규칙)
 data/easteregg.md        정해진 질문 → 정해진 답변
+data/figma/links.md      카테고리·섹션 → 피그마 프레임 링크 (피그마에서 보기)
 data/faq/DB_FAQ.csv      답변 형식 예시 · {변수} 없는 질문은 고정 답변
 ```
 
@@ -84,6 +85,7 @@ data/faq/DB_FAQ.csv      답변 형식 예시 · {변수} 없는 질문은 고�
 - 답변 카드: 컬러 스와치 · 타입 스케일 · 텍스트(타이핑 애니메이션)
 - **컬러칩 클릭 → 선택한 Figma 요소의 fill 적용**
 - **타입 행 클릭 → 선택한 텍스트의 fontSize 적용**
+- **피그마에서 보기 → 답변 근거가 있는 가이드 프레임으로 이동** (`data/figma/links.md` 매핑 · 랜딩 이미지는 `img_` 레이어명으로 자동 탐색 · 다른 파일이면 가이드 파일 링크를 열어줌)
 - 복사, 이전으로, 대화 초기화
 - 대화 히스토리: 최근 질문 30개 저장(플러그인 `clientStorage` `moa-history` / 미리보기 localStorage) · Gemini 참고 대화는 최근 3개
 - 대화 검색: Cmd/Ctrl+F → 상단 검색바 (Enter 다음 · Esc/빈 곳 클릭 닫기)

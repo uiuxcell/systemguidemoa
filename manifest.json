@@ -1,23 +1,25 @@
 {
   "name": "System Guide Moa",
-  "id": "moa-system-guide",
+  "id": "1707716392164963865",
   "api": "1.0.0",
   "main": "code.js",
   "ui": "index.html",
   "editorType": [
     "figma",
-    "figjam"
+    "dev"
+  ],
+  "capabilities": [
+    "inspect"
   ],
   "documentAccess": "dynamic-page",
+  "enablePrivatePluginApi": true,
   "networkAccess": {
     "allowedDomains": [
       "https://generativelanguage.googleapis.com",
       "https://cdn.jsdelivr.net",
       "https://raw.githubusercontent.com",
-      "https://api.github.com",
-      "https://snippet.maze.co",
-      "https://*.maze.co"
+      "https://api.github.com"
     ],
-    "reasoning": "Gemini API 호출, 마스코트 애니메이션 로드, GitHub의 최신 챗봇 프롬프트·가이드 DB·토큰(data/) 로드, Maze 사용성 테스트 스니펫 로드 및 데이터 전송"
+    "reasoning": "Gemini API 호출, 마스코트 애니메이션 로드, GitHub의 최신 챗봇 프롬프트·가이드 DB·토큰(data/) 로드"
   }
 }

@@ -992,7 +992,7 @@ function moaAskOnce(question, apiKey, opts){
       }
       var text = pj.answer;
       end(5, r.model + ' · 완료 · 프롬프트: ' + moaPromptSource());
-      return { text: text, sources: hits.map(function(h){ return h.source; }), hitTopics: hits.map(function(h){ return h.topic; }), grounded: true, model: r.model, topics: topics };
+      return { text: text, sources: hits.map(function(h){ return h.source; }), hitTopics: hits.map(function(h){ return h.topic; }), hitHeads: hits.map(function(h){ return moaHead(h); }), grounded: true, model: r.model, topics: topics };
     });
   })
   .catch(function(err){
