@@ -36,7 +36,7 @@ Radius의 구성이에요.
 
 ![](img_radius_all_05)
 
-### Max : 999xp
+### Max : 999px
 버튼(CTA)과 같이 알약 형태의 높이가 고정된 요소에 사용
 적용: Button (CTA), Indicator, Number Counter, Scroll, Search Field
 
@@ -97,7 +97,7 @@ Radius의 구성이에요.
 
 ## Max
 
-### Max : 999xp은 높이가 고정된 요소에 사용해요.
+### Max : 999px은 높이가 고정된 요소에 사용해요.
 버튼(CTA), 인디케이터, 스크롤 등 알약(Pill) 형태 컴포넌트의 코너에 적용해요.
 
 컴포넌트 높이 값의 50% 수치로 적용 가능해요.
